@@ -109,6 +109,19 @@ git push origin feature/new-feature
 - **Vercel Dashboard**: Dashboard Vercel để xem build logs
 - **Build Status**: Status hiển thị trong PR
 
+### Dọn dẹp Failed Deployments:
+```bash
+# Xem danh sách deployments
+cd frontend
+vercel ls
+
+# Xóa deployment bị lỗi (thay <url> bằng URL thực tế)
+vercel rm <deployment-url> --yes
+
+# Ví dụ:
+vercel rm restaurant-management-test-abc123.vercel.app --yes
+```
+
 ## 🏗 Thiết Lập Môi Trường Phát Triển
 
 ### Yêu cầu hệ thống:
