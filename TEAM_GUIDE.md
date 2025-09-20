@@ -45,10 +45,15 @@ git add .
 git commit -m "Add: menu item creation functionality"
 ```
 
-**Bước 3: Push code lên GitHub**
+**Bước 3: Push code lên GitHub (Auto-Deploy)**
 ```bash
 # Push branch lên GitHub
 git push origin feature/ten-feature-cua-ban
+
+# 🎯 Tự động deploy khi merge vào main:
+# - Vercel sẽ tự động deploy frontend
+# - GitHub Actions chạy tests và build
+# - Preview URL được tạo cho PR
 ```
 
 **Bước 4: Tạo Pull Request**
@@ -70,6 +75,39 @@ git push origin feature/ten-feature-cua-ban
 - `Update:` - Cập nhật tính năng có sẵn
 - `Remove:` - Xóa code/file
 - `Refactor:` - Cải thiện code structure
+
+## 🚀 Auto-Deployment từ GitHub
+
+### Cách hoạt động:
+1. **Push to main branch** → Tự động deploy production
+2. **Create Pull Request** → Tạo preview deployment
+3. **Merge PR** → Deploy lên production URL chính
+
+### URLs:
+- **Production**: https://restaurant-management-test-adcb0h667-diepvuminh123s-projects.vercel.app
+- **Preview**: Mỗi PR có URL riêng để test
+
+### Workflow:
+```bash
+# 1. Tạo feature branch
+git checkout -b feature/new-feature
+
+# 2. Develop và commit
+git add .
+git commit -m "Add: new feature"
+
+# 3. Push và tạo PR
+git push origin feature/new-feature
+# → GitHub tự tạo preview deployment
+
+# 4. Merge PR vào main
+# → Tự động deploy production
+```
+
+### Kiểm tra deployment:
+- **GitHub Actions**: Tab "Actions" trong repository
+- **Vercel Dashboard**: Dashboard Vercel để xem build logs
+- **Build Status**: Status hiển thị trong PR
 
 ## 🏗 Thiết Lập Môi Trường Phát Triển
 
