@@ -1,5 +1,4 @@
 {
-  "name": "restaurant-management-frontend",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "framework": "create-react-app",
