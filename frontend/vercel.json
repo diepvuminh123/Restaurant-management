@@ -1,40 +1,12 @@
 {
-  "version": 2,
   "name": "restaurant-management-frontend",
-  "builds": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "headers": {
-        "cache-control": "s-maxage=31536000,immutable"
-      },
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "REACT_APP_API_URL": "@react_app_api_url",
-    "REACT_APP_ENV": "@react_app_env"
-  },
-  "build": {
-    "env": {
-      "REACT_APP_API_URL": "https://your-backend-url.com",
-      "REACT_APP_ENV": "production"
-    }
-  },
-  "github": {
-    "enabled": true,
-    "autoAlias": true
-  }
+  ]
 }
