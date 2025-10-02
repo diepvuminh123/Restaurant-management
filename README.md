@@ -24,7 +24,7 @@ The Restaurant Management System is designed to streamline restaurant operations
 - **Order Management**: Track customer orders from placement to completion
 - **Table Management**: Manage table reservations and availability
 - **Staff Dashboard**: Interface for restaurant staff to manage daily operations
-## Project Report
+## 📑 Project Report
 Overleaf: https://www.overleaf.com/project/68da9495edff44645da00e49
 ## 🛠 Technology Stack
 
@@ -367,4 +367,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Happy Coding! 🚀**
+
 
