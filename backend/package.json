@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "restaurant-backend",
   "version": "1.0.0",
   "private": true,
@@ -8,9 +8,16 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "express-session": "^1.18.2",
+    "joi": "^18.0.1",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.10"
   }
 }
