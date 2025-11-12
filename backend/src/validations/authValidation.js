@@ -1,5 +1,5 @@
 const Joi = require('joi');
-
+// ĐĂNG KÝ 
 const registerSchema = Joi.object({
   username: Joi.string()
     .alphanum()
@@ -53,12 +53,13 @@ const registerSchema = Joi.object({
       'any.only': 'Role phải là customer, employee hoặc admin'
     })
 });
-
+// ĐĂNG NHẬP
 const loginSchema = Joi.object({
-  username: Joi.string()
+  email: Joi.string()
+    .email()
     .required()
     .messages({
-      'any.required': 'Username là bắt buộc'
+      'any.required': 'Email là bắt buộc'
     }),
 
   password: Joi.string()

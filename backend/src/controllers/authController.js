@@ -22,6 +22,25 @@ class AuthController {
       });
     }
   }
+/**
+   * POST /api/auth/verifyMail
+   * Xác thực mail
+   */
+  static async verifyMail(req, res) {
+    try {
+      const userData = req.body;
+      const newUser = await AuthService.verifUser(userData);
+      res.status(201).json({
+        success: true,
+        message: 'xác thực thành công',
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 
   /**
    * POST /api/auth/login
@@ -29,8 +48,8 @@ class AuthController {
    */
   static async login(req, res) {
     try {
-      const { username, password } = req.body;
-      const user = await AuthService.login(username, password);
+      const { email, password } = req.body;
+      const user = await AuthService.login(email, password);
 
       // Lưu thông tin vào session
       req.session.userId = user.user_id;

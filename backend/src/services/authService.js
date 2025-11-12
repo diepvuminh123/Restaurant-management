@@ -1,4 +1,10 @@
 const User = require('../models/User');
+const Mail = require('../models/Mail')
+require('dotenv').config();
+const { sendVerificationEmail } = require('../mailer');
+const { generateOtp6 } = require('../utils/otp');
+
+const otpExpiresMin = Number(process.env.OTP_EXPIRES_MIN || 10);
 
 class AuthService {
   /**
@@ -19,36 +25,45 @@ class AuthService {
       throw new Error('Email đã được sử dụng');
     }
 
-    // Tạo user mới
     const newUser = await User.create({
       username,
       email,
       password,
       fullName,
       phone,
-      role: role || 'customer' // Mặc định là customer
+      role: role || 'customer' 
     });
-
     return newUser;
   }
+  static async verifUser(userData){
+    const {email,user_id } = userData;
+    const code = generateOtp6();
+    const verified= await Mail.createAuthMail({email,user_id,code})
+    const isValidCode = await Mail.verifycode(code, verified.password_hash);
+     if (!isValidCode) {
+      throw new Error('Mã code không đúng');
+    }
+    return verified;
+   
+  }  
 
   /**
    * Đăng nhập
    */
-  static async login(username, password) {
-    // Tìm user theo username
-    const user = await User.findByUsername(username);
+  static async login(email, password) {
+
+    const user = await User.findByEmail(email);
     if (!user) {
-      throw new Error('Username1 hoặc mật khẩu không đúng');
+      throw new Error('Email hoặc mật khẩu không đúng');
     }
 
-    // Xác thực mật khẩu
+   
     const isValidPassword = await User.verifyPassword(password, user.password_hash);
     if (!isValidPassword) {
-      throw new Error('Username2 hoặc mật khẩu không đúng');
+      throw new Error('Email hoặc mật khẩu không đúng');
     }
 
-    // Trả về user (không bao gồm password)
+    
     const { password_hash, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }

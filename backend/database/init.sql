@@ -37,5 +37,14 @@ INSERT INTO users (username, email, password_hash, full_name, phone, role) VALUE
 -- Thêm khách hàng mẫu (password: customer123)
 INSERT INTO users (username, email, password_hash, full_name, phone, role) VALUES
 ('customer1', 'customer1@example.com', '$2b$10$8YqN8O5mXK5y5Z5qQmZqLeZmZqLeZmZqLeZmZqLeZmZqLeZmZqL', 'Trần Thị B', '0912345678', 'customer');
+CREATE TABLE IF NOT EXISTS email_verifications (
+  user_id        BIGINT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+  code_hash      TEXT NOT NULL,
+  expires_at     TIMESTAMPTZ NOT NULL,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
+
+CREATE INDEX IF NOT EXISTS idx_email_verifications_expires_at
+  ON email_verifications (expires_at);
 COMMIT;

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
-const { requireAuth } = require('../middlewares/auth');
+const { requireAuth, optionalAuth  } = require('../middlewares/auth');
 const { registerSchema, loginSchema } = require('../validations/authValidation');
 
 /**
@@ -11,12 +11,19 @@ const { registerSchema, loginSchema } = require('../validations/authValidation')
  * @access  Public
  */
 router.post('/register', validate(registerSchema), AuthController.register);
+/**
+ * @route   POST /api/auth/verifyMail
+ * @desc    Sau khi đăng ký tài khoản
+ * @access  Private
+ */
+router.post('/verifyEmail', optionalAuth, AuthController.verifyMail);
 
 /**
  * @route   POST /api/auth/login
  * @desc    Đăng nhập (tất cả các role)
  * @access  Public
  */
+
 router.post('/login', validate(loginSchema), AuthController.login);
 
 /**
