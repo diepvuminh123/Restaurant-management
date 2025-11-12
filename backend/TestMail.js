@@ -1,7 +1,6 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 
-//Hàm tạo mã OTP 6 số
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -12,7 +11,7 @@ function generateOTP() {
     service: 'gmail',
     auth: {
       user: 'restaurantmqhnotification@gmail.com',
-      pass: 'abqc wiab vfgs lmme', 
+      pass: '', 
     },
   });
 
@@ -21,7 +20,7 @@ function generateOTP() {
   // Gửi mail
   const info = await transporter.sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
-    to: 'chinhtpc123@gmail.com', // email người nhận
+    to: 'chinhtpc123@gmail.com', 
     subject: 'Mã xác thực tài khoản của bạn',
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6">
