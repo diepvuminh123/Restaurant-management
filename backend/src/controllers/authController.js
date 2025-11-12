@@ -29,7 +29,7 @@ class AuthController {
   static async verifyMail(req, res) {
     try {
       const userData = req.body;
-      const newUser = await AuthService.verifUser(userData);
+      await AuthService.verifUser(userData);
       res.status(201).json({
         success: true,
         message: 'xác thực thành công',

@@ -12,7 +12,7 @@ const { registerSchema, loginSchema } = require('../validations/authValidation')
  */
 router.post('/register', validate(registerSchema), AuthController.register);
 /**
- * @route   POST /api/auth/verifyMail
+ * @route   POST /api/auth/verifyEmail
  * @desc    Sau khi đăng ký tài khoản
  * @access  Private
  */

@@ -33,16 +33,18 @@ class AuthService {
       phone,
       role: role || 'customer' 
     });
+    const code = generateOtp6();
+   await Mail.createAuthMail({ user_id: newUser.user_id, code });
+    await sendVerificationEmail(email, code);
     return newUser;
   }
   static async verifUser(userData){
-    const {email,user_id } = userData;
-    const code = generateOtp6();
-    const verified= await Mail.createAuthMail({email,user_id,code})
-    const isValidCode = await Mail.verifycode(code, verified.password_hash);
+    const {code,user_id} = userData;
+    const verified = await Mail.getOtpByUserId(user_id);
+    const isValidCode = await Mail.verifycode(code, verified.code_hash);
      if (!isValidCode) {
       throw new Error('Mã code không đúng');
-    }
+    } 
     return verified;
    
   }  

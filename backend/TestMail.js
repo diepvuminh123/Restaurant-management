@@ -11,7 +11,7 @@ function generateOTP() {
     service: 'gmail',
     auth: {
       user: 'restaurantmqhnotification@gmail.com',
-      pass: '', 
+      pass: 'abcd efgh ijkl mnop', 
     },
   });
 
