@@ -22,7 +22,8 @@ class AuthController {
       });
     }
   }
-/**
+
+  /**
    * POST /api/auth/verifyMail
    * Xác thực mail
    */
@@ -41,6 +42,32 @@ class AuthController {
       });
     }
   }
+  /**
+   * POST /api/auth/reVerifyMail
+   * Gửi lại mail xác thực
+   */
+  static async reVerifyMail(req, res) {
+    try {
+      const userData = req.body;
+       console.log("userDataABC", userData); 
+      const verified = await AuthService.checkAuth(userData.user_id); // Kiểm tra xác thực chưa aj
+      console.log("verified", verified); 
+      if(verified){
+        throw new Error("Tài khoản đã được xác thực");
+      }
+      await AuthService.reVerifUser(userData);
+      res.status(201).json({
+        success: true,
+        message: 'Đã gửi lại xác thực thành công',
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
 
   /**
    * POST /api/auth/login

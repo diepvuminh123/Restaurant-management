@@ -16,7 +16,15 @@ router.post('/register', validate(registerSchema), AuthController.register);
  * @desc    Sau khi đăng ký tài khoản
  * @access  Private
  */
+
 router.post('/verifyEmail', optionalAuth, AuthController.verifyMail);
+/**
+ * @route   POST /api/auth/reVerifyEmail
+ * @desc    Gửi lại mail xác thực
+ * @access  Private
+ */
+
+router.post('/reVerifyEmail', optionalAuth, AuthController.reVerifyMail);
 
 /**
  * @route   POST /api/auth/login

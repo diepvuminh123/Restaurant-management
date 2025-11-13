@@ -24,17 +24,23 @@ class User {
     ]);
     return result.rows[0];
   }
+  static async getEmailById(user_id) {
+    const result = await pool.query("SELECT email FROM users WHERE user_id = $1", [
+      user_id,
+    ]);
+    return result.rows[0];
+  }
 
   static async create(userData) {
     const { username, email, password, fullName, phone, role } = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-  `INSERT INTO users (username, email, password_hash, full_name, phone, role) 
+      `INSERT INTO users (username, email, password_hash, full_name, phone, role) 
    VALUES ($1, $2, $3, $4, $5, $6) 
    RETURNING user_id, username, email, full_name, phone, role, created_at`,
-  [username, email, hashedPassword, fullName, phone, role || "customer"]
-);
+      [username, email, hashedPassword, fullName, phone, role || "customer"]
+    );
 
     return result.rows[0];
   }
@@ -59,12 +65,15 @@ class User {
     return result.rows.length > 0;
   }
   static async setUserVerified(userId) {
-    await pool.query(
-      "UPDATE users SET is_verified = TRUE WHERE user_id = $1",
-      [userId]
-    );
+    await pool.query("UPDATE users SET is_verified = TRUE WHERE user_id = $1", [
+      userId,
+    ]);
   }
-
+  static async checkAuth(userId) {
+    const result = await pool.query("SELECT is_verified FROM users WHERE user_id = $1", [
+      userId,
+    ]);
+    return result.rows[0];
+  }
 }
-
 module.exports = User;

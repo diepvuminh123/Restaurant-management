@@ -43,6 +43,9 @@ class AuthService {
 
     return newUser;
   }
+  /**
+   * Xác thực mã code 
+   */
   static async verifUser(userData) {
     const { code, user_id } = userData;
     const verified = await Mail.getOtpByUserId(user_id);
@@ -57,6 +60,21 @@ class AuthService {
     }
    
     return verified;
+  }
+  /**
+   * Gửi lại Xác thực mã code 
+   */
+  static async reVerifUser(userData) {
+    const {user_id} = userData;
+    const code = generateOtp6();
+    const resendMail = await User.getEmailById(user_id);
+    console.log("resendMailABC", resendMail);
+    await sendVerificationEmail({
+      to: resendMail.email,
+      code: code, 
+      minutes: 10, 
+    });
+    return;
   }
 
   /**
@@ -89,6 +107,16 @@ class AuthService {
       throw new Error("User không tồn tại");
     }
     return user;
+  }
+   /**
+   * Xem xacs thuc chua
+   */
+  static async checkAuth(userId){
+    const user = await User.checkAuth(userId);
+    if(!user){
+      throw new Error("User không tồn tại");
+    }
+    return user.is_verified;
   }
 }
 
