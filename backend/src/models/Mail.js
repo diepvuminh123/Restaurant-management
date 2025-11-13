@@ -29,6 +29,12 @@ class Mail {
   static async verifycode(code, hashedCode) {
     return await bcrypt.compare(code, hashedCode);
   }
+  static async deleteOtpByUserId(user_id) {
+    await pool.query(
+      'DELETE FROM email_verifications WHERE user_id = $1',
+      [user_id]
+    );
+  }
 }
 
 module.exports = Mail;

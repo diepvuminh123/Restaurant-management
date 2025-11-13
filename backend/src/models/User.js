@@ -58,6 +58,13 @@ class User {
     );
     return result.rows.length > 0;
   }
+  static async setUserVerified(userId) {
+    await pool.query(
+      "UPDATE users SET is_verified = TRUE WHERE user_id = $1",
+      [userId]
+    );
+  }
+
 }
 
 module.exports = User;

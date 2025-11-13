@@ -24,7 +24,7 @@ async function sendVerificationEmail({ to, code, minutes }) {
   `;
   return transporter.sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
-    to,
+    to: to,
     subject: 'Mã xác thực tài khoản',
     html,
   });
