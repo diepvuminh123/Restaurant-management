@@ -4,6 +4,7 @@ const { generateOtp6 } = require("../utils/otp");
 const { create } = require("./User");
 
 class Mail {
+  // Tạo mã xác thực và lưu vào DB
   static async createAuthMail(mailData) {
     const { user_id, code } = mailData;
     const otpExpiresMin = 10;
@@ -19,6 +20,22 @@ class Mail {
     );
     return result.rows[0];
   }
+
+  static async upDateAuthMail(mailData) {
+    const { user_id, code } = mailData;
+    const otpExpiresMin = 10;
+    const expiresAt = new Date(Date.now() + otpExpiresMin * 60 * 1000);
+    const codeHash = await bcrypt.hash(code, 10);
+    const result = await pool.query(
+      `UPDATE email_verifications SET code_hash = $2, expires_at = $3, created_at = NOW()
+       WHERE user_id = $1
+      RETURNING *`,
+       [user_id, codeHash, expiresAt]
+    );
+    return result.rows[0];
+  }
+
+
   static async getOtpByUserId(user_id) {
     const result = await pool.query(
       'SELECT code_hash, expires_at FROM email_verifications WHERE user_id = $1',

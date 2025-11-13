@@ -74,6 +74,7 @@ class AuthService {
       code: code, 
       minutes: 10, 
     });
+    await Mail.upDateAuthMail({ user_id, code });
     return;
   }
 
