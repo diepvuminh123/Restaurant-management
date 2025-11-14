@@ -27,8 +27,10 @@ CREATE TABLE IF NOT EXISTS email_verifications (
   user_id        BIGINT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
   code_hash      TEXT,
   expires_at     TIMESTAMPTZ,
+  otp_type       VARCHAR(20) NOT NULL,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 
 
 

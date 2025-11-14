@@ -6,39 +6,40 @@ const { create } = require("./User");
 class Mail {
   // Tạo mã xác thực(codehash) và lưu vào DB
   static async createAuthMail(mailData) {
-    const { user_id, code } = mailData;
+    const { user_id, code, otp_type = 'registration' } = mailData;
     const otpExpiresMin = 10;
     const expiresAt = new Date(Date.now() + otpExpiresMin * 60 * 1000);
     const codeHash = await bcrypt.hash(code, 10);
     const result = await pool.query(
-      `INSERT INTO email_verifications (user_id, code_hash, expires_at)
-       VALUES ($1,$2,$3)
+      `INSERT INTO email_verifications (user_id, code_hash, expires_at, otp_type)
+       VALUES ($1, $2, $3, $4)
        ON CONFLICT (user_id)
-       DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at, created_at = NOW()
+       DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at, otp_type = EXCLUDED.otp_type, created_at = NOW()
       RETURNING *`,
-       [user_id, codeHash, expiresAt]
+       [user_id, codeHash, expiresAt, otp_type]
     );
     return result.rows[0];
   }
 
   static async upDateAuthMail(mailData) {
-    const { user_id, code } = mailData;
+    const { user_id, code, OTPType } = mailData;
+    const otp_type = OTPType; // Lười đổi :)))
     const otpExpiresMin = 10;
     const expiresAt = new Date(Date.now() + otpExpiresMin * 60 * 1000);
     const codeHash = await bcrypt.hash(code, 10);
     const result = await pool.query(
-      `UPDATE email_verifications SET code_hash = $2, expires_at = $3, created_at = NOW()
+      `UPDATE email_verifications SET code_hash = $2, expires_at = $3, otp_type = $4, created_at = NOW()
        WHERE user_id = $1
       RETURNING *`,
-       [user_id, codeHash, expiresAt]
+       [user_id, codeHash, expiresAt, otp_type]
     );
     return result.rows[0];
   }
 
 
-  static async getOtpByUserId(user_id) {
+  static async getOtpDataByUserId(user_id) {
     const result = await pool.query(
-      'SELECT code_hash, expires_at FROM email_verifications WHERE user_id = $1',
+      'SELECT code_hash, expires_at, otp_type FROM email_verifications WHERE user_id = $1',
       [user_id]
     );
     return result.rows[0];

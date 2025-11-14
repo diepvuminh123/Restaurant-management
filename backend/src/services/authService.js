@@ -37,47 +37,74 @@ class AuthService {
     await Mail.createAuthMail({ user_id: newUser.user_id, code });
     await sendVerificationEmail({
       to: email,
-      code: code, 
-      minutes: 10, 
+      code: code,
+      minutes: 10,
     });
 
     return newUser;
   }
   /**
-   * Xác thực mã code 
+   * Xác thực mã code
    */
   static async verifyOtp(userData) {
     const { code, user_id } = userData;
-    const verified = await Mail.getOtpByUserId(user_id);
-    const isValidCode = await Mail.verifycode(code, verified.code_hash);
-    console.log("verifiedABC", verified);
+    const record = await Mail.getOtpDataByUserId(user_id);
+    console.log("recordABC", record);
+    if (!record || !record.code_hash) {
+      throw new Error("K tìm thấy OTP");
+    }
+    if (record.expires_at && new Date(record.expires_at) < new Date()) {
+      await Mail.clearOtpByUserId(user_id);
+      throw new Error("Mã OTP đã hết hạn, vui lòng yêu cầu mã mới");
+    }
+    const isValidCode = await Mail.verifycode(code, record.code_hash);
     console.log("isValidCodeABC", isValidCode);
 
     if (!isValidCode) {
-       console.log("isValidCode", isValidCode);
+      console.log("isValidCode", isValidCode);
       throw new Error("Mã code không đúng");
     }
-    else {
+    if (record.otp_type === "signup") {
       await User.setUserVerified(user_id);
       await Mail.clearOtpByUserId(user_id);
+      return {
+        success: true,
+        otp_type: "signup",
+        user_id,
+      };
     }
-   
-    return verified;
+
+    if (record.otp_type === "reset") {
+      await Mail.clearOtpByUserId(user_id);
+      return {
+        success: true,
+        allow_reset: true,
+        user_id: user_id,
+        otp_type: "reset",
+      };
+    }
+    await Mail.clearOtpByUserId(user_id);
+
+    return {
+      success: true,
+      otp_type: record.otp_type,
+      user_id,
+    };
   }
   /**
-   * Gửi Xác thực mã code 
+   * Gửi Xác thực mã code
    */
-  static async reVerifUser(userData) {
-    const {user_id} = userData;
+  static async sendOtp(userData) {
+    const { user_id, OTPType } = userData;
     const code = generateOtp6();
-    const resendMail = await User.getEmailById(user_id);
-    console.log("resendMailABC", resendMail);
+    const MailUser = await User.getEmailById(user_id);
+    console.log("resendMailABC", MailUser);
     await sendVerificationEmail({
-      to: resendMail.email,
-      code: code, 
-      minutes: 10, 
+      to: MailUser.email,
+      code: code,
+      minutes: 10,
     });
-    await Mail.upDateAuthMail({ user_id, code });
+    await Mail.upDateAuthMail({ user_id, code, OTPType });
     return;
   }
 
@@ -112,12 +139,12 @@ class AuthService {
     }
     return user;
   }
-   /**
+  /**
    * Xem xacs thuc chua
    */
-  static async checkAuth(userId){
+  static async checkAuth(userId) {
     const user = await User.checkAuth(userId);
-    if(!user){
+    if (!user) {
       throw new Error("User không tồn tại");
     }
     return user.is_verified;

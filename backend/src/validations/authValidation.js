@@ -68,8 +68,15 @@ const loginSchema = Joi.object({
       'any.required': 'Mật khẩu là bắt buộc'
     })
 });
+// Đầu vào yêu cầu gửi OTP
+const sendOtpSchema = Joi.object({
+  user_id: Joi.number().required(),
+  OTPType: Joi.string().valid("signup", "reset").required()
+});
+
 
 module.exports = {
   registerSchema,
-  loginSchema
+  loginSchema,
+  sendOtpSchema
 };

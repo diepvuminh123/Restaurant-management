@@ -30,10 +30,11 @@ class AuthController {
   static async verifyOtp(req, res) {
     try {
       const userData = req.body;
-      await AuthService.verifyOtp(userData);
-      res.status(201).json({
+      const otpResult = await AuthService.verifyOtp(userData);
+      res.status(200).json({
         success: true,
         message: "xác thực thành công",
+        ...otpResult
       });
     } catch (error) {
       res.status(400).json({
@@ -56,7 +57,7 @@ class AuthController {
       ) {
         throw new Error("Tài khoản đã được xác thực");
       }
-      await AuthService.reVerifUser(userData);
+      await AuthService.sendOtp(userData);
       res.status(201).json({
         success: true,
         message: "Đã gửi mã xác thực vào mail",

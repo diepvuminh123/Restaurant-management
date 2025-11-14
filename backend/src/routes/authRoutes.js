@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const { requireAuth, optionalAuth  } = require('../middlewares/auth');
-const { registerSchema, loginSchema } = require('../validations/authValidation');
+const { registerSchema, loginSchema,sendOtpSchema } = require('../validations/authValidation');
 
 /**
  * @route   POST /api/auth/register
@@ -24,7 +24,7 @@ router.post('/verifyOtp', optionalAuth, AuthController.verifyOtp);
  * @access  Private
  */
 
-router.post('/sendOtp', optionalAuth, AuthController.sendOtp);
+router.post('/sendOtp', validate(sendOtpSchema), AuthController.sendOtp);
 
 /**
  * @route   POST /api/auth/login
