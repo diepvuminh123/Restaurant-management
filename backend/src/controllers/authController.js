@@ -29,11 +29,11 @@ class AuthController {
    */
   static async verifyOtp(req, res) {
     try {
-      const userData = req.body;
-      const otpResult = await AuthService.verifyOtp(userData);
+      const { email, code } = req.body;
+      const otpResult = await AuthService.verifyOtp({ email, code });
       res.status(200).json({
         success: true,
-        message: "xác thực thành công",
+        message: "Xác thực thành công",
         ...otpResult
       });
     } catch (error) {
@@ -49,18 +49,35 @@ class AuthController {
    */
   static async sendOtp(req, res) {
     try {
-      const userData = req.body;
-      console.log("userDataABC", userData);
-      if (
-        userData.OTPType === "signup" &&
-        (await AuthService.checkAuth(userData.user_id))
-      ) {
-        throw new Error("Tài khoản đã được xác thực");
+      const { email, OTPType } = req.body;
+      console.log("userDataABC", { email, OTPType });
+      
+      // Kiểm tra email có tồn tại không
+      const user = await AuthService.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "Email không tồn tại trong hệ thống"
+        });
       }
-      await AuthService.sendOtp(userData);
-      res.status(201).json({
+
+      // Nếu là signup, kiểm tra đã xác thực chưa
+      if (OTPType === "signup" && user.is_verified) {
+        return res.status(400).json({
+          success: false,
+          message: "Tài khoản đã được xác thực"
+        });
+      }
+
+      await AuthService.sendOtp({ email, OTPType });
+      
+      res.status(200).json({
         success: true,
-        message: "Đã gửi mã xác thực vào mail",
+        message: "Đã gửi mã xác thực vào email",
+        data: {
+          email: email,
+          expiresIn: "10 phút"
+        }
       });
     } catch (error) {
       res.status(400).json({

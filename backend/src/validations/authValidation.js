@@ -70,13 +70,45 @@ const loginSchema = Joi.object({
 });
 // Đầu vào yêu cầu gửi OTP
 const sendOtpSchema = Joi.object({
-  user_id: Joi.number().required(),
-  OTPType: Joi.string().valid("signup", "reset").required()
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({
+      'string.email': 'Email không hợp lệ',
+      'any.required': 'Email là bắt buộc'
+    }),
+  OTPType: Joi.string()
+    .valid("signup", "reset")
+    .required()
+    .messages({
+      'any.only': 'OTPType phải là signup hoặc reset',
+      'any.required': 'OTPType là bắt buộc'
+    })
 });
 
+// Xác thực OTP
+const verifyOtpSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({
+      'string.email': 'Email không hợp lệ',
+      'any.required': 'Email là bắt buộc'
+    }),
+  code: Joi.string()
+    .length(6)
+    .pattern(/^[0-9]+$/)
+    .required()
+    .messages({
+      'string.length': 'Mã OTP phải có 6 chữ số',
+      'string.pattern.base': 'Mã OTP chỉ chứa số',
+      'any.required': 'Mã OTP là bắt buộc'
+    })
+});
 
 module.exports = {
   registerSchema,
   loginSchema,
-  sendOtpSchema
+  sendOtpSchema,
+  verifyOtpSchema
 };

@@ -7,19 +7,25 @@ const { generateOtp6 } = require("../utils/otp");
 const otpExpiresMin = Number(process.env.OTP_EXPIRES_MIN || 10);
 
 class AuthService {
+
+  static async getUserByEmail(email) {
+    const user = await User.findByEmail(email);
+    return user;
+  }
+
   /**
    * Đăng ký user mới
    */
   static async register(userData) {
     const { username, email, password, fullName, phone, role } = userData;
 
-    // Kiểm tra username đã tồn tại
+   
     const usernameExists = await User.isUsernameExists(username);
     if (usernameExists) {
       throw new Error("Username đã tồn tại");
     }
 
-    // Kiểm tra email đã tồn tại
+    
     const emailExists = await User.isEmailExists(email);
     if (emailExists) {
       throw new Error("Email đã được sử dụng");
@@ -47,7 +53,15 @@ class AuthService {
    * Xác thực mã code
    */
   static async verifyOtp(userData) {
-    const { code, user_id } = userData;
+    const { code, email } = userData;
+    
+    
+    const user = await User.findByEmail(email);
+    if (!user) {
+      throw new Error("Email không tồn tại");
+    }
+    
+    const user_id = user.user_id;
     const record = await Mail.getOtpDataByUserId(user_id);
     console.log("recordABC", record);
     if (!record || !record.code_hash) {
@@ -70,7 +84,8 @@ class AuthService {
       return {
         success: true,
         otp_type: "signup",
-        user_id,
+        email: email,
+        user_id: user_id,
       };
     }
 
@@ -79,6 +94,7 @@ class AuthService {
       return {
         success: true,
         allow_reset: true,
+        email: email,
         user_id: user_id,
         otp_type: "reset",
       };
@@ -88,19 +104,27 @@ class AuthService {
     return {
       success: true,
       otp_type: record.otp_type,
-      user_id,
+      email: email,
+      user_id: user_id,
     };
   }
   /**
    * Gửi Xác thực mã code
    */
   static async sendOtp(userData) {
-    const { user_id, OTPType } = userData;
+    const { email, OTPType } = userData;
+    
+    // Lấy user_id từ email
+    const user = await User.findByEmail(email);
+    if (!user) {
+      throw new Error("Email không tồn tại");
+    }
+    
+    const user_id = user.user_id;
     const code = generateOtp6();
-    const MailUser = await User.getEmailById(user_id);
-    console.log("resendMailABC", MailUser);
+    console.log("resendMailABC", { email, user_id });
     await sendVerificationEmail({
-      to: MailUser.email,
+      to: email,
       code: code,
       minutes: 10,
     });

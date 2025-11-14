@@ -23,7 +23,7 @@ class Mail {
 
   static async upDateAuthMail(mailData) {
     const { user_id, code, OTPType } = mailData;
-    const otp_type = OTPType; // Lười đổi :)))
+    const otp_type = OTPType; // Lỡ dại :)))
     const otpExpiresMin = 10;
     const expiresAt = new Date(Date.now() + otpExpiresMin * 60 * 1000);
     const codeHash = await bcrypt.hash(code, 10);
