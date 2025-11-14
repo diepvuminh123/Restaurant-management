@@ -113,8 +113,7 @@ class AuthService {
    */
   static async sendOtp(userData) {
     const { email, OTPType } = userData;
-    
-    // Lấy user_id từ email
+  
     const user = await User.findByEmail(email);
     if (!user) {
       throw new Error("Email không tồn tại");

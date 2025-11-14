@@ -52,7 +52,6 @@ class AuthController {
       const { email, OTPType } = req.body;
       console.log("userDataABC", { email, OTPType });
       
-      // Kiểm tra email có tồn tại không
       const user = await AuthService.getUserByEmail(email);
       if (!user) {
         return res.status(404).json({
@@ -61,7 +60,6 @@ class AuthController {
         });
       }
 
-      // Nếu là signup, kiểm tra đã xác thực chưa
       if (OTPType === "signup" && user.is_verified) {
         return res.status(400).json({
           success: false,
