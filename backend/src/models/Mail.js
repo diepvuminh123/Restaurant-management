@@ -4,7 +4,7 @@ const { generateOtp6 } = require("../utils/otp");
 const { create } = require("./User");
 
 class Mail {
-  // Tạo mã xác thực và lưu vào DB
+  // Tạo mã xác thực(codehash) và lưu vào DB
   static async createAuthMail(mailData) {
     const { user_id, code } = mailData;
     const otpExpiresMin = 10;
@@ -46,12 +46,18 @@ class Mail {
   static async verifycode(code, hashedCode) {
     return await bcrypt.compare(code, hashedCode);
   }
-  static async deleteOtpByUserId(user_id) {
-    await pool.query(
-      'DELETE FROM email_verifications WHERE user_id = $1',
-      [user_id]
-    );
-  }
+  static async clearOtpByUserId(user_id) {
+  await pool.query(
+    `
+    UPDATE email_verifications 
+    SET code_hash = NULL,
+        expires_at = NULL
+    WHERE user_id = $1
+    `,
+    [user_id]
+  );
+}
+
 }
 
 module.exports = Mail;

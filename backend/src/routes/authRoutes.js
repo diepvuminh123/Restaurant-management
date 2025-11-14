@@ -13,18 +13,18 @@ const { registerSchema, loginSchema } = require('../validations/authValidation')
 router.post('/register', validate(registerSchema), AuthController.register);
 /**
  * @route   POST /api/auth/verifyEmail
- * @desc    Sau khi đăng ký tài khoản
+ * @desc    Xác thực OTP
  * @access  Private
  */
 
-router.post('/verifyEmail', optionalAuth, AuthController.verifyMail);
+router.post('/verifyOtp', optionalAuth, AuthController.verifyOtp);
 /**
- * @route   POST /api/auth/reVerifyEmail
- * @desc    Gửi lại mail xác thực
+ * @route   POST /api/auth/sendOtp
+ * @desc    Gửi xác thực qua mail
  * @access  Private
  */
 
-router.post('/reVerifyEmail', optionalAuth, AuthController.reVerifyMail);
+router.post('/sendOtp', optionalAuth, AuthController.sendOtp);
 
 /**
  * @route   POST /api/auth/login

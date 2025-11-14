@@ -1,4 +1,4 @@
--- Active: 1762708863974@@127.0.0.1@5432@postgres
+
 BEGIN;
 
 CREATE DATABASE restaurant_db;
@@ -22,27 +22,14 @@ CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 
--- =============================================
--- SAMPLE DATA
--- =============================================
 
--- Thêm admin mặc định (password: admin123)
-INSERT INTO users (username, email, password_hash, full_name, phone, role) VALUES
-('admin', 'admin@restaurant.com', '$2b$10$8YqN8O5mXK5y5Z5qQmZqLeZmZqLeZmZqLeZmZqLeZmZqLeZmZqL', 'Administrator', '0123456789', 'admin');
-
--- Thêm nhân viên mẫu (password: employee123)
-INSERT INTO users (username, email, password_hash, full_name, phone, role) VALUES
-('employee1', 'employee1@restaurant.com', '$2b$10$8YqN8O5mXK5y5Z5qQmZqLeZmZqLeZmZqLeZmZqLeZmZqLeZmZqL', 'Nguyễn Văn A', '0987654321', 'employee');
-
--- Thêm khách hàng mẫu (password: customer123)
-INSERT INTO users (username, email, password_hash, full_name, phone, role) VALUES
-('customer1', 'customer1@example.com', '$2b$10$8YqN8O5mXK5y5Z5qQmZqLeZmZqLeZmZqLeZmZqLeZmZqLeZmZqL', 'Trần Thị B', '0912345678', 'customer');
 CREATE TABLE IF NOT EXISTS email_verifications (
   user_id        BIGINT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
-  code_hash      TEXT NOT NULL,
-  expires_at     TIMESTAMPTZ NOT NULL,
+  code_hash      TEXT,
+  expires_at     TIMESTAMPTZ,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 
 
 CREATE INDEX IF NOT EXISTS idx_email_verifications_expires_at

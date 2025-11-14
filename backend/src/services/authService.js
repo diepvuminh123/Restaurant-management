@@ -46,23 +46,26 @@ class AuthService {
   /**
    * Xác thực mã code 
    */
-  static async verifUser(userData) {
+  static async verifyOtp(userData) {
     const { code, user_id } = userData;
     const verified = await Mail.getOtpByUserId(user_id);
     const isValidCode = await Mail.verifycode(code, verified.code_hash);
+    console.log("verifiedABC", verified);
+    console.log("isValidCodeABC", isValidCode);
+
     if (!isValidCode) {
        console.log("isValidCode", isValidCode);
       throw new Error("Mã code không đúng");
     }
     else {
       await User.setUserVerified(user_id);
-      await Mail.deleteOtpByUserId(user_id);
+      await Mail.clearOtpByUserId(user_id);
     }
    
     return verified;
   }
   /**
-   * Gửi lại Xác thực mã code 
+   * Gửi Xác thực mã code 
    */
   static async reVerifUser(userData) {
     const {user_id} = userData;
