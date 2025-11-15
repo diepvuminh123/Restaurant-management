@@ -31,10 +31,15 @@ class AuthController {
     try {
       const { email, code } = req.body;
       const otpResult = await AuthService.verifyOtp({ email, code });
+      if (otpResult.otp_type === "reset" && otpResult.allow_reset) {
+        req.session.resetUserId = otpResult.user_id;
+        req.session.resetEmail = otpResult.email;
+      }
+
       res.status(200).json({
         success: true,
         message: "Xác thực thành công",
-        ...otpResult
+        ...otpResult,
       });
     } catch (error) {
       res.status(400).json({
@@ -51,31 +56,31 @@ class AuthController {
     try {
       const { email, OTPType } = req.body;
       console.log("userDataABC", { email, OTPType });
-      
+
       const user = await AuthService.getUserByEmail(email);
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: "Email không tồn tại trong hệ thống"
+          message: "Email không tồn tại trong hệ thống",
         });
       }
 
       if (OTPType === "signup" && user.is_verified) {
         return res.status(400).json({
           success: false,
-          message: "Tài khoản đã được xác thực"
+          message: "Tài khoản đã được xác thực",
         });
       }
 
       await AuthService.sendOtp({ email, OTPType });
-      
+
       res.status(200).json({
         success: true,
         message: "Đã gửi mã xác thực vào email",
         data: {
           email: email,
-          expiresIn: "10 phút"
-        }
+          expiresIn: "10 phút",
+        },
       });
     } catch (error) {
       res.status(400).json({
@@ -126,13 +131,20 @@ class AuthController {
    */
   static async resetPassword(req, res) {
     try {
-      const userData = req.body;
-      const newUser = await AuthService.register(userData);
+      const userData = {
+        ...req.body,
+        userId: req.session.resetUserId,
+      };
 
+      console.log("userDataABC", userData);
+      await AuthService.resetPassword(userData);
+
+      delete req.session.resetUserId;
+      delete req.session.resetEmail;
+      
       res.status(201).json({
         success: true,
-        message: "Đăng ký thành công",
-        data: newUser,
+        message: "Đặt lại mk thành công",
       });
     } catch (error) {
       res.status(400).json({
