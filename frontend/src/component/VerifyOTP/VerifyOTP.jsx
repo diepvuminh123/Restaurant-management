@@ -88,6 +88,7 @@ export default function VerifyOTP({ email, onVerifySuccess, otpType = "signup" }
             placeholder="Nhập mã xác thực"
             className="otpInput"
             maxLength="6"
+             style={{ width: "95%", padding: "8px" }}
           />
         </div>
 

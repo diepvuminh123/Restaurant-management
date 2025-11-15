@@ -57,6 +57,7 @@
   font-size: 14px;
 }
 
+
 .input:focus {
   border-color: #c66b33;
   background: white;
@@ -64,14 +65,15 @@
 
 .passwordBox {
   position: relative;
+  width: 95%;
 }
 
 .togglePass {
   position: absolute;
-  right: 12px;
+  right: 0px !important;
   top: 50%;
-  transform: translateY(-50%);
   background: none;
+  transform: translateY(-50%);
   border: none;
   cursor: pointer;
   color: #666;
@@ -103,21 +105,22 @@
 }
 
 .primaryButton {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #c66b33;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  margin-top: 8px;
-  cursor: pointer;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  all: unset !important;  /* bỏ tất cả style mặc định */
+  width: 100% !important;
+  min-height: 44px !important;
+  border-radius: 8px !important;
+  background: #c66b33 !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-top: 8px !important;
+  padding: 1px !important;
 }
+
 
 .primaryButton:disabled {
   opacity: 0.6;

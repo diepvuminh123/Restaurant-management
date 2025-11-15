@@ -75,6 +75,7 @@ export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
           value={formData.email}
           onChange={handleChange}
           required
+           style={{ width: "95%" }}
         />
 
         <label className="label">
@@ -88,6 +89,7 @@ export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
           value={formData.username}
           onChange={handleChange}
           required
+          style={{ width: "95%" }}
         />
 
         <label className="label">

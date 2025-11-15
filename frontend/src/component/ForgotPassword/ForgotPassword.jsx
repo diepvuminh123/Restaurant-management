@@ -169,6 +169,7 @@ export default function ForgotPassword({ onBackToLogin }) {
           }}
           placeholder="email@example.com"
           required
+           style={{ width: "95%" }}
         />
 
         {error && <div className="errorMessage">{error}</div>}

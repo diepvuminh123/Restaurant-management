@@ -62,6 +62,7 @@ export default function LoginForm({
         <label className="label">
           Email <span className="required">*</span>
         </label>
+         <div className="passwordBox">
         <input
           type="email"
           name="email"
@@ -71,6 +72,7 @@ export default function LoginForm({
           onChange={handleChange}
           required
         />
+        </div>
 
         {/* Password */}
         <label className="label">
