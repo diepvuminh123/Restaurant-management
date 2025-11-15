@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const { requireAuth, optionalAuth  } = require('../middlewares/auth');
-const { registerSchema, loginSchema } = require('../validations/authValidation');
+const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema } = require('../validations/authValidation');
 
 /**
  * @route   POST /api/auth/register
@@ -12,19 +12,18 @@ const { registerSchema, loginSchema } = require('../validations/authValidation')
  */
 router.post('/register', validate(registerSchema), AuthController.register);
 /**
- * @route   POST /api/auth/verifyEmail
- * @desc    Sau khi đăng ký tài khoản
- * @access  Private
+ * @route   POST /api/auth/verifyOtp
+ * @desc    Xác thực OTP
+ * @access  Public
  */
-
-router.post('/verifyEmail', optionalAuth, AuthController.verifyMail);
+router.post('/verifyOtp', validate(verifyOtpSchema), AuthController.verifyOtp);
 /**
- * @route   POST /api/auth/reVerifyEmail
- * @desc    Gửi lại mail xác thực
+ * @route   POST /api/auth/sendOtp
+ * @desc    Gửi xác thực qua mail
  * @access  Private
  */
 
-router.post('/reVerifyEmail', optionalAuth, AuthController.reVerifyMail);
+router.post('/sendOtp', validate(sendOtpSchema), AuthController.sendOtp);
 
 /**
  * @route   POST /api/auth/login

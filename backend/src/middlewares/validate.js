@@ -18,8 +18,6 @@ const validate = (schema) => {
         errors
       });
     }
-
-    // Gắn validated data vào req.body
     req.body = value;
     next();
   };

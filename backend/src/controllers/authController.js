@@ -1,4 +1,4 @@
-const AuthService = require('../services/authService');
+const AuthService = require("../services/authService");
 
 class AuthController {
   /**
@@ -12,62 +12,78 @@ class AuthController {
 
       res.status(201).json({
         success: true,
-        message: 'Đăng ký thành công',
-        data: newUser
+        message: "Đăng ký thành công",
+        data: newUser,
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
 
   /**
-   * POST /api/auth/verifyMail
+   * POST /api/auth/verifyOtp
    * Xác thực mail
    */
-  static async verifyMail(req, res) {
+  static async verifyOtp(req, res) {
     try {
-      const userData = req.body;
-      await AuthService.verifUser(userData);
-      res.status(201).json({
+      const { email, code } = req.body;
+      const otpResult = await AuthService.verifyOtp({ email, code });
+      res.status(200).json({
         success: true,
-        message: 'xác thực thành công',
+        message: "Xác thực thành công",
+        ...otpResult
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
   /**
-   * POST /api/auth/reVerifyMail
-   * Gửi lại mail xác thực
+   * POST /api/auth/sendOtp
+   * Gửi mã xác thực
    */
-  static async reVerifyMail(req, res) {
+  static async sendOtp(req, res) {
     try {
-      const userData = req.body;
-       console.log("userDataABC", userData); 
-      const verified = await AuthService.checkAuth(userData.user_id); // Kiểm tra xác thực chưa aj
-      console.log("verified", verified); 
-      if(verified){
-        throw new Error("Tài khoản đã được xác thực");
+      const { email, OTPType } = req.body;
+      console.log("userDataABC", { email, OTPType });
+      
+      const user = await AuthService.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "Email không tồn tại trong hệ thống"
+        });
       }
-      await AuthService.reVerifUser(userData);
-      res.status(201).json({
+
+      if (OTPType === "signup" && user.is_verified) {
+        return res.status(400).json({
+          success: false,
+          message: "Tài khoản đã được xác thực"
+        });
+      }
+
+      await AuthService.sendOtp({ email, OTPType });
+      
+      res.status(200).json({
         success: true,
-        message: 'Đã gửi lại xác thực thành công',
+        message: "Đã gửi mã xác thực vào email",
+        data: {
+          email: email,
+          expiresIn: "10 phút"
+        }
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
-
 
   /**
    * POST /api/auth/login
@@ -85,7 +101,7 @@ class AuthController {
 
       res.json({
         success: true,
-        message: 'Đăng nhập thành công',
+        message: "Đăng nhập thành công",
         data: {
           user: {
             userId: user.user_id,
@@ -93,14 +109,14 @@ class AuthController {
             email: user.email,
             fullName: user.full_name,
             phone: user.phone,
-            role: user.role
-          }
-        }
+            role: user.role,
+          },
+        },
       });
     } catch (error) {
       res.status(401).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -115,20 +131,20 @@ class AuthController {
         if (err) {
           return res.status(500).json({
             success: false,
-            message: 'Không thể đăng xuất'
+            message: "Không thể đăng xuất",
           });
         }
 
-        res.clearCookie(process.env.SESSION_NAME || 'restaurant_session');
+        res.clearCookie(process.env.SESSION_NAME || "restaurant_session");
         res.json({
           success: true,
-          message: 'Đăng xuất thành công'
+          message: "Đăng xuất thành công",
         });
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -152,14 +168,14 @@ class AuthController {
             fullName: user.full_name,
             phone: user.phone,
             role: user.role,
-            createdAt: user.created_at
-          }
-        }
+            createdAt: user.created_at,
+          },
+        },
       });
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -176,13 +192,13 @@ class AuthController {
         data: {
           userId: req.session.userId,
           username: req.session.username,
-          role: req.session.userRole
-        }
+          role: req.session.userRole,
+        },
       });
     } else {
       res.json({
         success: true,
-        isAuthenticated: false
+        isAuthenticated: false,
       });
     }
   }
