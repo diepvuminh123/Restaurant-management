@@ -1,0 +1,97 @@
+.loginScreen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  justify-items: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg,  #F3EFEA 0%);
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.loginContainer {
+  max-width: 420px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.welcomeBoard {
+  max-width: 420px;
+  width: 100%;
+  color: black;
+  text-align: center;
+}
+
+.welcomeBoard img:not([alt="Tick"]) {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.welcomeBoard h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.welcomeBoard h2 {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.welcomeBoard img[alt="Tick"] {
+  max-width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .loginScreen {
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .loginScreen {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 16px;
+  }
+  
+  .loginContainer {
+    max-width: 100%;
+    padding: 16px;
+  }
+  
+  .welcomeBoard {
+    max-width: 100%;
+  }
+  
+  .welcomeBoard h1 {
+    font-size: 18px;
+  }
+  
+  .welcomeBoard h2 {
+    font-size: 13px;
+  }
+  
+  .formTitle {
+    font-size: 22px;
+  }
+}
