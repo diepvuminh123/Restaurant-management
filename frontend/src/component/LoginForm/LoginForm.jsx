@@ -1,90 +1,138 @@
 import React, { useState } from "react";
-import { ICONS } from "../../constants/asset/icon";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { LuUtensilsCrossed } from "react-icons/lu";
+import ApiService from "../../services/apiService";
 import "./LoginForm.css";
 
-export default function LoginForm() {
+export default function LoginForm({
+  onSignupClick,
+  onForgotPasswordClick,
+  onLoginSuccess,
+}) {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await ApiService.login(formData.email, formData.password);
+      
+      if (response.success) {
+        onLoginSuccess?.(response.data.user);
+      }
+    } catch (err) {
+      setError(err.message || "Đăng nhập thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="loginFormWrapper">
-      <img src={ICONS.LOGO} alt="Logo" className="formLogo" />
-      <h1 className="formTitle">Đăng nhập</h1>
-      <p className="formSubtitle">Chào mừng bạn trở lại</p>
-      
-      <form onSubmit={(e) => e.preventDefault()}>
+      {/* Logo */}
+      <div className="formLogo">
+        <LuUtensilsCrossed />
+      </div>
+
+      {/* Title */}
+      <h2 className="formTitle">Chào mừng bạn trở lại</h2>
+      <p className="formSubtitle">Đăng nhập để tiếp tục</p>
+
+      <form className="formContainer" onSubmit={handleSubmit}>
         {/* Email */}
-        <div className="group">
-          <label htmlFor="email" className="label">
-            Email <span className="required">*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            placeholder="Nhập email của bạn"
-            className="input"
-          />
-        </div>
+        <label className="label">
+          Email <span className="required">*</span>
+        </label>
+        <input
+          type="email"
+          name="email"
+          className="input"
+          placeholder="email@example.com"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
 
         {/* Password */}
-        <div className="group">
-          <label htmlFor="password" className="label">
-            Mật khẩu <span className="required">*</span>
-          </label>
-
-          <div style={{ position: "relative" }}>
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              required
-              placeholder="Nhập mật khẩu"
-              className="input"
-              style={{ paddingRight: "40px" }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  setShowPassword(!showPassword);
-                }
-              }}
-              aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-              style={{
-                position: "absolute",
-                right: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "18px",
-                userSelect: "none",
-                padding: "4px",
-              }}
-            >
-              {showPassword ? "👁️" : "👁️‍🗨️"}
-            </button>
-          </div>
+        <label className="label">
+          Mật khẩu <span className="required">*</span>
+        </label>
+        <div className="passwordBox">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            className="input"
+            placeholder="Nhập mật khẩu"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <button
+            type="button"
+            className="togglePass"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FiEyeOff /> : <FiEye />}
+          </button>
         </div>
 
-        {/* Options */}
+        {/* Remember + forgot */}
         <div className="optionsRow">
-          <label htmlFor="remember" className="checkboxLabel">
-            <input id="remember" type="checkbox" />
+          <label className="checkRow">
+            <input
+              type="checkbox"
+              name="remember"
+              checked={formData.remember}
+              onChange={handleChange}
+            />
             Ghi nhớ đăng nhập
           </label>
-          <a href="#forgot" className="forgot">
+
+          <span className="forgot" onClick={onForgotPasswordClick}>
             Quên mật khẩu?
-          </a>
+          </span>
         </div>
 
-        {/* Button */}
-        <button className="button">Đăng nhập</button>
+        {/* Error */}
+        {error && <div className="errorMessage">{error}</div>}
+
+        {/* Login button */}
+        <button type="submit" className="primaryButton" disabled={loading}>
+          {loading ? "Đang xử lý..." : "Đăng nhập"}
+        </button>
       </form>
 
+      {/* Footer */}
       <div className="formFooter">
-        Bạn chưa có tài khoản? <span className="signupLink">Đăng ký ngay</span>
+        Chưa có tài khoản?{" "}
+        <span className="signupLink" onClick={onSignupClick}>
+          Đăng ký tài khoản
+        </span>
+      </div>
+
+      <div className="orRole">ĐĂNG NHẬP VỚI VAI TRÒ KHÁC</div>
+
+      <div className="roleButtons">
+        <button className="roleButton">Nhân viên</button>
+        <button className="roleButton">Quản trị viên</button>
       </div>
     </div>
   );
