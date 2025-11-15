@@ -3,6 +3,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import ApiService from "../../services/apiService";
 import VerifyOTP from "../VerifyOTP/VerifyOTP";
+import Loading from "../Loading/Loading";
 import "./ForgotPassword.css";
 
 export default function ForgotPassword({ onBackToLogin }) {
@@ -131,7 +132,7 @@ export default function ForgotPassword({ onBackToLogin }) {
           {error && <div className="errorMessage">{error}</div>}
 
           <button type="submit" className="primaryButton" disabled={loading}>
-            {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
+            {loading ? <Loading /> : "Đặt lại mật khẩu"}
           </button>
         </form>
 
@@ -173,7 +174,7 @@ export default function ForgotPassword({ onBackToLogin }) {
         {error && <div className="errorMessage">{error}</div>}
 
         <button type="submit" className="primaryButton" disabled={loading}>
-          {loading ? "Đang gửi..." : "Gửi mã xác thực"}
+          {loading ? <Loading /> : "Gửi mã xác thực"}
         </button>
       </form>
 

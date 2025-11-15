@@ -77,6 +77,10 @@
   font-weight: 600;
   cursor: pointer;
   padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
 }
 
 .resendButton:hover:not(:disabled) {
@@ -105,6 +109,10 @@
   font-weight: 600;
   margin-top: 8px;
   cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primaryButton:disabled {

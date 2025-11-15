@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import ApiService from "../../services/apiService";
+import Loading from "../Loading/Loading";
 import "./LoginForm.css";
 
 export default function LoginForm({
@@ -116,7 +117,7 @@ export default function LoginForm({
 
         {/* Login button */}
         <button type="submit" className="primaryButton" disabled={loading}>
-          {loading ? "Đang xử lý..." : "Đăng nhập"}
+          {loading ? <Loading /> : "Đăng nhập"}
         </button>
       </form>
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import ApiService from "../../services/apiService";
+import Loading from "../Loading/Loading";
 import "./SignUpForm.css";
 
 export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
@@ -136,7 +137,7 @@ export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
         {error && <div className="errorMessage">{error}</div>}
 
         <button type="submit" className="primaryButton" disabled={loading}>
-          {loading ? "Đang xử lý..." : "Đăng ký"}
+          {loading ? <Loading /> : "Đăng ký"}
         </button>
       </form>
 

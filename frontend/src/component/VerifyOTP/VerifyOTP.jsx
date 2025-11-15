@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import ApiService from "../../services/apiService";
+import Loading from "../Loading/Loading";
 import "./VerifyOTP.css";
 
 export default function VerifyOTP({ email, onVerifySuccess, otpType = "signup" }) {
@@ -98,7 +99,7 @@ export default function VerifyOTP({ email, onVerifySuccess, otpType = "signup" }
               className="resendButton"
               disabled={resendLoading}
             >
-              {resendLoading ? "Đang gửi..." : "Gửi lại mã"}
+              {resendLoading ? <Loading /> : "Gửi lại mã"}
             </button>
           ) : (
             <span className="countdown">
@@ -110,7 +111,7 @@ export default function VerifyOTP({ email, onVerifySuccess, otpType = "signup" }
         {error && <div className="errorMessage">{error}</div>}
 
         <button type="submit" className="primaryButton" disabled={loading}>
-          {loading ? "Đang xác thực..." : "Xác thực"}
+          {loading ? <Loading /> : "Xác thực"}
         </button>
       </form>
     </div>
