@@ -3,6 +3,7 @@ const Mail = require("../models/Mail");
 require("dotenv").config();
 const { sendVerificationEmail } = require("../mailer");
 const { generateOtp6 } = require("../utils/otp");
+const bcrypt = require("bcrypt");
 
 const otpExpiresMin = Number(process.env.OTP_EXPIRES_MIN || 10);
 
@@ -170,16 +171,27 @@ class AuthService {
     }
     return user.is_verified;
   }
-  static async resetPassword(userData){
-    const {newPassword, userId} = userData;
-    console.log("userId", userId);
+  /**
+   * Reset mật khẩu
+   */
+  static async resetPassword(userData) {
+    const { newPassword, userId } = userData;
+    console.log("userIdABC",userId);
+    const user = await User.findById(userId);
     if (!userId) {
       throw new Error("User không tồn tại");
-  }
+    }
+    console.log("user.password_hash",user.password_hash);
+    const isValidPassword = await User.verifyPassword(
+      newPassword,
+      user.password_hash
+    );
+    if (isValidPassword) {
+      throw new Error("Mật khẩu mới không được trùng với mật khẩu cũ");
+    }
+
     await User.updatePassword(userId, newPassword);
   }
-
-  }
-
+}
 
 module.exports = AuthService;

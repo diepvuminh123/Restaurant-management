@@ -135,13 +135,11 @@ class AuthController {
         ...req.body,
         userId: req.session.resetUserId,
       };
-
-      console.log("userDataABC", userData);
       await AuthService.resetPassword(userData);
 
       delete req.session.resetUserId;
       delete req.session.resetEmail;
-      
+
       res.status(201).json({
         success: true,
         message: "Đặt lại mk thành công",
