@@ -58,10 +58,10 @@ class ApiService {
     });
   }
 
-  static async resetPassword(password, confirmPassword) {
+  static async resetPassword(newPassword) {
     return this.request('/auth/resetPassword', {
       method: 'POST',
-      body: { password, confirmPassword },
+      body: { newPassword },
     });
   }
 

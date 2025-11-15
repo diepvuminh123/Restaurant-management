@@ -48,7 +48,7 @@ export default function ForgotPassword({ onBackToLogin }) {
     setLoading(true);
 
     try {
-      const response = await ApiService.resetPassword(newPassword, confirmPassword);
+      const response = await ApiService.resetPassword(newPassword);
       if (response.success) {
         alert("Đặt lại mật khẩu thành công!");
         onBackToLogin();
