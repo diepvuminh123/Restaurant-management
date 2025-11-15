@@ -4,10 +4,9 @@ const bcrypt = require("bcrypt");
 class User {
   static async findById(userId) {
     const result = await pool.query(
-      "SELECT user_id, username, email, full_name, phone, role, created_at FROM users WHERE user_id = $1",
+      "SELECT * FROM users WHERE user_id = $1",
       [userId]
     );
-    console.log(result, "result");
     return result.rows[0];
   }
 
@@ -74,6 +73,13 @@ class User {
       userId,
     ]);
     return result.rows[0];
+  }
+  static async updatePassword(userId, newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query(
+      "UPDATE users SET password_hash = $1 WHERE user_id = $2",
+      [hashedPassword, userId]
+    );
   }
 }
 module.exports = User;

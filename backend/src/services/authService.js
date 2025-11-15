@@ -3,11 +3,11 @@ const Mail = require("../models/Mail");
 require("dotenv").config();
 const { sendVerificationEmail } = require("../mailer");
 const { generateOtp6 } = require("../utils/otp");
+const bcrypt = require("bcrypt");
 
 const otpExpiresMin = Number(process.env.OTP_EXPIRES_MIN || 10);
 
 class AuthService {
-
   static async getUserByEmail(email) {
     const user = await User.findByEmail(email);
     return user;
@@ -19,13 +19,11 @@ class AuthService {
   static async register(userData) {
     const { username, email, password, role } = userData;
 
-   
     const usernameExists = await User.isUsernameExists(username);
     if (usernameExists) {
       throw new Error("Username đã tồn tại");
     }
 
-    
     const emailExists = await User.isEmailExists(email);
     if (emailExists) {
       throw new Error("Email đã được sử dụng");
@@ -38,7 +36,11 @@ class AuthService {
       role: role || "customer",
     });
     const code = generateOtp6();
-    await Mail.createAuthMail({ user_id: newUser.user_id, code, otp_type: "signup" });
+    await Mail.createAuthMail({
+      user_id: newUser.user_id,
+      code,
+      otp_type: "signup",
+    });
     await sendVerificationEmail({
       to: email,
       code: code,
@@ -52,13 +54,12 @@ class AuthService {
    */
   static async verifyOtp(userData) {
     const { code, email } = userData;
-    
-    
+
     const user = await User.findByEmail(email);
     if (!user) {
       throw new Error("Email không tồn tại");
     }
-    
+
     const user_id = user.user_id;
     const record = await Mail.getOtpDataByUserId(user_id);
     console.log("recordABC", record);
@@ -111,12 +112,12 @@ class AuthService {
    */
   static async sendOtp(userData) {
     const { email, OTPType } = userData;
-  
+
     const user = await User.findByEmail(email);
     if (!user) {
       throw new Error("Email không tồn tại");
     }
-    
+
     const user_id = user.user_id;
     const code = generateOtp6();
     console.log("resendMailABC", { email, user_id });
@@ -169,6 +170,27 @@ class AuthService {
       throw new Error("User không tồn tại");
     }
     return user.is_verified;
+  }
+  /**
+   * Reset mật khẩu
+   */
+  static async resetPassword(userData) {
+    const { newPassword, userId } = userData;
+    console.log("userIdABC",userId);
+    const user = await User.findById(userId);
+    if (!userId) {
+      throw new Error("User không tồn tại");
+    }
+    console.log("user.password_hash",user.password_hash);
+    const isValidPassword = await User.verifyPassword(
+      newPassword,
+      user.password_hash
+    );
+    if (isValidPassword) {
+      throw new Error("Mật khẩu mới không được trùng với mật khẩu cũ");
+    }
+
+    await User.updatePassword(userId, newPassword);
   }
 }
 
