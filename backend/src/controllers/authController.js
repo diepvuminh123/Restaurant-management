@@ -120,7 +120,27 @@ class AuthController {
       });
     }
   }
+  /**
+   * POST /api/auth/resetPassword
+   * Reset lại mật khẩu
+   */
+  static async resetPassword(req, res) {
+    try {
+      const userData = req.body;
+      const newUser = await AuthService.register(userData);
 
+      res.status(201).json({
+        success: true,
+        message: "Đăng ký thành công",
+        data: newUser,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
   /**
    * POST /api/auth/logout
    * Đăng xuất

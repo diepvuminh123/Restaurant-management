@@ -17,7 +17,7 @@ class AuthService {
    * Đăng ký user mới
    */
   static async register(userData) {
-    const { username, email, password, fullName, phone, role } = userData;
+    const { username, email, password, role } = userData;
 
    
     const usernameExists = await User.isUsernameExists(username);
@@ -35,12 +35,10 @@ class AuthService {
       username,
       email,
       password,
-      fullName,
-      phone,
       role: role || "customer",
     });
     const code = generateOtp6();
-    await Mail.createAuthMail({ user_id: newUser.user_id, code });
+    await Mail.createAuthMail({ user_id: newUser.user_id, code, otp_type: "signup" });
     await sendVerificationEmail({
       to: email,
       code: code,

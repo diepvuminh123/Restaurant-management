@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const { requireAuth, optionalAuth  } = require('../middlewares/auth');
-const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema } = require('../validations/authValidation');
+const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema,resetPasswordSchema } = require('../validations/authValidation');
 
 /**
  * @route   POST /api/auth/register
@@ -32,6 +32,13 @@ router.post('/sendOtp', validate(sendOtpSchema), AuthController.sendOtp);
  */
 
 router.post('/login', validate(loginSchema), AuthController.login);
+/**
+ * @route   POST /api/auth/resetPassword
+ * @desc    Reset mật khẩu
+ * @access  Public
+ */
+
+router.post('/resetPassword', validate(resetPasswordSchema), AuthController.resetPassword);
 
 /**
  * @route   POST /api/auth/logout

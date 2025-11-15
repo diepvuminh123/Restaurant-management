@@ -4,9 +4,9 @@ const { generateOtp6 } = require("../utils/otp");
 const { create } = require("./User");
 
 class Mail {
-  // Tạo mã xác thực(codehash) và lưu vào DB
+  // 
   static async createAuthMail(mailData) {
-    const { user_id, code, otp_type = 'registration' } = mailData;
+    const { user_id, code, otp_type } = mailData;
     const otpExpiresMin = 10;
     const expiresAt = new Date(Date.now() + otpExpiresMin * 60 * 1000);
     const codeHash = await bcrypt.hash(code, 10);

@@ -29,22 +29,22 @@ const registerSchema = Joi.object({
       'any.required': 'Mật khẩu là bắt buộc'
     }),
 
-  fullName: Joi.string()
-    .min(2)
-    .max(100)
-    .required()
-    .messages({
-      'string.min': 'Họ tên phải có ít nhất 2 ký tự',
-      'string.max': 'Họ tên không được quá 100 ký tự',
-      'any.required': 'Họ tên là bắt buộc'
-    }),
+  // fullName: Joi.string()
+  //   .min(2)
+  //   .max(100)
+  //   .required()
+  //   .messages({
+  //     'string.min': 'Họ tên phải có ít nhất 2 ký tự',
+  //     'string.max': 'Họ tên không được quá 100 ký tự',
+  //     'any.required': 'Họ tên là bắt buộc'
+  //   }),
 
-  phone: Joi.string()
-    .pattern(/^[0-9]{10,11}$/)
-    .allow('')
-    .messages({
-      'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
-    }),
+  // phone: Joi.string()
+  //   .pattern(/^[0-9]{10,11}$/)
+  //   .allow('')
+  //   .messages({
+  //     'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+  //   }),
 
   role: Joi.string()
     .valid('customer', 'employee', 'admin')
@@ -105,10 +105,19 @@ const verifyOtpSchema = Joi.object({
       'any.required': 'Mã OTP là bắt buộc'
     })
 });
+const resetPasswordSchema = Joi.object({
+password: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'Mật khẩu là bắt buộc'
+    }),
 
-module.exports = {
+})
+
+    module.exports = {
   registerSchema,
   loginSchema,
   sendOtpSchema,
-  verifyOtpSchema
+  verifyOtpSchema,
+  resetPasswordSchema
 };
