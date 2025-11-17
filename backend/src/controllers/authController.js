@@ -115,6 +115,7 @@ class AuthController {
             fullName: user.full_name,
             phone: user.phone,
             role: user.role,
+            is_verified: user.is_verified,
           },
         },
       });

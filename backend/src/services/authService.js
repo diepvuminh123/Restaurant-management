@@ -138,6 +138,12 @@ class AuthService {
     if (!user) {
       throw new Error("Email hoặc mật khẩu không đúng");
     }
+    const is_verified = await User.checkIs_verified(user.user_id);
+    console.log("is_verifiedABC",is_verified);
+    if (is_verified.is_verified === false) {
+      throw new Error("Bạn vui lòng xác thực tài khoản trước khi đăng nhập");
+    }
+
 
     const isValidPassword = await User.verifyPassword(
       password,

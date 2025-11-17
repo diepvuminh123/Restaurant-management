@@ -74,6 +74,12 @@ class User {
     ]);
     return result.rows[0];
   }
+  static async checkIs_verified(userID){
+    const result = await pool.query("SELECT is_verified FROM users WHERE user_id = $1", [
+      userID,
+    ]);
+    return result.rows[0];
+  }
   static async updatePassword(userId, newPassword) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.query(
