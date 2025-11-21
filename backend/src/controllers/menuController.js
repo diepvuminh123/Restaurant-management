@@ -8,7 +8,7 @@ class MenuController {
   static async getSections(req, res) {
     try {
       const sections = await MenuService.getSections();
-      res.json({
+      res.status(200).json({
         success: true,
         data: sections,
       });

@@ -42,63 +42,75 @@ class Menu {
 
         let whereConditions = [];
         let params = [];
-        let paramCounter = 1;
+        let idx = 1; // $1,2...
 
-        if (section_id) {
-            whereConditions.push(`mi.section_id = $${paramCounter++}`);
+        if (section_id !== undefined) {
+            whereConditions.push(`mi.section_id = $${idx++}`);
             params.push(section_id);
         }
 
-        if (category_id) {
+        if (category_id !== undefined) {
             whereConditions.push(
-                `EXISTS (SELECT 1 FROM menu_item_categories mic WHERE mic.menu_item_id = mi.id AND mic.category_id = $${paramCounter++})`
+                `EXISTS (SELECT 1 FROM menu_item_categories mic WHERE mic.menu_item_id = mi.id AND mic.category_id = $${idx++})`
             );
             params.push(category_id);
         }
 
         if (available !== undefined) {
-            whereConditions.push(`mi.available = $${paramCounter++}`);
+            whereConditions.push(`mi.available = $${idx++}`);
             params.push(available);
         }
 
         if (is_popular !== undefined) {
-            whereConditions.push(`mi.is_popular = $${paramCounter++}`);
+            whereConditions.push(`mi.is_popular = $${idx++}`);
             params.push(is_popular);
         }
 
-        if (search) {
+        if (search !== undefined && search !== "") {
+            // use the same parameter for both ILIKE occurrences
             whereConditions.push(
-                `(mi.name ILIKE $${paramCounter} OR mi.description_short ILIKE $${paramCounter})`
+                `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})`
             );
             params.push(`%${search}%`);
-            paramCounter++;
+            idx++;
         }
 
         if (price_min !== undefined) {
-            whereConditions.push(`mi.price >= $${paramCounter++}`);
+            whereConditions.push(`mi.price >= $${idx++}`);
             params.push(price_min);
         }
 
         if (price_max !== undefined) {
-            whereConditions.push(`mi.price <= $${paramCounter++}`);
+            whereConditions.push(`mi.price <= $${idx++}`);
             params.push(price_max);
         }
 
         const whereClause =
             whereConditions.length > 0 ? "WHERE " + whereConditions.join(" AND ") : "";
 
-        // Đếm tổng số items
+        // Đếm tổng số items (parameterized)
         const countQuery = `SELECT COUNT(*) as total FROM menu_items mi ${whereClause}`;
         const countResult = await pool.query(countQuery, params);
-        const total = parseInt(countResult.rows[0].total);
+        const total = parseInt(countResult.rows[0].total, 10) || 0;
 
-        // Validate sort_by để tránh SQL injection
-        const allowedSortFields = ["id", "name", "price", "rating_avg", "created_at"];
+        // Tránh SQL injection (column names cannot be parameterized)
+        const allowedSortFields = [
+            "id",
+            "name",
+            "price",
+            "rating_avg",
+            "created_at",
+        ];
         const sortField = allowedSortFields.includes(sort_by) ? sort_by : "id";
-        const sortDir = sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC";
+        const sortDir = sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC";
 
-        // Lấy items có phân trang
-        const offset = (page - 1) * limit;
+        // Pagination params
+        const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+
+        // Add limit & offset placeholders
+        const limitPlaceholder = `$${idx++}`;
+        const offsetPlaceholder = `$${idx++}`;
+
         const itemsQuery = `
             SELECT 
                 mi.id,
@@ -115,26 +127,27 @@ class Menu {
             FROM menu_items mi
             ${whereClause}
             ORDER BY mi.${sortField} ${sortDir}
-            LIMIT $${paramCounter++} OFFSET $${paramCounter++}
+            LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
         `;
 
-        const itemsResult = await pool.query(itemsQuery, [...params, limit, offset]);
+        const itemsParams = [...params, limit, offset];
+        const itemsResult = await pool.query(itemsQuery, itemsParams);
 
         return {
             items: itemsResult.rows.map((item) => ({
                 ...item,
-                price: parseFloat(item.price),
-                sale_price: item.sale_price ? parseFloat(item.sale_price) : null,
-                effective_price: parseFloat(item.effective_price),
-                rating_avg: parseFloat(item.rating_avg),
+                price: item.price !== null ? parseFloat(item.price) : null,
+                sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
+                effective_price: item.effective_price !== null ? parseFloat(item.effective_price) : null,
+                rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
                 is_popular: Boolean(item.is_popular),
                 available: Boolean(item.available),
             })),
             pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
+                page: parseInt(page, 10),
+                limit: parseInt(limit, 10),
                 total,
-                total_pages: Math.ceil(total / limit),
+                total_pages: Math.ceil(total / limit) || 0,
             },
         };
     }
@@ -143,10 +156,9 @@ class Menu {
      * Lấy facets để filter (khoảng giá, danh mục)
      */
     static async getFacets(sectionId) {
-        let whereClause = sectionId ? "WHERE mi.section_id = $1" : "";
-        let params = sectionId ? [sectionId] : [];
+        const whereClause = sectionId !== undefined ? "WHERE mi.section_id = $1" : "";
+        const params = sectionId !== undefined ? [sectionId] : [];
 
-        // Lấy khoảng giá
         const priceQuery = `
             SELECT 
                 MIN(price) as price_min, 
@@ -156,7 +168,6 @@ class Menu {
         `;
         const priceResult = await pool.query(priceQuery, params);
 
-        // Lấy danh mục với số lượng món
         const categoriesQuery = `
             SELECT 
                 mc.id,
@@ -173,12 +184,12 @@ class Menu {
         const categoriesResult = await pool.query(categoriesQuery, params);
 
         return {
-            price_min: parseFloat(priceResult.rows[0].price_min) || 0,
-            price_max: parseFloat(priceResult.rows[0].price_max) || 0,
+            price_min: priceResult.rows[0].price_min !== null ? parseFloat(priceResult.rows[0].price_min) : 0,
+            price_max: priceResult.rows[0].price_max !== null ? parseFloat(priceResult.rows[0].price_max) : 0,
             categories: categoriesResult.rows.map((cat) => ({
                 id: cat.id,
                 name: cat.name,
-                count: parseInt(cat.count),
+                count: parseInt(cat.count, 10),
             })),
         };
     }
@@ -204,13 +215,11 @@ class Menu {
             LEFT JOIN menu_sections ms ON mi.section_id = ms.id
             WHERE mi.id = $1
         `;
-
         const result = await pool.query(query, [id]);
         if (result.rows.length === 0) return null;
 
         const item = result.rows[0];
 
-        // Lấy danh mục của món ăn này
         const categoriesQuery = `
             SELECT mc.id, mc.name
             FROM menu_categories mc
@@ -224,14 +233,14 @@ class Menu {
             name: item.name,
             description_full: item.description_full,
             images: item.images || [],
-            price: parseFloat(item.price),
-            sale_price: item.sale_price ? parseFloat(item.sale_price) : null,
+            price: item.price !== null ? parseFloat(item.price) : null,
+            sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
             section: {
                 id: item.section_id,
                 name: item.section_name,
             },
             categories: categoriesResult.rows,
-            rating_avg: parseFloat(item.rating_avg),
+            rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
             rating_count: item.rating_count,
             available: Boolean(item.available),
         };
@@ -257,10 +266,9 @@ class Menu {
         try {
             await client.query("BEGIN");
 
-            // Insert món ăn
             const insertQuery = `
                 INSERT INTO menu_items 
-                (name, price, sale_price, description_short, description_full, image_cover, images, section_id)
+                    (name, price, sale_price, description_short, description_full, image_cover, images, section_id)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 RETURNING id
             `;
@@ -279,13 +287,10 @@ class Menu {
 
             const menuItemId = insertResult.rows[0].id;
 
-            // Insert liên kết với danh mục
             if (category_ids && category_ids.length > 0) {
+                const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
                 for (const catId of category_ids) {
-                    await client.query(
-                        "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)",
-                        [menuItemId, catId]
-                    );
+                    await client.query(insertCatQuery, [menuItemId, catId]);
                 }
             }
 
@@ -320,66 +325,61 @@ class Menu {
         try {
             await client.query("BEGIN");
 
-            // Build update query động
             const updateFields = [];
             const updateParams = [];
-            let paramCounter = 1;
+            let idx = 1;
 
             if (name !== undefined) {
-                updateFields.push(`name = $${paramCounter++}`);
+                updateFields.push(`name = $${idx++}`);
                 updateParams.push(name);
             }
             if (price !== undefined) {
-                updateFields.push(`price = $${paramCounter++}`);
+                updateFields.push(`price = $${idx++}`);
                 updateParams.push(price);
             }
             if (sale_price !== undefined) {
-                updateFields.push(`sale_price = $${paramCounter++}`);
+                updateFields.push(`sale_price = $${idx++}`);
                 updateParams.push(sale_price);
             }
             if (description !== undefined) {
-                updateFields.push(`description_full = $${paramCounter++}`);
+                updateFields.push(`description_full = $${idx++}`);
                 updateParams.push(description);
             }
             if (description_short !== undefined) {
-                updateFields.push(`description_short = $${paramCounter++}`);
+                updateFields.push(`description_short = $${idx++}`);
                 updateParams.push(description_short);
             }
             if (image !== undefined) {
-                updateFields.push(`image_cover = $${paramCounter++}`);
+                updateFields.push(`image_cover = $${idx++}`);
                 updateParams.push(image);
-                updateFields.push(`images = $${paramCounter++}`);
+                updateFields.push(`images = $${idx++}`);
                 updateParams.push(JSON.stringify([image]));
             }
             if (section_id !== undefined) {
-                updateFields.push(`section_id = $${paramCounter++}`);
+                updateFields.push(`section_id = $${idx++}`);
                 updateParams.push(section_id);
             }
             if (available !== undefined) {
-                updateFields.push(`available = $${paramCounter++}`);
+                updateFields.push(`available = $${idx++}`);
                 updateParams.push(available);
             }
 
             if (updateFields.length > 0) {
-                const updateQuery = `UPDATE menu_items SET ${updateFields.join(
-                    ", "
-                )} WHERE id = $${paramCounter}`;
+                const updateQuery = `UPDATE menu_items SET ${updateFields.join(", ")} WHERE id = $${idx}`;
                 updateParams.push(id);
                 await client.query(updateQuery, updateParams);
             }
 
-            // Cập nhật danh mục nếu được cung cấp
             if (category_ids !== undefined) {
-                await client.query("DELETE FROM menu_item_categories WHERE menu_item_id = $1", [
-                    id,
-                ]);
+                await client.query(
+                    "DELETE FROM menu_item_categories WHERE menu_item_id = $1",
+                    [id]
+                );
 
                 if (category_ids && category_ids.length > 0) {
+                    const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
                     for (const catId of category_ids) {
-                        await client.query(
-                            "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)",
-                            [id, catId]
-                        );
+                        await client.query(insertCatQuery, [id, catId]);
                     }
                 }
             }
