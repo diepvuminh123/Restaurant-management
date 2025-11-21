@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const sessionConfig = require('./config/session');
 const authRoutes = require('./routes/authRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api', menuRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

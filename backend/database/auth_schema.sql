@@ -31,9 +31,6 @@ CREATE TABLE IF NOT EXISTS email_verifications (
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-
-
-
 CREATE INDEX IF NOT EXISTS idx_email_verifications_expires_at
   ON email_verifications (expires_at);
 COMMIT;
