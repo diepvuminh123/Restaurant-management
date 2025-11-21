@@ -1,4 +1,4 @@
-.signupFormWrapper {
+.verifyOTPWrapper {
   max-width: 380px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -35,53 +35,67 @@
   text-align: left;
 }
 
-.label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.required {
-  color: #e03d2e;
-}
-
-.input {
+.otpInputContainer {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  margin-bottom: 16px;
-  font-size: 14px;
+  margin-bottom: 20px;
 }
 
-.input:focus {
+.otpInput {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+  font-size: 24px;
+  font-family: monospace;
+  text-align: center;
+  letter-spacing: 8px;
+}
+
+.otpInput:focus {
   border-color: #c66b33;
   background: white;
   outline: none;
 }
 
-.passwordBox {
-  position: relative;
-  margin-bottom: 16px;
+.otpInput::placeholder {
+  color: #999;
+  letter-spacing: normal;
+  font-size: 14px;
 }
 
-.passwordBox .input {
-  margin-bottom: 0;
+.resendContainer {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.togglePass {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
+.resendButton {
+  background: transparent;
   border: none;
+  color: #c66b33;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  color: #666;
-  font-size: 20px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.resendButton:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.resendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.countdown {
+  color: #999;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .primaryButton {
@@ -104,17 +118,6 @@
 .primaryButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.formFooter {
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.loginLink {
-  color: #c66b33;
-  cursor: pointer;
-  font-weight: 600;
 }
 
 .errorMessage {
