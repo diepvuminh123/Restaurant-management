@@ -1,0 +1,139 @@
+/* Container chính của toàn bộ khu vực Quick Booking */
+/* .home-quick-booking-section {
+    /* max-width: 1200px; /* Chiều rộng tối đa cho phần nội dung */
+    /* margin: 40px auto; Căn giữa trang */ 
+    /* padding: 0 20px; */
+
+
+/* Phần trên: Thông tin Nhà hàng (Trái) và Form (Phải) */
+.booking-content-top {
+    display: flex;
+    /* Căn chỉnh các phần tử con theo trục ngang */
+    justify-content: space-between; 
+    /* Căn chỉnh các phần tử con theo trục dọc (nếu chiều cao khác nhau) */
+    align-items: flex-start; 
+    gap: 50px; /* Khoảng cách giữa hai cột */
+    padding-bottom: 50px;
+    /* Thiết lập background màu be nhạt cho phần trên theo Figma */
+    background-color: #FBF8F4; 
+    padding: 60px 80px; 
+    
+}
+
+/* A. Cột bên trái: Thông tin Nhà hàng */
+.restaurant-info-panel {
+    flex-basis: 50%; /* Chiếm khoảng 50% không gian */
+    padding-right: 20px;
+}
+
+/* Đánh giá */
+.rating-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.star-icon {
+    color: #FBC02D; /* Màu vàng sao */
+    margin-right: 5px;
+}
+
+/* Tên nhà hàng */
+.restaurant-title {
+    font-size: 3em; 
+    font-weight: bold;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+/* Mô tả */
+.restaurant-description {
+    font-size: 1.1em;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
+
+/* Các nút hành động */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+}
+
+.btn-primary {
+    background-color: #D36C2F; /* Màu cam đất */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #C16027;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #D36C2F;
+    border: 1px solid #D36C2F;
+}
+
+.btn-secondary:hover {
+    background-color: #FBF8F4;
+}
+
+
+/* B. Cột bên phải: Form Đặt Bàn Nhanh */
+.quick-booking-form-wrapper {
+    flex-basis: 50%; /* Chiếm khoảng 50% không gian */
+    /* Dùng Flexbox để căn giữa form theo chiều ngang */
+    display: flex;
+    justify-content: flex-end; 
+}
+
+
+.restaurant-main-image {
+    width: 100%;
+    height: 400px; /* Chiều cao cố định cho hình ảnh */
+    /* Thêm hình ảnh nền */
+    background-size: cover;
+    background-position: center;
+    border-radius: 0 0 15px 15px; /* Bo góc dưới */
+}
+.restaurant-main-image-wrapper {
+    width: 100%;
+    border-radius: 0 0 15px 15px; /* Bo góc dưới */
+    overflow: hidden; /* Cắt ảnh theo bo góc */
+    height: 400px; /* Đặt chiều cao cho wrapper (hoặc cho thẻ img) */
+}
+
+/* Thẻ <img> thực tế */
+.restaurant-main-image {
+    background-image: url(../../../public/HomeReservation.jpg);
+    width: 100%;
+    height: 100%; /* Chiếm toàn bộ chiều cao của wrapper */
+    object-fit: cover; /* Đảm bảo ảnh che phủ hết container mà không bị méo */
+    display: block; 
+}
