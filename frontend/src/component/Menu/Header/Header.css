@@ -1,0 +1,88 @@
+.menu-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.menu-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-header__logo {
+  width: 48px;
+  height: 48px;
+  background: #c66b33;
+  color: white;
+  font-size: 28px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.brand-title {
+  font-weight: 700;
+  color: #e36a2d;
+}
+.brand-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+.menu-header__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: #555;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #e36a2d;
+  color: white;
+}
+
+.menu-header__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f6f6f6;
+  border-radius: 10px;
+  padding: 8px 10px;
+  gap: 6px;
+}
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+.cart-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+}

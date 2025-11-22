@@ -1,0 +1,54 @@
+.sidebar {
+  width: 240px;
+}
+
+.sidebar-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  position: sticky;
+  top: 90px;
+}
+
+.sidebar-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sidebar-title.mt {
+  margin-top: 20px;
+}
+
+.price-display {
+  color: #e36a2d;
+  font-size: 14px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: #fff5f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.price-display strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sidebar-item {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.sidebar-range {
+  width: 100%;
+  accent-color: #e36a2d;
+  margin-top: 10px;
+}
+
+.sidebar-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+}
