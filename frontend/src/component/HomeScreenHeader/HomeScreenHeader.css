@@ -1,0 +1,161 @@
+/* Container chính của Header */
+.HeaderComponent {
+    background-color: #fbf8f1; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 10px 40px; 
+    height: 60px; 
+    font-family: 'Arial', sans-serif; 
+    box-sizing: border-box; 
+}
+
+/* Các icon chung */
+.icon {
+    font-size: 1.2em; /* Kích thước icon nhỏ hơn một chút */
+    color: #4A4A4A; /* Màu xám đậm cho icon */
+    margin-right: 5px; /* Khoảng cách giữa icon và chữ */
+}
+
+/* Phần bên trái: Logo và Tên Nhà hàng */
+.header__left-section {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa logo và thông tin nhà hàng */
+}
+
+.header__logo-wrapper {
+    background-color: #D36C2F; /* Màu nền cam đất giống Figma */
+    width: 40px; /* Kích thước icon wrapper */
+    height: 40px;
+    border-radius: 8px; /* Bo tròn góc */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header__logo-wrapper .icon-utensils {
+    color: white; /* Icon màu trắng trên nền cam */
+    font-size: 1.5em; /* Kích thước icon trong logo */
+}
+
+.header__restaurant-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Căn giữa theo chiều dọc nếu có khoảng trống */
+}
+
+.header__restaurant-name {
+    font-size: 1.1em; /* Kích thước chữ tên nhà hàng */
+    font-weight: bold;
+    color: #333333;
+    margin: 0; /* Bỏ margin mặc định của h1 */
+    line-height: 1.2; /* Khoảng cách dòng */
+}
+
+.header__tagline {
+    font-size: 0.8em; /* Kích thước chữ phụ đề */
+    color: #666666;
+    margin: 0; /* Bỏ margin mặc định của h2 */
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+/* Phần giữa: Các tab điều hướng */
+.header__nav {
+    display: flex;
+    gap: 30px; /* Khoảng cách lớn hơn giữa các liên kết */
+}
+
+.header__nav a {
+    text-decoration: none;
+    color: #4A4A4A;
+    font-weight: 500;
+    font-size: 0.95em;
+    padding: 5px 0; /* Chỉ padding trên dưới */
+    transition: color 0.3s ease;
+}
+
+.header__nav a:hover {
+    color: #D36C2F; /* Màu cam đất khi hover */
+}
+
+/* Phần bên phải: Liên hệ, Ngôn ngữ, Profile */
+.header__right-section {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Khoảng cách giữa các nhóm con bên phải */
+}
+
+/* Số liên hệ */
+.header__contact {
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Ngăn số điện thoại bị xuống dòng */
+}
+
+.header__phone-number {
+    color: #4A4A4A;
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+/* Chọn ngôn ngữ */
+.header__language {
+    display: flex;
+    align-items: center;
+}
+
+.language-select {
+    border: none; /* Bỏ viền mặc định */
+    background-color: transparent; /* Nền trong suốt */
+    color: #4A4A4A;
+    font-size: 0.95em;
+    font-weight: 500;
+    appearance: none; /* Ẩn mũi tên mặc định của select */
+    padding-right: 20px; /* Để tạo không gian cho mũi tên custom nếu có */
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234A4A4A%22%20d%3D%22M287%2C114.7L154.5%2C247.3c-2.4%2C2.4-5.4%2C3.6-8.7%2C3.6c-3.3%2C0-6.3-1.2-8.7-3.6L5.4%2C114.7C0%2C109.3%2C0%2C99.7%2C5.4%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0l120.3%2C120.3L267.6%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0C292.4%2C99.7%2C292.4%2C109.3%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E'); /* Mũi tên drop-down custom */
+    background-repeat: no-repeat;
+    background-position: right 0px center;
+    background-size: 10px;
+}
+/* Focus state cho select */
+.language-select:focus {
+    outline: none; /* Bỏ outline mặc định khi focus */
+}
+
+
+/* Hồ sơ người dùng / Đăng nhập */
+.header__profile {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa icon user và nút/tên */
+}
+
+.loginButton {
+    background-color: transparent; /* Nền trong suốt */
+    color: #4A4A4A; /* Màu chữ */
+    border: none;
+    padding: 0; /* Bỏ padding */
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95em;
+    transition: color 0.3s ease;
+}
+
+.loginButton:hover {
+    color: #D36C2F; /* Màu cam đất khi hover */
+}
+
+.header__username {
+    color: #4A4A4A;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.header__username:hover {
+    color: #D36C2F;
+}

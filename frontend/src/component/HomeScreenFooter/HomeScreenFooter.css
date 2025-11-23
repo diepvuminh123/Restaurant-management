@@ -1,0 +1,187 @@
+/* -------------------------------------- */
+/* 1. FOOTER CONTAINER AND LAYOUT */
+/* -------------------------------------- */
+
+.footer-container {
+    background-color: #262D38; /* Màu nền tối theo hình ảnh */
+    color: #F5F5F5; /* Màu chữ trắng/sáng */
+    padding: 60px 0 30px 0; /* Padding trên dưới cho Footer */
+}
+
+/* Wrapper giới hạn chiều rộng nội dung, căn giữa */
+.footer-content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px; /* Padding hai bên cho nội dung */
+    
+    /* Thiết lập Grid cho bố cục 4 cột */
+    display: grid;
+    /* Chia làm 4 cột: 1.5 phần cho Brand, 1 phần cho 3 cột còn lại */
+    grid-template-columns: 1.5fr repeat(3, 1fr); 
+    gap: 80px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Đường kẻ phân cách */
+}
+
+/* -------------------------------------- */
+/* 2. CỘT BRAND (CỘT 1) */
+/* -------------------------------------- */
+
+.brand-col {
+    /* Đảm bảo nội dung không tràn */
+    max-width: 350px; 
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.brand-logo {
+    /* Thay đổi màu sắc và kích thước theo logo thực tế */
+    background-color: #D36C2F; /* Màu cam đất từ các component trước */
+    padding: 8px;
+    border-radius: 8px;
+    margin-right: 10px;
+    color: white;
+}
+
+.restaurant-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.slogan {
+    font-size: 0.9em;
+    color: #A0A0A0; /* Màu xám nhạt */
+    margin: 0;
+}
+
+.brand-description {
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #D0D0D0;
+    margin-bottom: 30px;
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.social-links a:hover {
+    background-color: #D36C2F;
+}
+
+/* -------------------------------------- */
+/* 3. CÁC CỘT LIÊN KẾT (CỘT 2, 3, 4) */
+/* -------------------------------------- */
+
+.col-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.col-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-item {
+    margin-bottom: 12px;
+}
+
+.link-text {
+    color: #D0D0D0;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: color 0.3s;
+}
+
+.link-text:hover {
+    color: #D36C2F; /* Hover màu cam */
+}
+
+
+/* -------------------------------------- */
+/* 4. PHẦN BOTTOM (COPYRIGHT) */
+/* -------------------------------------- */
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 20px auto 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: #A0A0A0;
+}
+
+.language-selector {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.language-selector:hover {
+    color: #D36C2F;
+}
+
+.lang-icon {
+    margin-right: 5px;
+}
+
+/* -------------------------------------- */
+/* 5. RESPONSIVE DESIGN (Cho thiết bị nhỏ hơn) */
+/* -------------------------------------- */
+
+@media (max-width: 950px) {
+    .footer-content-wrapper {
+        /* Chuyển sang bố cục 2 cột lớn hơn cho máy tính bảng */
+        grid-template-columns: repeat(2, 1fr); 
+    }
+    
+    /* Đảm bảo cột brand chiếm toàn bộ hàng nếu cần */
+    .brand-col {
+        grid-column: span 2;
+        max-width: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-content-wrapper {
+        /* Chuyển sang bố cục 1 cột cho điện thoại */
+        grid-template-columns: 1fr;
+    }
+    
+    .brand-col {
+        grid-column: span 1;
+        margin-bottom: 30px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}

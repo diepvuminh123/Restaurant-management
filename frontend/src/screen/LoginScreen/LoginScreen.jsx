@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LoginForm from '../../component/LoginForm/LoginForm'
 import SignUpForm from '../../component/SignUpForm/SignUpForm'
@@ -7,7 +7,7 @@ import SuccessMessage from '../../component/SuccessMessage/SuccessMessage'
 import ForgotPassword from '../../component/ForgotPassword/ForgotPassword'
 import './LoginScreen.css'
 import WelcomeBoard from '../../component/WelcomeBoard/WelcomeBoard'
-
+import {Link} from 'react-router-dom';
 export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
   const [currentView, setCurrentView] = useState(initialView);
   const [registeredEmail, setRegisteredEmail] = useState('');
@@ -17,7 +17,13 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
   useEffect(() => {
     setCurrentView(initialView);
   }, [initialView]);
-
+  
+  const handleLoginSuccess = (userData) => {
+    if (onLoginSuccess) {
+      onLoginSuccess(userData);
+    }
+    navigate('/home');
+  }
   const handleSignupClick = () => {
     setCurrentView('signup');
     navigate('/signup');
@@ -52,7 +58,7 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
           <LoginForm
             onSignupClick={handleSignupClick}
             onForgotPasswordClick={handleForgotPasswordClick}
-            onLoginSuccess={onLoginSuccess}
+            onLoginSuccess={handleLoginSuccess}
           />
         );
       case 'signup':

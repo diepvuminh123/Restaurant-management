@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LoginScreen from './screen/LoginScreen/LoginScreen';
+import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 function App() {
   const [user, setUser] = useState(null);
@@ -50,6 +51,7 @@ function App() {
         <Route path="/signup" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="signup" />} />
         <Route path="/verify" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="verify" />} />
         <Route path="/forgot-password" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />} />
+        <Route path="/home" element={<HomeScreen />} />
         <Route path="/menu" element={<MenuScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
