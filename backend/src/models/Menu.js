@@ -67,9 +67,8 @@ class Menu {
         }
 
         if (search !== undefined && search !== "") {
-            // use the same parameter for both ILIKE occurrences
             whereConditions.push(
-                `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})`
+                `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})` //ILike kệ chữ hoa và thường
             );
             params.push(`%${search}%`);
             idx++;
@@ -87,13 +86,18 @@ class Menu {
 
         const whereClause =
             whereConditions.length > 0 ? "WHERE " + whereConditions.join(" AND ") : "";
+        console.log("WHERE CLAUSE:", whereClause, "PARAMS:", params);
 
-        // Đếm tổng số items (parameterized)
+        // Đếm tổng số items
         const countQuery = `SELECT COUNT(*) as total FROM menu_items mi ${whereClause}`;
         const countResult = await pool.query(countQuery, params);
         const total = parseInt(countResult.rows[0].total, 10) || 0;
+        console.log("TOTAL ITEMS ABC:", total);
+        console.log("countResult: ", countResult);
+        
 
-        // Tránh SQL injection (column names cannot be parameterized)
+
+        
         const allowedSortFields = [
             "id",
             "name",
@@ -102,10 +106,13 @@ class Menu {
             "created_at",
         ];
         const sortField = allowedSortFields.includes(sort_by) ? sort_by : "id";
-        const sortDir = sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC";
+        console.log("SORT FIELD:", sortField);
+        const sortDir = sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC"; //toUpperCase() -> vuminh -> VUMINH
+        console.log("SORT DIRECTION:", sortDir);
 
-        // Pagination params
+        // tính phân trang 
         const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+        console.log("OFFSET:", offset, "LIMIT:", limit);
 
         // Add limit & offset placeholders
         const limitPlaceholder = `$${idx++}`;
@@ -130,6 +137,7 @@ class Menu {
             LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
         `;
 
+        // truy vấn nè
         const itemsParams = [...params, limit, offset];
         const itemsResult = await pool.query(itemsQuery, itemsParams);
 
