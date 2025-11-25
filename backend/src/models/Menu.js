@@ -32,8 +32,7 @@ class Menu {
             available,
             is_popular,
             search,
-            price_min,
-            price_max,
+        
             sort_by = "price",
             sort_order = "ASC",
             page = 1,
@@ -72,16 +71,6 @@ class Menu {
             );
             params.push(`%${search}%`);
             idx++;
-        }
-
-        if (price_min !== undefined) {
-            whereConditions.push(`mi.price >= $${idx++}`);
-            params.push(price_min);
-        }
-
-        if (price_max !== undefined) {
-            whereConditions.push(`mi.price <= $${idx++}`);
-            params.push(price_max);
         }
 
         const whereClause =
@@ -160,47 +149,6 @@ class Menu {
         };
     }
 
-    /**
-     * Lấy facets để filter (khoảng giá, danh mục)
-     */
-    static async getFacets(sectionId) {
-        const whereClause = sectionId !== undefined ? "WHERE mi.section_id = $1" : "";
-        const params = sectionId !== undefined ? [sectionId] : [];
-
-        const priceQuery = `
-            SELECT 
-                MIN(price) as price_min, 
-                MAX(price) as price_max
-            FROM menu_items mi
-            ${whereClause}
-        `;
-        const priceResult = await pool.query(priceQuery, params);
-
-        const categoriesQuery = `
-            SELECT 
-                mc.id,
-                mc.name,
-                COUNT(DISTINCT mic.menu_item_id) as count
-            FROM menu_categories mc
-            LEFT JOIN menu_item_categories mic ON mc.id = mic.category_id
-            LEFT JOIN menu_items mi ON mic.menu_item_id = mi.id
-            ${whereClause}
-            GROUP BY mc.id, mc.name
-            HAVING COUNT(DISTINCT mic.menu_item_id) > 0
-            ORDER BY mc.name
-        `;
-        const categoriesResult = await pool.query(categoriesQuery, params);
-
-        return {
-            price_min: priceResult.rows[0].price_min !== null ? parseFloat(priceResult.rows[0].price_min) : 0,
-            price_max: priceResult.rows[0].price_max !== null ? parseFloat(priceResult.rows[0].price_max) : 0,
-            categories: categoriesResult.rows.map((cat) => ({
-                id: cat.id,
-                name: cat.name,
-                count: parseInt(cat.count, 10),
-            })),
-        };
-    }
 
     /**
      * Lấy thông tin món ăn theo ID

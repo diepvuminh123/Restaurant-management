@@ -22,11 +22,6 @@ router.get("/menu/categories", MenuController.getCategories);
  */
 router.get("/menus", MenuController.getMenuItems);
 
-/**
- * GET /api/menus/facets
- * Lấy facets để filter (giá min/max, danh mục)
- */
-router.get("/menus/facets", MenuController.getFacets);
 
 /**
  * GET /api/menus/:id

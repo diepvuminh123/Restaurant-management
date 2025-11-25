@@ -60,8 +60,7 @@ class MenuController {
         available: req.query.available !== undefined ? req.query.available === "true" : undefined,
         is_popular: req.query.is_popular !== undefined ? req.query.is_popular === "true" : undefined,
         search: req.query.search,
-        price_min: req.query.price_min ? parseFloat(req.query.price_min) : undefined,
-        price_max: req.query.price_max ? parseFloat(req.query.price_max) : undefined,
+       
         sort_by: req.query.sort_by || "price",
         sort_order: req.query.sort_order || "ASC",
         page: req.query.page ? parseInt(req.query.page) : 1,
@@ -81,25 +80,6 @@ class MenuController {
     }
   }
 
-  /**
-   * GET /api/menus/facets
-   * Lấy thông tin facets để filter (giá min/max, danh mục)
-   */
-  static async getFacets(req, res) {
-    try {
-      const { section_id } = req.query;
-      const facets = await MenuService.getFacets(section_id);
-      res.json({
-        success: true,
-        data: facets,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
 
   /**
    * GET /api/menus/:id
