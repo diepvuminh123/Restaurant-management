@@ -34,7 +34,7 @@ class Menu {
             search,
             price_min,
             price_max,
-            sort_by = "id",
+            sort_by = "price",
             sort_order = "ASC",
             page = 1,
             limit = 10,
@@ -99,13 +99,13 @@ class Menu {
 
         
         const allowedSortFields = [
-            "id",
+            
             "name",
             "price",
             "rating_avg",
             "created_at",
         ];
-        const sortField = allowedSortFields.includes(sort_by) ? sort_by : "id";
+        const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
         console.log("SORT FIELD:", sortField);
         const sortDir = sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC"; //toUpperCase() -> vuminh -> VUMINH
         console.log("SORT DIRECTION:", sortDir);

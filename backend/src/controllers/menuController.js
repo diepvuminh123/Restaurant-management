@@ -62,7 +62,7 @@ class MenuController {
         search: req.query.search,
         price_min: req.query.price_min ? parseFloat(req.query.price_min) : undefined,
         price_max: req.query.price_max ? parseFloat(req.query.price_max) : undefined,
-        sort_by: req.query.sort_by || "id",
+        sort_by: req.query.sort_by || "price",
         sort_order: req.query.sort_order || "ASC",
         page: req.query.page ? parseInt(req.query.page) : 1,
         limit: req.query.limit ? parseInt(req.query.limit) : 10,
