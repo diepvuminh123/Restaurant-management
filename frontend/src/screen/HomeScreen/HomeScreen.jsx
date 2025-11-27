@@ -3,10 +3,10 @@ import './HomeScreen.css'
 import QuickBooking from './QuickBooking/QuickBooking'
 import HomeScreenHeader from '../../component/HomeScreenHeader/HomeScreenHeader'
 import HomeScreenFooter from '../../component/HomeScreenFooter/HomeScreenFooter'
-const HomeScreen = () => {
+const HomeScreen = ({ user, onLogout }) => {
   return (
     <div className="HomeScreen">
-      <HomeScreenHeader />
+      <HomeScreenHeader user={user} onLogout={onLogout} />
       <QuickBooking />
       <HomeScreenFooter />
     </div>

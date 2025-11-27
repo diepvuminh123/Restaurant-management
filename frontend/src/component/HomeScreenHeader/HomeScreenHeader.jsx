@@ -3,16 +3,21 @@ import "./HomeScreenHeader.css";
 import { LuUtensilsCrossed, LuPhone } from "react-icons/lu";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
-import {Link} from 'react-router-dom';
-const HomeScreenHeader = () => {
+import {Link, useNavigate} from 'react-router-dom';
+const HomeScreenHeader = ({ user, onLogout }) => {
     
-    const [isLogin, setIsLogin] = useState(false); 
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const navigate = useNavigate();
 
-    
-    const handleLoginClick = () => {
-        setIsLogin(!isLogin); 
-        alert(isLogin ? "Đã đăng xuất" : "Đã đăng nhập!");
-    }
+    const handleProfileClick = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleLogout = async () => {
+        await onLogout();
+        navigate('/');
+        setIsDropdownOpen(false);
+    };
 
     return(
         <div className="HeaderComponent">
@@ -55,13 +60,20 @@ const HomeScreenHeader = () => {
 
                 {/* Hồ sơ người dùng / Đăng nhập */}
                 <div className="header__profile">
-                    <CiUser className="icon icon-user" />
-                    {!isLogin && (
-                        <button className="loginButton" onClick={handleLoginClick}>Đăng nhập</button>
-                    )}
-                    {/* Nếu đã đăng nhập, bạn có thể hiển thị tên người dùng hoặc icon khác */}
-                    {isLogin && (
-                        <span className="header__username" onClick={handleLoginClick}>Tài khoản</span>
+                    <CiUser className="icon icon-user" onClick={handleProfileClick} style={{ cursor: 'pointer' }} />
+                    {user && (
+                        <>
+                            <span className="header__username" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
+                                {user.username}
+                            </span>
+                            {isDropdownOpen && (
+                                <div className="profile__dropdown">
+                                    <button className="dropdown__logout-btn" onClick={handleLogout}>
+                                        Đăng xuất
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

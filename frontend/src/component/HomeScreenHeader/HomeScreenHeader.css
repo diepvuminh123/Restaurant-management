@@ -131,6 +131,7 @@
     display: flex;
     align-items: center;
     gap: 8px; /* Khoảng cách giữa icon user và nút/tên */
+    position: relative;
 }
 
 .loginButton {
@@ -157,5 +158,38 @@
 }
 
 .header__username:hover {
+    color: #D36C2F;
+}
+
+/* Dropdown Profile */
+.profile__dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
+    margin-top: 8px;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.dropdown__logout-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background-color: transparent;
+    border: none;
+    color: #4A4A4A;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.dropdown__logout-btn:hover {
+    background-color: #f5f5f5;
     color: #D36C2F;
 }

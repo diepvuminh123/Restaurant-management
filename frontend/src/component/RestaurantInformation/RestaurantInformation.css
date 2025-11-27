@@ -1,0 +1,152 @@
+.contact-bar__section {
+    background-color: #FBF8F4;
+    border-bottom: 1px solid #f3f4f6; /* border-gray-100 */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    margin: 10px;
+    border: 1px solid #4b5563;
+    border-radius: 10px;
+}
+
+/* Wrapper giới hạn chiều rộng nội dung */
+.contact-bar__container {
+    max-width: 1280px; /* max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem;
+    padding-top: 1rem; /* py-4 */
+    padding-bottom: 1rem;
+}
+
+/* Flex container chứa nội dung chính */
+.contact-bar__content {
+    display: flex;
+    flex-direction: column; /* flex-col (Mặc định) */
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem; /* space-y-4 */
+    color: #4b5563; /* text-gray-700 */
+}
+
+/* Desktop Layout (lg breakpoint) */
+@media (min-width: 1024px) {
+    .contact-bar__content {
+        flex-direction: row; /* lg:flex-row */
+        gap: 0; /* lg:space-y-0 */
+    }
+}
+
+
+/* -------------------------------------- */
+/* PHẦN GIỜ MỞ CỬA VÀ TRẠNG THÁI (TRÁI) */
+/* -------------------------------------- */
+
+.contact-bar__schedule {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* space-x-6 */
+    flex-wrap: wrap;
+    justify-content: center; /* justify-center */
+}
+
+@media (min-width: 1024px) {
+    .contact-bar__schedule {
+        justify-content: flex-start; /* lg:justify-start */
+    }
+}
+
+/* Trạng thái mở/đóng (div) */
+.contact-bar__status {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border-radius: 0.75rem; /* rounded-xl */
+    color: white;
+    font-weight: 600; /* font-semibold */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+}
+
+/* Màu sắc khi Đang mở cửa */
+.contact-bar__status--open {
+    background-color: #D36C2F; /* bg-[#D36C2F] */
+}
+
+/* Màu sắc khi Đóng cửa (fallback) */
+.contact-bar__status--closed {
+    background-color: #6b7280; /* bg-gray-500 */
+}
+
+/* Chi tiết giờ */
+.contact-bar__time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* space-x-1 */
+}
+
+/* Màu icon cam đất */
+.contact-bar__icon-color {
+    color: #D36C2F;
+}
+
+/* Chữ đậm cho ngày */
+.contact-bar__time-text {
+    font-weight: 600; /* font-semibold */
+}
+
+/* Chi tiết giờ (11:00 - 22:00) */
+.contact-bar__time-detail {
+    color: #4b5563; /* text-gray-600 */
+}
+
+
+/* -------------------------------------- */
+/* PHẦN THÔNG TIN LIÊN HỆ (PHẢI) */
+/* -------------------------------------- */
+
+.contact-bar__info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* space-x-6 */
+    flex-wrap: wrap;
+    justify-content: center; /* justify-center */
+}
+
+@media (min-width: 1024px) {
+    .contact-bar__info {
+        justify-content: flex-end; /* lg:justify-end */
+    }
+}
+
+/* Link điện thoại */
+.contact-bar__link {
+    display: flex;
+    align-items: center;
+    transition-duration: 200ms;
+}
+
+.contact-bar__link:hover {
+    color: #D36C2F;
+}
+
+/* Địa chỉ */
+.contact-bar__address {
+    display: flex;
+    align-items: center;
+}
+
+/* Nút Chỉ đường */
+.contact-bar__button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    color: #4b5563; /* text-gray-700 */
+    border-radius: 0.75rem; /* rounded-xl */
+    transition-duration: 200ms;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    text-decoration: none; /* Loại bỏ gạch chân mặc định */
+}
+
+.contact-bar__button:hover {
+    background-color: #f9fafb; /* hover:bg-gray-50 */
+}
