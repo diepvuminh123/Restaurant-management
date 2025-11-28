@@ -175,6 +175,7 @@ class Menu {
         if (result.rows.length === 0) return null;
 
         const item = result.rows[0];
+        
 
         const categoriesQuery = `
             SELECT mc.id, mc.name

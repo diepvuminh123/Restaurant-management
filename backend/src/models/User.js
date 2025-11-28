@@ -3,10 +3,9 @@ const bcrypt = require("bcrypt");
 
 class User {
   static async findById(userId) {
-    const result = await pool.query(
-      "SELECT * FROM users WHERE user_id = $1",
-      [userId]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE user_id = $1", [
+      userId,
+    ]);
     return result.rows[0];
   }
 
@@ -24,9 +23,10 @@ class User {
     return result.rows[0];
   }
   static async getEmailById(user_id) {
-    const result = await pool.query("SELECT email FROM users WHERE user_id = $1", [
-      user_id,
-    ]);
+    const result = await pool.query(
+      "SELECT email FROM users WHERE user_id = $1",
+      [user_id]
+    );
     return result.rows[0];
   }
 
@@ -69,23 +69,43 @@ class User {
     ]);
   }
   static async checkAuth(userId) {
-    const result = await pool.query("SELECT is_verified FROM users WHERE user_id = $1", [
-      userId,
-    ]);
+    const result = await pool.query(
+      "SELECT is_verified FROM users WHERE user_id = $1",
+      [userId]
+    );
     return result.rows[0];
   }
-  static async checkIs_verified(userID){
-    const result = await pool.query("SELECT is_verified FROM users WHERE user_id = $1", [
-      userID,
-    ]);
+  static async checkIs_verified(userID) {
+    const result = await pool.query(
+      "SELECT is_verified FROM users WHERE user_id = $1",
+      [userID]
+    );
     return result.rows[0];
   }
   static async updatePassword(userId, newPassword) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query("UPDATE users SET password_hash = $1 WHERE user_id = $2", [
+      hashedPassword,
+      userId,
+    ]);
+  }
+  static async incrementFailLoginAttempts(userId) {
     await pool.query(
-      "UPDATE users SET password_hash = $1 WHERE user_id = $2",
-      [hashedPassword, userId]
+      "UPDATE users SET fail_login_attempts = fail_login_attempts + 1 WHERE user_id = $1",
+      [userId]
     );
   }
+  static async resetFailLoginAttempts(userId) {
+    await pool.query("UPDATE users SET fail_login_attempts = 0, locked_until = NULL WHERE user_id = $1", [userId])
+  }
+  static async lockAccount(lockUntil, userId ) {
+
+    
+    await pool.query(
+      "UPDATE users SET locked_until = $1 WHERE user_id = $2",
+      [lockUntil, userId]
+    );
+  }
+  
 }
 module.exports = User;
