@@ -4,21 +4,16 @@ import { LuUtensilsCrossed } from "react-icons/lu";
 import { Search } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
 import Logo from '../../../component/Logo/Logo'
+
 export default function Header({
   activeTab,
   onTabChange,
   searchValue,
   onSearchChange,
   cartCount = 0,
+  sections = [], // Nhận sections từ API
+  loadingSections = false,
 }) {
-  const TABS = [
-    { key: "main", label: "Món Chính" },
-    { key: "drink", label: "Đồ Uống" },
-    { key: "dessert", label: "Món Tráng Miệng" },
-    { key: "combo", label: "Combo" },
-    { key: "veggie", label: "Món Chay" },
-  ];
-
   return (
     <header className="menu-header">
       <div className="menu-header__left">
@@ -33,15 +28,19 @@ export default function Header({
       </div>
 
       <nav className="menu-header__tabs">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            className={`tab-btn ${activeTab === t.key ? "active" : ""}`}
-            onClick={() => onTabChange(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
+        {loadingSections ? (
+          <div className="tabs-loading">Đang tải...</div>
+        ) : (
+          sections.map((section) => (
+            <button
+              key={section.id}
+              className={`tab-btn ${activeTab === section.id ? "active" : ""}`}
+              onClick={() => onTabChange(section.id)}
+            >
+              {section.name}
+            </button>
+          ))
+        )}
       </nav>
 
       <div className="menu-header__right">

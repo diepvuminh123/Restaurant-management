@@ -52,3 +52,33 @@
   font-size: 12px;
   margin-top: 4px;
 }
+.sidebar-price-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e36a2d;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.sidebar-price-input:focus {
+  border-color: #e36a2d;
+  box-shadow: 0 0 0 3px rgba(227, 106, 45, 0.1);
+}
+
+.sidebar-price-input::-webkit-outer-spin-button,
+.sidebar-price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.sidebar-price-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+

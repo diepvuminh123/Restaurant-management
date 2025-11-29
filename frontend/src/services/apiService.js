@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
 
 class ApiService {
   static async request(endpoint, options = {}) {
@@ -82,6 +82,48 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  
+  // Lấy danh sách menu sections (Món Chính, Đồ Uống, Tráng Miệng, etc.)
+  static async getMenuSections() {
+    return this.request('/menu/sections', {
+      method: 'GET',
+    });
+  }
+
+  // Lấy danh sách categories theo section_id
+  static async getMenuCategories(sectionId) {
+    const query = sectionId ? `?section_id=${sectionId}` : '';
+    return this.request(`/menu/categories${query}`, {
+      method: 'GET',
+    });
+  }
+
+  // Lấy danh sách món ăn với filters
+  // filters: { section_id, category_id, search, min_price, max_price, sort }
+  static async getMenuItems(filters = {}) {
+    const queryParams = new URLSearchParams();
+    
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key]);
+      }
+    });
+
+    const queryString = queryParams.toString();
+    return this.request(`/menus${queryString ? `?${queryString}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  // Lấy facets (categories, price range) cho filtering
+  static async getMenuFacets(sectionId) {
+    const query = sectionId ? `?section_id=${sectionId}` : '';
+    return this.request(`/menus/facets${query}`, {
+      method: 'GET',
+    });
+  }
+
 }
 
 export default ApiService;

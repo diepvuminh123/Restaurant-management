@@ -1,37 +1,88 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
-
-const CATEGORIES = [
-  "Phở",
-  "Cơm",
-  "Bún",
-  "Món Nướng",
-  "Món Chiên",
-  "Món Chay",
-  "Đồ Uống",
-  "Tráng Miệng",
-];
+import ApiService from "../../../services/apiService";
 
 export default function Sidebar({
   selected,
   onToggle,
   price,
   onPrice,
-  max = 500000,
+  sectionId = 1,
 }) {
+  const [categories, setCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState({ price_min: 0, price_max: 500000 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFacets = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await ApiService.getMenuFacets(sectionId);
+        
+        if (response.success && response.data) {
+          setCategories(response.data.categories || []);
+          
+          const minPrice = parseFloat(response.data.price_min) || 0;
+          const maxPrice = parseFloat(response.data.price_max) || 500000;
+          
+          setPriceRange({
+            price_min: minPrice,
+            price_max: maxPrice
+          });
+          
+          
+          onPrice(maxPrice);
+          
+        } else {
+          setCategories([]);
+          setPriceRange({ price_min: 0, price_max: 500000 });
+        }
+      } catch (err) {
+        setError(err.message);
+        setCategories([]);
+        setPriceRange({ price_min: 0, price_max: 500000 });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (sectionId) {
+      fetchFacets();
+    }
+    
+  }, [sectionId]); 
+
+  const handlePriceInput = (e) => {
+    const value = parseInt(e.target.value) || 0;
+    
+    const limitedValue = Math.min(Math.max(value, priceRange.price_min), priceRange.price_max);
+    onPrice(limitedValue);
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar-card">
         <div className="sidebar-title">Loại món</div>
 
-        {CATEGORIES.map((c) => (
-          <label key={c} className="sidebar-item">
+        {loading && <p className="sidebar-loading">Đang tải...</p>}
+        
+        {error && <p className="sidebar-error">Lỗi: {error}</p>}
+
+        {!loading && !error && categories.length === 0 && (
+          <p className="sidebar-empty">Không có danh mục</p>
+        )}
+
+        {!loading && !error && categories.map((category) => (
+          <label key={category.id} className="sidebar-item">
             <input
               type="checkbox"
-              checked={selected.includes(c)}
-              onChange={() => onToggle(c)}
+              checked={selected.includes(category.id)}
+              onChange={() => onToggle(category.id)}
             />
-            {c}
+            {category.name}
           </label>
         ))}
 
@@ -41,18 +92,30 @@ export default function Sidebar({
           Tối đa: <strong>{price.toLocaleString("vi-VN")}đ</strong>
         </div>
 
+        {/* Input số để nhập giá trực tiếp */}
+        <input
+          type="number"
+          min={priceRange.price_min}
+          max={priceRange.price_max}
+          value={price}
+          onChange={handlePriceInput}
+          placeholder="Nhập giá tối đa"
+          className="sidebar-price-input"
+        />
+
+        {/* Range slider */}
         <input
           type="range"
-          min={0}
-          max={max}
+          min={priceRange.price_min}
+          max={priceRange.price_max}
           value={price}
           onChange={(e) => onPrice(Number(e.target.value))}
           className="sidebar-range"
         />
 
         <div className="sidebar-range-labels">
-          <span>0đ</span>
-          <span>{max.toLocaleString("vi-VN")}đ</span>
+          <span>{priceRange.price_min.toLocaleString("vi-VN")}đ</span>
+          <span>{priceRange.price_max.toLocaleString("vi-VN")}đ</span>
         </div>
       </div>
     </aside>

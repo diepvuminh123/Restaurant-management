@@ -39,3 +39,49 @@
   color: white;
   border-color: #e36a2d;
 }
+
+.menu-loading,
+.menu-error,
+.menu-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.menu-loading p {
+  color: #3498db;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.menu-error {
+  background: #fef5f5;
+  border: 1px solid #fdd;
+}
+
+.menu-error p {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.menu-error button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.menu-error button:hover {
+  background: #c0392b;
+}
+
+.menu-empty p {
+  color: #999;
+  font-size: 16px;
+}

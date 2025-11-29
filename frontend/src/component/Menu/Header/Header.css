@@ -45,6 +45,12 @@
   gap: 8px;
 }
 
+.tabs-loading {
+  padding: 9px 14px;
+  color: #999;
+  font-size: 14px;
+}
+
 .tab-btn {
   border: none;
   background: transparent;
@@ -53,7 +59,13 @@
   padding: 9px 14px;
   border-radius: 12px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
+
+.tab-btn:hover {
+  background: #f5f5f5;
+}
+
 .tab-btn.active {
   background: #e36a2d;
   color: white;

@@ -22,6 +22,12 @@
   background: #eaeaea;
 }
 
+.dish-thumb__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .dish-badge {
   position: absolute;
   top: 10px;
@@ -72,6 +78,20 @@
   font-weight: 700;
   font-size: 16px;
   margin: 8px 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dish-price__original {
+  color: #999;
+  font-size: 14px;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.dish-price__sale {
+  color: #e74c3c;
 }
 
 .dish-actions {
