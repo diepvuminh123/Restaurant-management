@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LoginForm from '../../component/LoginForm/LoginForm'
 import SignUpForm from '../../component/SignUpForm/SignUpForm'
@@ -7,7 +7,7 @@ import SuccessMessage from '../../component/SuccessMessage/SuccessMessage'
 import ForgotPassword from '../../component/ForgotPassword/ForgotPassword'
 import './LoginScreen.css'
 import WelcomeBoard from '../../component/WelcomeBoard/WelcomeBoard'
-import {Link} from 'react-router-dom';
+import BackButton from '../../component/BackButton/BackButton'
 export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
   const [currentView, setCurrentView] = useState(initialView);
   const [registeredEmail, setRegisteredEmail] = useState('');
@@ -102,6 +102,10 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
 
   return (
     <div className="loginScreen">
+      <div className="loginScreen__back">
+        <BackButton />
+      </div>
+      
       <div className="loginContainer">
         {renderCurrentView()}
       </div>

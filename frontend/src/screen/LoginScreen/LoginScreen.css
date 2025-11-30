@@ -11,8 +11,18 @@
   box-sizing: border-box;
 }
 
+.loginScreen__back {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 1600px;
+  margin-top: 10px;
+ 
+  margin: 0 auto;
+  justify-self: start;
+}
+
 .loginContainer {
-  max-width: 420px;
+  max-width: 460px;
   width: 100%;
   padding: 20px;
   background: white;

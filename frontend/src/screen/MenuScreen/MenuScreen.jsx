@@ -33,9 +33,7 @@ export default function MenuScreen() {
       try {
         setLoadingSections(true);
         const response = await ApiService.getMenuSections();
-        
-        console.log('📑 Sections Response:', response);
-        
+              
         if (response.success && response.data) {
           setSections(response.data);
           // Set activeTab là section đầu tiên

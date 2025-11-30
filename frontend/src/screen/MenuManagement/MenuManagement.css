@@ -1,0 +1,326 @@
+.menu-management {
+  padding: 24px;
+}
+
+.menu-management__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.menu-management__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-management__title h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.menu-management__back-icon {
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+}
+
+.btn-add-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #e36a2d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-item:hover {
+  background: #d55f26;
+}
+
+.menu-management__search {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.menu-management__search .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #999;
+}
+
+.menu-management__search input {
+  width: 100%;
+  padding: 12px 12px 12px 44px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.menu-management__search input:focus {
+  border-color: #e36a2d;
+}
+
+.menu-management__filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: #e36a2d;
+  color: #e36a2d;
+}
+
+.filter-btn--active {
+  background: #e36a2d;
+  color: #fff;
+  border-color: #e36a2d;
+}
+
+.menu-management__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-card--popular {
+  background: #fff3e6;
+  border: 1px solid #e36a2d;
+}
+
+.stat-card--new {
+  background: #e6f7ff;
+  border: 1px solid #4da6ff;
+}
+
+.stat-card--out {
+  background: #ffe6e6;
+  border: 1px solid #ff6b6b;
+}
+
+.stat-card__label {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.stat-card__value {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stat-card--popular .stat-card__value {
+  color: #e36a2d;
+}
+
+.stat-card--new .stat-card__value {
+  color: #4da6ff;
+}
+
+.stat-card--out .stat-card__value {
+  color: #ff6b6b;
+}
+
+.menu-management__table-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.menu-management__table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.menu-management__table-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.menu-management__table-header select {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.menu-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.menu-table thead {
+  background: #f8f9fa;
+}
+
+.menu-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.menu-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-table__image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.menu-table__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-table__no-image {
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+}
+
+.menu-table__name .name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.menu-table__name .desc {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+.price-original {
+  font-size: 13px;
+  color: #999;
+  text-decoration: line-through;
+  margin-right: 8px;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-badge--popular {
+  background: #fff3e6;
+  color: #e36a2d;
+}
+
+.status-badge--new {
+  background: #e6f7ff;
+  color: #4da6ff;
+}
+
+.status-badge--out {
+  background: #ffe6e6;
+  color: #ff6b6b;
+}
+
+.menu-table__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit,
+.btn-more {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  color: #666;
+}
+
+.btn-edit:hover {
+  background: #fff3e6;
+  border-color: #e36a2d;
+  color: #e36a2d;
+}
+
+.btn-more:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-data p:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}

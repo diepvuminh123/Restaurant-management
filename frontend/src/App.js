@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import './App.css';
 import LoginScreen from './screen/LoginScreen/LoginScreen';
 import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
+import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import ApiService from './services/apiService';
 
 function App() {
@@ -31,6 +32,14 @@ function App() {
     console.log("Logged in user:", userData);
   };
 
+  // Helper function để xác định default route dựa trên role
+  const getDefaultRoute = (userRole) => {
+    if (userRole === 'admin' || userRole === 'employee') {
+      return '/admin/dashboard';
+    }
+    return '/home';
+  };
+
   const handleLogout = async () => {
     try {
       // Call backend logout API
@@ -52,21 +61,60 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {user ? (
-          <>
-            <Route path="/home" element={<HomeScreen onLogout={handleLogout} user={user} />} />
-            <Route path="/menu" element={<MenuScreen onLogout={handleLogout} user={user} />} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<LoginScreen onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/signup" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="signup" />} />
-            <Route path="/verify" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="verify" />} />
-            <Route path="/forgot-password" element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </>
-        )}
+        {/* Public routes - Không cần đăng nhập */}
+        <Route 
+          path="/login" 
+          element={
+            user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
+            <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="login" />
+          } 
+        />
+        <Route 
+          path="/signup" 
+          element={
+            user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
+            <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="signup" />
+          } 
+        />
+        <Route 
+          path="/verify" 
+          element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="verify" />} 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />} 
+        />
+
+        {/* Public pages - Không cần đăng nhập */}
+        <Route 
+          path="/home" 
+          element={<HomeScreen onLogout={handleLogout} user={user} />} 
+        />
+        <Route 
+          path="/menu" 
+          element={<MenuScreen onLogout={handleLogout} user={user} />} 
+        />
+
+        {/* Admin/Employee routes */}
+        <Route 
+          path="/admin/*" 
+          element={
+            user && (user.role === 'admin' || user.role === 'employee') ? 
+            <AdminDashboard user={user} onLogout={handleLogout} /> : 
+            user ? <Navigate to={getDefaultRoute(user.role)} replace /> :
+            <Navigate to="/login" replace />
+          } 
+        />
+
+        {/* Default redirect */}
+        <Route 
+          path="/" 
+          element={<Navigate to="/home" replace />} 
+        />
+        <Route 
+          path="*" 
+          element={<Navigate to="/home" replace />} 
+        />
       </Routes>
     </BrowserRouter>
   );
