@@ -117,12 +117,13 @@ class ApiService {
   }
 
   // Lấy facets (categories, price range) cho filtering
-  static async getMenuFacets(sectionId) {
-    const query = sectionId ? `?section_id=${sectionId}` : '';
-    return this.request(`/menus/facets${query}`, {
-      method: 'GET',
-    });
-  }
+  // ĐÃ XÓA API NÀY Ở BACKEND
+  // static async getMenuFacets(sectionId) {
+  //   const query = sectionId ? `?section_id=${sectionId}` : '';
+  //   return this.request(`/menus/facets${query}`, {
+  //     method: 'GET',
+  //   });
+  // }
 
 }
 

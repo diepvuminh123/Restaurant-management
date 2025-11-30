@@ -15,26 +15,20 @@ export default function Sidebar({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFacets = async () => {
+    const fetchCategories = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const response = await ApiService.getMenuFacets(sectionId);
+        // Lấy danh mục từ API categories thay vì facets đã bị xóa
+        const response = await ApiService.getMenuCategories(sectionId);
         
         if (response.success && response.data) {
-          setCategories(response.data.categories || []);
+          setCategories(response.data || []);
           
-          const minPrice = parseFloat(response.data.price_min) || 0;
-          const maxPrice = parseFloat(response.data.price_max) || 500000;
-          
-          setPriceRange({
-            price_min: minPrice,
-            price_max: maxPrice
-          });
-          
-          
-          onPrice(maxPrice);
+          // Giữ nguyên price range mặc định vì không còn facets API
+          setPriceRange({ price_min: 0, price_max: 500000 });
+          onPrice(500000);
           
         } else {
           setCategories([]);
@@ -50,7 +44,7 @@ export default function Sidebar({
     };
 
     if (sectionId) {
-      fetchFacets();
+      fetchCategories();
     }
     
   }, [sectionId]); 
