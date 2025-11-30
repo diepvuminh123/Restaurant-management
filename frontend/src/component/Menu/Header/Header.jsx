@@ -3,7 +3,7 @@ import "./Header.css";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import { Search } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
-import Logo from '../../../component/Logo/Logo'
+import MenuHeaderLogo from '../../../component/Logo/Logo'
 
 export default function Header({
   activeTab,
@@ -17,14 +17,10 @@ export default function Header({
   return (
     <header className="menu-header">
       <div className="menu-header__left">
-        <div className="menu-header__logo">
-          <Logo />
-        </div>
 
-        <div className="menu-header__brand">
-          <div className="brand-title">Nhà Hàng</div>
-          <div className="brand-sub">Minh Quoanh Huân</div>
-        </div>
+          <MenuHeaderLogo />
+
+       
       </div>
 
       <nav className="menu-header__tabs">

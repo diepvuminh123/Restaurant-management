@@ -115,7 +115,7 @@ class Menu {
                 mi.sale_price,
                 COALESCE(mi.sale_price, mi.price) as effective_price,
                 mi.description_short,
-                mi.image_cover,
+                mi.images,
                 mi.rating_avg,
                 mi.rating_count,
                 mi.is_popular,
@@ -304,8 +304,6 @@ class Menu {
                 updateParams.push(description_short);
             }
             if (image !== undefined) {
-                updateFields.push(`image_cover = $${idx++}`);
-                updateParams.push(image);
                 updateFields.push(`images = $${idx++}`);
                 updateParams.push(JSON.stringify([image]));
             }

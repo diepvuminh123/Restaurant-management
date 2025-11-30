@@ -19,13 +19,7 @@ const Header = () => {
         <div className="HeaderComponent">
             
             <div className="header__left-section">
-                <div className="header__logo-wrapper">
-                    <LuUtensilsCrossed className="icon icon-utensils" />
-                </div>
-                <div className="header__restaurant-info">
-                    <h1 className="header__restaurant-name">Nhà hàng Huân Minh Quanh</h1>
-                    <h2 className="header__tagline">Hương vị truyền thống</h2>
-                </div>
+                <Logo />
             </div>
 
             

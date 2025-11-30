@@ -11,14 +11,17 @@ export default function DishCard({ dish, onAdd }) {
     sale_price,
     rating_avg,
     is_popular,
-    image_cover
+    images
   } = dish;
+
+  // Lấy ảnh đầu tiên từ array images
+  const mainImage = images && images.length > 0 ? images[0] : null;
 
   return (
     <div className="dish-card">
       <div className="dish-thumb">
-        {image_cover ? (
-          <img src={image_cover} alt={name} className="dish-thumb__image" />
+        {mainImage ? (
+          <img src={mainImage} alt={name} className="dish-thumb__image" />
         ) : (
           <div className="dish-thumb__placeholder" />
         )}

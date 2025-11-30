@@ -1,0 +1,45 @@
+/* Logo Component - Shared styles */
+
+.header__left-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+ 
+}
+
+
+.header__logo-wrapper {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #c66b33;
+  border-radius: 8px;
+}
+
+.icon-utensils {
+  font-size: 20px;
+  color: #fff;
+}
+
+.header__restaurant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header__restaurant-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e36a2d;
+  margin: 0;
+}
+
+.header__tagline {
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+  margin: 0;
+}

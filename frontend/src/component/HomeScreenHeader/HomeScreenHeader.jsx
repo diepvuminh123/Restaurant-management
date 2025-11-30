@@ -4,6 +4,7 @@ import { LuUtensilsCrossed, LuPhone } from "react-icons/lu";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import {Link, useNavigate} from 'react-router-dom';
+import MenuHeaderLogo from '../Logo/Logo';
 const HomeScreenHeader = ({ user, onLogout }) => {
     
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,13 +24,7 @@ const HomeScreenHeader = ({ user, onLogout }) => {
         <div className="HeaderComponent">
             {/* Nhóm Logo và Tên Nhà hàng - nằm bên trái */}
             <div className="header__left-section">
-                <div className="header__logo-wrapper">
-                    <LuUtensilsCrossed className="icon icon-utensils" />
-                </div>
-                <div className="header__restaurant-info">
-                    <h1 className="header__restaurant-name">Nhà hàng Huân Minh Quanh</h1>
-                    <h2 className="header__tagline">Hương vị truyền thống</h2>
-                </div>
+                <MenuHeaderLogo />
             </div>
 
             {/* Các tab điều hướng - nằm ở giữa */}
