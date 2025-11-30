@@ -218,26 +218,23 @@ class Menu {
             description_short = null,
         } = data;
 
-        const client = await pool.connect();
-
         try {
-            await client.query("BEGIN");
+            await pool.query("BEGIN");
 
             const insertQuery = `
                 INSERT INTO menu_items 
-                    (name, price, sale_price, description_short, description_full, image_cover, images, section_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    (name, price, sale_price, description_short, description_full, images, section_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
                 RETURNING id
             `;
 
             const images = image ? JSON.stringify([image]) : null;
-            const insertResult = await client.query(insertQuery, [
+            const insertResult = await pool.query(insertQuery, [
                 name,
                 price,
                 sale_price,
                 description_short || description,
                 description,
-                image,
                 images,
                 section_id,
             ]);
@@ -247,17 +244,17 @@ class Menu {
             if (category_ids && category_ids.length > 0) {
                 const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
                 for (const catId of category_ids) {
-                    await client.query(insertCatQuery, [menuItemId, catId]);
+                    await pool.query(insertCatQuery, [menuItemId, catId]);
                 }
             }
 
-            await client.query("COMMIT");
+            await pool.query("COMMIT");
             return menuItemId;
         } catch (error) {
-            await client.query("ROLLBACK");
+            await pool.query("ROLLBACK");
             throw error;
         } finally {
-            client.release();
+            pool.release();
         }
     }
 

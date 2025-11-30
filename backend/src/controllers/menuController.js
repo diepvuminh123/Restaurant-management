@@ -106,7 +106,7 @@ class MenuController {
       });
     }
   }
-
+// Admin only
   /**
    * POST /api/menus
    * Tạo món ăn mới

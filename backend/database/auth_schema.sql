@@ -12,6 +12,8 @@ CREATE TABLE users (
     phone VARCHAR(15),
     role VARCHAR(20) NOT NULL CHECK (role IN ('customer', 'employee', 'admin')),
     is_verified BOOLEAN DEFAULT FALSE,
+    fail_login_attempts INT DEFAULT 0,
+    locked_until TIMESTAMP DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

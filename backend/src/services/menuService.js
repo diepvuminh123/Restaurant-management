@@ -52,16 +52,7 @@ class MenuService {
    * Tạo món ăn mới
    */
   static async createMenuItem(data) {
-    const { name, price } = data;
-
-    if (!name || !price) {
-      throw new Error("Tên và giá là bắt buộc");
-    }
-
-    if (price <= 0) {
-      throw new Error("Giá phải lớn hơn 0");
-    }
-
+    
     const menuItemId = await Menu.createMenuItem(data);
     return { id: menuItemId };
   }
