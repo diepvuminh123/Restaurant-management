@@ -226,6 +226,7 @@ const MenuManagement = ({ user }) => {
                 <th>Tên món</th>
                 <th>Giá</th>
                 <th>Trạng thái</th>
+                <th>Loại món </th>
                 <th>Hành động</th>
               </tr>
             </thead>
@@ -258,6 +259,8 @@ const MenuManagement = ({ user }) => {
                     </span>
                   </td>
                   <td>{getStatusBadge(item)}</td>
+                  <td className ="name">{item.categories}</td>
+            
                   <td>
                     <div className="menu-table__actions">
                       <button

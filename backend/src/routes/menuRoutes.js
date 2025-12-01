@@ -10,6 +10,12 @@ const menuValidation = require("../validations/menuValidation");
  */
 router.get("/menu/sections", MenuController.getSections);
 
+// /**
+//  * Put /api/menu/sections
+//  * Cập nhập các phần menu (Món chính, Đồ uống, Món tráng miệng)
+//  */
+// router.put("/menu/sections", MenuController.getSections);
+
 /**
  * GET /api/menu/categories
  * Lấy danh mục theo phần menu
@@ -22,6 +28,11 @@ router.get("/menu/categories", MenuController.getCategories);
  */
 router.get("/menus", MenuController.getMenuItems);
 
+// /**
+//  * GET /api/menus/facets
+//  * Lấy facets để filter (giá min/max, danh mục)
+//  */
+// router.get("/menus/facets", MenuController.getFacets);
 
 /**
  * GET /api/menus/:id

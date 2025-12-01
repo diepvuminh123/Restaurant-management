@@ -1,113 +1,107 @@
 const pool = require("../config/database");
 
 class Menu {
-    /**
-     * Lấy tất cả phần menu đang active
-     */
-    static async getAllSections() {
-        const result = await pool.query(
-            "SELECT id, name, sort_order, is_active FROM menu_sections WHERE is_active = true ORDER BY sort_order ASC"
-        );
-        return result.rows;
+  /**
+   * Lấy tất cả phần menu đang active
+   */
+  static async getAllSections() {
+    const result = await pool.query(
+      "SELECT id, name, sort_order, is_active FROM menu_sections WHERE is_active = true ORDER BY sort_order ASC"
+    );
+    return result.rows;
+  }
+
+  /**
+   * Lấy danh mục theo section
+   */
+  static async getCategoriesBySection(sectionId) {
+    const result = await pool.query(
+      "SELECT id, name, section_id FROM menu_categories WHERE section_id = $1",
+      [sectionId]
+    );
+    return result.rows;
+  }
+
+  /**
+   * Lấy danh sách món ăn với filter, sort và phân trang
+   */
+  static async getAllMenuItems(filters = {}) {
+    const {
+      section_id,
+      category_id,
+      available,
+      is_popular,
+      search,
+
+      sort_by = "price",
+      sort_order = "ASC",
+      page = 1,
+      limit = 10,
+    } = filters;
+
+    let whereConditions = [];
+    let params = [];
+    let idx = 1; // $1,2...
+
+    if (section_id !== undefined) {
+      whereConditions.push(`mi.section_id = $${idx++}`);
+      params.push(section_id);
     }
 
-    /**
-     * Lấy danh mục theo section
-     */
-    static async getCategoriesBySection(sectionId) {
-        const result = await pool.query(
-            "SELECT id, name, section_id FROM menu_categories WHERE section_id = $1",
-            [sectionId]
-        );
-        return result.rows;
+    if (category_id !== undefined) {
+      whereConditions.push(
+        `EXISTS (SELECT 1 FROM menu_item_categories mic WHERE mic.menu_item_id = mi.id AND mic.category_id = $${idx++})`
+      );
+      params.push(category_id);
     }
 
-    /**
-     * Lấy danh sách món ăn với filter, sort và phân trang
-     */
-    static async getAllMenuItems(filters = {}) {
-        const {
-            section_id,
-            category_id,
-            available,
-            is_popular,
-            search,
-        
-            sort_by = "price",
-            sort_order = "ASC",
-            page = 1,
-            limit = 10,
-        } = filters;
+    if (available !== undefined) {
+      whereConditions.push(`mi.available = $${idx++}`);
+      params.push(available);
+    }
 
-        let whereConditions = [];
-        let params = [];
-        let idx = 1; // $1,2...
+    if (is_popular !== undefined) {
+      whereConditions.push(`mi.is_popular = $${idx++}`);
+      params.push(is_popular);
+    }
 
-        if (section_id !== undefined) {
-            whereConditions.push(`mi.section_id = $${idx++}`);
-            params.push(section_id);
-        }
+    if (search !== undefined && search !== "") {
+      whereConditions.push(
+        `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})` //ILike kệ chữ hoa và thường
+      );
+      params.push(`%${search}%`);
+      idx++;
+    }
 
-        if (category_id !== undefined) {
-            whereConditions.push(
-                `EXISTS (SELECT 1 FROM menu_item_categories mic WHERE mic.menu_item_id = mi.id AND mic.category_id = $${idx++})`
-            );
-            params.push(category_id);
-        }
+    const whereClause =
+      whereConditions.length > 0
+        ? "WHERE " + whereConditions.join(" AND ")
+        : "";
+    console.log("WHERE CLAUSE:", whereClause, "PARAMS:", params);
 
-        if (available !== undefined) {
-            whereConditions.push(`mi.available = $${idx++}`);
-            params.push(available);
-        }
+    // Đếm tổng số items
+    const countQuery = `SELECT COUNT(*) as total FROM menu_items mi ${whereClause}`;
+    const countResult = await pool.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total, 10) || 0;
+    console.log("TOTAL ITEMS ABC:", total);
+    console.log("countResult: ", countResult);
 
-        if (is_popular !== undefined) {
-            whereConditions.push(`mi.is_popular = $${idx++}`);
-            params.push(is_popular);
-        }
+    const allowedSortFields = ["name", "price", "rating_avg", "created_at"];
+    const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
+    console.log("SORT FIELD:", sortField);
+    const sortDir =
+      sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC"; //toUpperCase() -> vuminh -> VUMINH
+    console.log("SORT DIRECTION:", sortDir);
 
-        if (search !== undefined && search !== "") {
-            whereConditions.push(
-                `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})` //ILike kệ chữ hoa và thường
-            );
-            params.push(`%${search}%`);
-            idx++;
-        }
+    // tính phân trang
+    const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    console.log("OFFSET:", offset, "LIMIT:", limit);
 
-        const whereClause =
-            whereConditions.length > 0 ? "WHERE " + whereConditions.join(" AND ") : "";
-        console.log("WHERE CLAUSE:", whereClause, "PARAMS:", params);
+    // Add limit & offset placeholders
+    const limitPlaceholder = `$${idx++}`;
+    const offsetPlaceholder = `$${idx++}`;
 
-        // Đếm tổng số items
-        const countQuery = `SELECT COUNT(*) as total FROM menu_items mi ${whereClause}`;
-        const countResult = await pool.query(countQuery, params);
-        const total = parseInt(countResult.rows[0].total, 10) || 0;
-        console.log("TOTAL ITEMS ABC:", total);
-        console.log("countResult: ", countResult);
-        
-
-
-        
-        const allowedSortFields = [
-            
-            "name",
-            "price",
-            "rating_avg",
-            "created_at",
-        ];
-        const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
-        console.log("SORT FIELD:", sortField);
-        const sortDir = sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC"; //toUpperCase() -> vuminh -> VUMINH
-        console.log("SORT DIRECTION:", sortDir);
-
-        // tính phân trang 
-        const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-        console.log("OFFSET:", offset, "LIMIT:", limit);
-
-        // Add limit & offset placeholders
-        const limitPlaceholder = `$${idx++}`;
-        const offsetPlaceholder = `$${idx++}`;
-
-        const itemsQuery = `
+    const itemsQuery = `
             SELECT 
                 mi.id,
                 mi.name,
@@ -126,35 +120,52 @@ class Menu {
             LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
         `;
 
-        // truy vấn nè
-        const itemsParams = [...params, limit, offset];
-        const itemsResult = await pool.query(itemsQuery, itemsParams);
+    // truy vấn nè
+    const itemsParams = [...params, limit, offset];
+    const itemsResult = await pool.query(itemsQuery, itemsParams);
+    const items = itemsResult.rows;
+    for (const item of items) {
+      const categoriesQuery = `
+    SELECT mc.name
+    FROM menu_item_categories mic
+    INNER JOIN menu_categories mc ON mc.id = mic.category_id
+    WHERE mic.menu_item_id = $1
+  `;
 
-        return {
-            items: itemsResult.rows.map((item) => ({
-                ...item,
-                price: item.price !== null ? parseFloat(item.price) : null,
-                sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
-                effective_price: item.effective_price !== null ? parseFloat(item.effective_price) : null,
-                rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
-                is_popular: Boolean(item.is_popular),
-                available: Boolean(item.available),
-            })),
-            pagination: {
-                page: parseInt(page, 10),
-                limit: parseInt(limit, 10),
-                total,
-                total_pages: Math.ceil(total / limit) || 0,
-            },
-        };
+      const { rows: catRows } = await pool.query(categoriesQuery, [item.id]);
+      
+      item.categories = catRows.map((r) => r.name);
     }
 
+    return {
+      items: items.map((item) => ({
+        ...item,
+        price: item.price !== null ? parseFloat(item.price) : null,
+        sale_price:
+          item.sale_price !== null ? parseFloat(item.sale_price) : null,
+        effective_price:
+          item.effective_price !== null
+            ? parseFloat(item.effective_price)
+            : null,
+        rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
+        is_popular: Boolean(item.is_popular),
+        available: Boolean(item.available),
+        categories: item.categories || [],
+      })),
+      pagination: {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        total,
+        total_pages: Math.ceil(total / limit) || 0,
+      },
+    };
+  }
 
-    /**
-     * Lấy thông tin món ăn theo ID
-     */
-    static async getMenuItemById(id) {
-        const query = `
+  /**
+   * Lấy thông tin món ăn theo ID
+   */
+  static async getMenuItemById(id) {
+    const query = `
             SELECT 
                 mi.id,
                 mi.name,
@@ -171,212 +182,215 @@ class Menu {
             LEFT JOIN menu_sections ms ON mi.section_id = ms.id
             WHERE mi.id = $1
         `;
-        const result = await pool.query(query, [id]);
-        if (result.rows.length === 0) return null;
+    const result = await pool.query(query, [id]);
+    if (result.rows.length === 0) return null;
 
-        const item = result.rows[0];
-        
+    const item = result.rows[0];
 
-        const categoriesQuery = `
+    const categoriesQuery = `
             SELECT mc.id, mc.name
             FROM menu_categories mc
             INNER JOIN menu_item_categories mic ON mc.id = mic.category_id
             WHERE mic.menu_item_id = $1
         `;
-        const categoriesResult = await pool.query(categoriesQuery, [id]);
+    const categoriesResult = await pool.query(categoriesQuery, [id]);
 
-        return {
-            id: item.id,
-            name: item.name,
-            description_full: item.description_full,
-            images: item.images || [],
-            price: item.price !== null ? parseFloat(item.price) : null,
-            sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
-            section: {
-                id: item.section_id,
-                name: item.section_name,
-            },
-            categories: categoriesResult.rows,
-            rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
-            rating_count: item.rating_count,
-            available: Boolean(item.available),
-        };
-    }
+    return {
+      id: item.id,
+      name: item.name,
+      description_full: item.description_full,
+      images: item.images || [],
+      price: item.price !== null ? parseFloat(item.price) : null,
+      sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
+      section: {
+        id: item.section_id,
+        name: item.section_name,
+      },
+      categories: categoriesResult.rows,
+      rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
+      rating_count: item.rating_count,
+      available: Boolean(item.available),
+    };
+  }
 
-    /**
-     * Tạo món ăn mới
-     */
-    static async createMenuItem(data) {
-        const {
-            name,
-            price,
-            description,
-            category_ids = [],
-            image,
-            sale_price = null,
-            section_id = 1,
-            description_short = null,
-        } = data;
+  /**
+   * Tạo món ăn mới
+   */
+  static async createMenuItem(data) {
+    const {
+      name,
+      price,
+      description,
+      category_ids = [],
+      image,
+      sale_price = null,
+      section_id = 1,
+      description_short = null,
+    } = data;
 
-        try {
-            await pool.query("BEGIN");
+    try {
+      await pool.query("BEGIN");
 
-            const insertQuery = `
+      const insertQuery = `
                 INSERT INTO menu_items 
                     (name, price, sale_price, description_short, description_full, images, section_id)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                 RETURNING id
             `;
 
-            const images = image ? JSON.stringify([image]) : null;
-            const insertResult = await pool.query(insertQuery, [
-                name,
-                price,
-                sale_price,
-                description_short || description,
-                description,
-                images,
-                section_id,
-            ]);
+      const images = image ? JSON.stringify([image]) : null;
+      const insertResult = await pool.query(insertQuery, [
+        name,
+        price,
+        sale_price,
+        description_short || description,
+        description,
+        images,
+        section_id,
+      ]);
 
-            const menuItemId = insertResult.rows[0].id;
+      const menuItemId = insertResult.rows[0].id;
 
-            if (category_ids && category_ids.length > 0) {
-                const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
-                for (const catId of category_ids) {
-                    await pool.query(insertCatQuery, [menuItemId, catId]);
-                }
-            }
-
-            await pool.query("COMMIT");
-            return menuItemId;
-        } catch (error) {
-            await pool.query("ROLLBACK");
-            throw error;
-        } finally {
-            pool.release();
+      if (category_ids && category_ids.length > 0) {
+        const insertCatQuery =
+          "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
+        for (const catId of category_ids) {
+          await pool.query(insertCatQuery, [menuItemId, catId]);
         }
+      }
+
+      await pool.query("COMMIT");
+      return menuItemId;
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    } finally {
+      pool.release();
     }
+  }
 
-    /**
-     * Cập nhật món ăn
-     */
-    static async updateMenuItem(id, data) {
-        const {
-            name,
-            price,
-            sale_price,
-            description,
-            description_short,
-            images,
-            section_id,
-            category_ids,
-            available,
-            is_popular,
-            prep_time,
-            notes,
-        } = data;
+  /**
+   * Cập nhật món ăn
+   */
+  static async updateMenuItem(id, data) {
+    const {
+      name,
+      price,
+      sale_price,
+      description,
+      description_short,
+      images,
+      section_id,
+      category_ids,
+      available,
+      is_popular,
+      prep_time,
+      notes,
+    } = data;
 
-        
+    try {
+      await pool.query("BEGIN");
 
-        try {
-            await pool.query("BEGIN");
+      const updateFields = [];
+      const updateParams = [];
+      let idx = 1;
 
-            const updateFields = [];
-            const updateParams = [];
-            let idx = 1;
+      if (name !== undefined) {
+        updateFields.push(`name = $${idx++}`);
+        updateParams.push(name);
+      }
+      if (price !== undefined) {
+        updateFields.push(`price = $${idx++}`);
+        updateParams.push(price);
+      }
+      if (sale_price !== undefined) {
+        updateFields.push(`sale_price = $${idx++}`);
+        updateParams.push(sale_price);
+      }
+      if (description !== undefined) {
+        updateFields.push(`description_full = $${idx++}`);
+        updateParams.push(description);
+      }
+      if (description_short !== undefined) {
+        updateFields.push(`description_short = $${idx++}`);
+        updateParams.push(description_short);
+      }
+      if (images !== undefined) {
+        updateFields.push(`images = $${idx++}`);
+        updateParams.push(JSON.stringify([images]));
+      }
+      if (section_id !== undefined) {
+        updateFields.push(`section_id = $${idx++}`);
+        updateParams.push(section_id);
+      }
+      if (available !== undefined) {
+        updateFields.push(`available = $${idx++}`);
+        updateParams.push(available);
+      }
+      if (is_popular !== undefined) {
+        updateFields.push(`is_popular = $${idx++}`);
+        updateParams.push(is_popular);
+      }
+      if (prep_time !== undefined) {
+        updateFields.push(`prep_time = $${idx++}`);
+        updateParams.push(prep_time);
+      }
+      if (notes !== undefined) {
+        updateFields.push(`notes = $${idx++}`);
+        updateParams.push(notes);
+      }
 
-            if (name !== undefined) {
-                updateFields.push(`name = $${idx++}`);
-                updateParams.push(name);
-            }
-            if (price !== undefined) {
-                updateFields.push(`price = $${idx++}`);
-                updateParams.push(price);
-            }
-            if (sale_price !== undefined) {
-                updateFields.push(`sale_price = $${idx++}`);
-                updateParams.push(sale_price);
-            }
-            if (description !== undefined) {
-                updateFields.push(`description_full = $${idx++}`);
-                updateParams.push(description);
-            }
-            if (description_short !== undefined) {
-                updateFields.push(`description_short = $${idx++}`);
-                updateParams.push(description_short);
-            }
-            if (images !== undefined) {
-                updateFields.push(`images = $${idx++}`);
-                updateParams.push(JSON.stringify([images]));
-            }
-            if (section_id !== undefined) {
-                updateFields.push(`section_id = $${idx++}`);
-                updateParams.push(section_id);
-            }
-            if (available !== undefined) {
-                updateFields.push(`available = $${idx++}`);
-                updateParams.push(available);
-            }
-            if (is_popular !== undefined) {
-                updateFields.push(`is_popular = $${idx++}`);
-                updateParams.push(is_popular);
-            };
-            if (prep_time !== undefined) {
-                updateFields.push(`prep_time = $${idx++}`);
-                updateParams.push(prep_time);
-            }; 
-            if (notes !== undefined) {
-                updateFields.push(`notes = $${idx++}`);
-                updateParams.push(notes);
-            };
+      if (updateFields.length > 0) {
+        const updateQuery = `UPDATE menu_items SET ${updateFields.join(
+          ", "
+        )} WHERE id = $${idx}`;
+        updateParams.push(id);
+        await pool.query(updateQuery, updateParams);
+      }
 
-            if (updateFields.length > 0) {
-                const updateQuery = `UPDATE menu_items SET ${updateFields.join(", ")} WHERE id = $${idx}`;
-                updateParams.push(id);
-                await pool.query(updateQuery, updateParams);
-            }
-
-            if (category_ids !== undefined) {
-                await pool.query(
-                    "DELETE FROM menu_item_categories WHERE menu_item_id = $1",
-                    [id]
-                );
-
-                if (category_ids && category_ids.length > 0) {
-                    const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
-                    for (const catId of category_ids) {
-                        await pool.query(insertCatQuery, [id, catId]);
-                    }
-                }
-            }
-
-            await pool.query("COMMIT");
-            return true;
-        } catch (error) {
-            await pool.query("ROLLBACK");
-            throw error;
-        }
-    }
-
-    /**
-     * Cập nhật trạng thái còn hàng
-     */
-    static async updateAvailability(id, available) {
-        const result = await pool.query(
-            "UPDATE menu_items SET available = $1 WHERE id = $2",
-            [available, id]
+      if (category_ids !== undefined) {
+        await pool.query(
+          "DELETE FROM menu_item_categories WHERE menu_item_id = $1",
+          [id]
         );
-        return result.rowCount > 0;
-    }
 
-    /**
-     * Xóa món ăn
-     */
-    static async deleteMenuItem(id) {
-        const result = await pool.query("DELETE FROM menu_items WHERE id = $1", [id]);
-        return result.rowCount > 0;
+        if (category_ids && category_ids.length > 0) {
+          const insertCatQuery =
+            "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
+          for (const catId of category_ids) {
+            await pool.query(insertCatQuery, [id, catId]);
+          }
+        }
+      }
+
+      await pool.query("COMMIT");
+      return true;
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
     }
+  }
+
+  /**
+   * Cập nhật trạng thái còn hàng
+   */
+  static async updateAvailability(id, available) {
+    const result = await pool.query(
+      "UPDATE menu_items SET available = $1 WHERE id = $2",
+      [available, id]
+    );
+    return result.rowCount > 0;
+  }
+
+  /**
+   * Xóa món ăn
+   */
+  static async deleteMenuItem(id) {
+    const result = await pool.query("DELETE FROM menu_items WHERE id = $1", [
+      id,
+    ]);
+    return result.rowCount > 0;
+  }
 }
 
 module.exports = Menu;
