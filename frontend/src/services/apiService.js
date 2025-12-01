@@ -115,6 +115,14 @@ class ApiService {
       method: 'GET',
     });
   }
+  static async updateMenuItem(id, updatedData){
+    
+    return this.request(`/menus/${id}`,{
+      method: 'PUT',
+      body:updatedData,
+     });
+
+  }
 
   // Lấy facets (categories, price range) cho filtering
   // ĐÃ XÓA API NÀY Ở BACKEND

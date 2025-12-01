@@ -134,6 +134,7 @@ class MenuController {
   static async updateMenuItem(req, res) {
     try {
       const { id } = req.params;
+      console.log("Test");
       await MenuService.updateMenuItem(id, req.body);
       res.json({
         success: true,

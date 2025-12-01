@@ -52,19 +52,28 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Employee chỉ được cập nhật available và is_popular
-    if (isEmployee) {
-      onSave({
-        available: formData.available,
-        is_popular: formData.is_popular
-      });
-    } else {
-      // Admin có full quyền
-      onSave(formData);
-    }
+  e.preventDefault();
+  
+  // Chuẩn hóa dữ liệu trước khi gửi
+  const normalizedData = {
+    ...formData,
+    name: formData.name.trim(), 
+    sale_price: formData.sale_price === '' ? null : Number(formData.sale_price), 
+    prep_time: formData.prep_time === '' ? null : Number(formData.prep_time), 
+    notes: formData.notes.trim() || null, 
   };
+
+  // Employee chỉ được cập nhật available và is_popular
+  if (isEmployee) {
+    onSave({
+      available: normalizedData.available,
+      is_popular: normalizedData.is_popular
+    });
+  } else {
+    // Admin có full quyền
+    onSave(normalizedData);
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={onClose}>

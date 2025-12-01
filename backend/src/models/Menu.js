@@ -268,16 +268,19 @@ class Menu {
             sale_price,
             description,
             description_short,
-            image,
+            images,
             section_id,
             category_ids,
             available,
+            is_popular,
+            prep_time,
+            notes,
         } = data;
 
-        const client = await pool.connect();
+        
 
         try {
-            await client.query("BEGIN");
+            await pool.query("BEGIN");
 
             const updateFields = [];
             const updateParams = [];
@@ -303,9 +306,9 @@ class Menu {
                 updateFields.push(`description_short = $${idx++}`);
                 updateParams.push(description_short);
             }
-            if (image !== undefined) {
+            if (images !== undefined) {
                 updateFields.push(`images = $${idx++}`);
-                updateParams.push(JSON.stringify([image]));
+                updateParams.push(JSON.stringify([images]));
             }
             if (section_id !== undefined) {
                 updateFields.push(`section_id = $${idx++}`);
@@ -315,15 +318,27 @@ class Menu {
                 updateFields.push(`available = $${idx++}`);
                 updateParams.push(available);
             }
+            if (is_popular !== undefined) {
+                updateFields.push(`is_popular = $${idx++}`);
+                updateParams.push(is_popular);
+            };
+            if (prep_time !== undefined) {
+                updateFields.push(`prep_time = $${idx++}`);
+                updateParams.push(prep_time);
+            }; 
+            if (notes !== undefined) {
+                updateFields.push(`notes = $${idx++}`);
+                updateParams.push(notes);
+            };
 
             if (updateFields.length > 0) {
                 const updateQuery = `UPDATE menu_items SET ${updateFields.join(", ")} WHERE id = $${idx}`;
                 updateParams.push(id);
-                await client.query(updateQuery, updateParams);
+                await pool.query(updateQuery, updateParams);
             }
 
             if (category_ids !== undefined) {
-                await client.query(
+                await pool.query(
                     "DELETE FROM menu_item_categories WHERE menu_item_id = $1",
                     [id]
                 );
@@ -331,18 +346,16 @@ class Menu {
                 if (category_ids && category_ids.length > 0) {
                     const insertCatQuery = "INSERT INTO menu_item_categories (menu_item_id, category_id) VALUES ($1, $2)";
                     for (const catId of category_ids) {
-                        await client.query(insertCatQuery, [id, catId]);
+                        await pool.query(insertCatQuery, [id, catId]);
                     }
                 }
             }
 
-            await client.query("COMMIT");
+            await pool.query("COMMIT");
             return true;
         } catch (error) {
-            await client.query("ROLLBACK");
+            await pool.query("ROLLBACK");
             throw error;
-        } finally {
-            client.release();
         }
     }
 

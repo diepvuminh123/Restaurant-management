@@ -105,6 +105,7 @@ const MenuManagement = ({ user }) => {
         setShowEditModal(false);
       }
     } catch (error) {
+      alert(selectedItem.id);
       alert('Lỗi: ' + error.message);
     }
   };
