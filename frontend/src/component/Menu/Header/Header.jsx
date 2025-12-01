@@ -3,7 +3,8 @@ import "./Header.css";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import { Search } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
-import MenuHeaderLogo from '../../../component/Logo/Logo'
+import MenuHeaderLogo from '../../../component/Logo/Logo';
+import Loading from '../../Loading/Loading'
 
 export default function Header({
   activeTab,
@@ -25,7 +26,7 @@ export default function Header({
 
       <nav className="menu-header__tabs">
         {loadingSections ? (
-          <div className="tabs-loading">Đang tải...</div>
+          <Loading />
         ) : (
           sections.map((section) => (
             <button

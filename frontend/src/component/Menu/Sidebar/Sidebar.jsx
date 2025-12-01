@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
 import ApiService from "../../../services/apiService";
+import Loading from "../../Loading/Loading";
 
 export default function Sidebar({
   selected,
@@ -61,7 +62,7 @@ export default function Sidebar({
       <div className="sidebar-card">
         <div className="sidebar-title">Loại món</div>
 
-        {loading && <p className="sidebar-loading">Đang tải...</p>}
+        {loading && <Loading />}
         
         {error && <p className="sidebar-error">Lỗi: {error}</p>}
 

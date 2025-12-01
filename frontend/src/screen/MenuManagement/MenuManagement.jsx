@@ -4,6 +4,7 @@ import { MdEdit, MdMoreVert } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
 import ApiService from '../../services/apiService';
 import EditMenuItemModal from '../../component/EditMenuItemModal/EditMenuItemModal';
+import Loading from '../../component/Loading/Loading';
 import './MenuManagement.css';
 
 const MenuManagement = ({ user }) => {
@@ -210,7 +211,7 @@ const MenuManagement = ({ user }) => {
         </div>
 
         {loading ? (
-          <div className="loading">Đang tải...</div>
+          <Loading />
         ) : filteredItems.length === 0 ? (
           <div className="no-data">
             <p>Không có món ăn nào.</p>

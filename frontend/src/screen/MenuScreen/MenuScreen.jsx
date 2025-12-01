@@ -6,6 +6,7 @@ import FilterBar from "../../component/Menu/FilterBar/FilterBar";
 import Sidebar from "../../component/Menu/Sidebar/Sidebar";
 import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
+import Loading from "../../component/Loading/Loading";
 
 const PAGE_SIZE = 12;
 
@@ -210,7 +211,7 @@ export default function MenuScreen() {
 
           {loading && (
             <div className="menu-loading">
-              <p>Đang tải menu...</p>
+              <Loading />
             </div>
           )}
 

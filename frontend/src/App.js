@@ -6,6 +6,7 @@ import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import ApiService from './services/apiService';
+import Loading from './component/Loading/Loading';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -55,7 +56,7 @@ function App() {
   };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '40px' }}>Loading...</div>;
+    return <Loading />;
   }
 
   return (
