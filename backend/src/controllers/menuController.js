@@ -60,8 +60,9 @@ class MenuController {
         available: req.query.available !== undefined ? req.query.available === "true" : undefined,
         is_popular: req.query.is_popular !== undefined ? req.query.is_popular === "true" : undefined,
         search: req.query.search,
-       
-        sort_by: req.query.sort_by || "price",
+        price_min: req.query.price_min ? parseFloat(req.query.price_min) : undefined,
+        price_max: req.query.price_max ? parseFloat(req.query.price_max) : undefined,
+        sort_by: req.query.sort_by || "id",
         sort_order: req.query.sort_order || "ASC",
         page: req.query.page ? parseInt(req.query.page) : 1,
         limit: req.query.limit ? parseInt(req.query.limit) : 10,
@@ -80,6 +81,25 @@ class MenuController {
     }
   }
 
+  /**
+   * GET /api/menus/facets
+   * Lấy thông tin facets để filter (giá min/max, danh mục)
+   */
+  static async getFacets(req, res) {
+    try {
+      const { section_id } = req.query;
+      const facets = await MenuService.getFacets(section_id);
+      res.json({
+        success: true,
+        data: facets,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 
   /**
    * GET /api/menus/:id
@@ -104,9 +124,10 @@ class MenuController {
         success: false,
         message: error.message,
       });
-    }
+
+      console.log("Test");    }
   }
-// Admin only
+
   /**
    * POST /api/menus
    * Tạo món ăn mới
@@ -134,7 +155,6 @@ class MenuController {
   static async updateMenuItem(req, res) {
     try {
       const { id } = req.params;
-      console.log("Test");
       await MenuService.updateMenuItem(id, req.body);
       res.json({
         success: true,
@@ -209,6 +229,60 @@ class MenuController {
         });
       }
       res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * PUT /api/menu/sections/:id
+   * Cập nhật Section
+   */
+  static async updateSection(req, res) {
+    try {
+      const { id } = req.params;
+      const updated = await MenuService.updateSection(id, req.body);
+      res.json({
+        success: true,
+        message: "Cập nhật phần menu thành công",
+        data: updated,
+      });
+    } catch (error) {
+      if (error.message === "Phần menu không tồn tại") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * PUT /api/menu/categories/:id
+   * Cập nhật Category
+   */
+  static async updateCategory(req, res) {
+    try {
+      const { id } = req.params;
+      const updated = await MenuService.updateCategory(id, req.body);
+      res.json({
+        success: true,
+        message: "Cập nhật danh mục thành công",
+        data: updated,
+      });
+    } catch (error) {
+      if (error.message === "Danh mục không tồn tại") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(400).json({
         success: false,
         message: error.message,
       });

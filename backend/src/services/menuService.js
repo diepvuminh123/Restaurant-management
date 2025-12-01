@@ -52,7 +52,16 @@ class MenuService {
    * Tạo món ăn mới
    */
   static async createMenuItem(data) {
-    
+    const { name, price } = data;
+
+    if (!name || !price) {
+      throw new Error("Tên và giá là bắt buộc");
+    }
+
+    if (price <= 0) {
+      throw new Error("Giá phải lớn hơn 0");
+    }
+
     const menuItemId = await Menu.createMenuItem(data);
     return { id: menuItemId };
   }
@@ -109,6 +118,38 @@ class MenuService {
     if (!deleted) {
       throw new Error("Món ăn không tồn tại");
     }
+  }
+
+  /**
+   * Cập nhật Section
+   */
+  static async updateSection(id, data) {
+    if (!id) {
+      throw new Error("ID phần menu là bắt buộc");
+    }
+
+    const updated = await Menu.updateSection(id, data);
+    if (!updated) {
+      throw new Error("Phần menu không tồn tại");
+    }
+
+    return updated;
+  }
+
+  /**
+   * Cập nhật Category
+   */
+  static async updateCategory(id, data) {
+    if (!id) {
+      throw new Error("ID danh mục là bắt buộc");
+    }
+
+    const updated = await Menu.updateCategory(id, data);
+    if (!updated) {
+      throw new Error("Danh mục không tồn tại");
+    }
+
+    return updated;
   }
 }
 

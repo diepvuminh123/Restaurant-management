@@ -113,7 +113,11 @@ class Menu {
                 mi.rating_avg,
                 mi.rating_count,
                 mi.is_popular,
-                mi.available
+                mi.available,
+                mi.is_new,
+                mi.is_soldout,
+                mi.prep_time,
+                mi.notes
             FROM menu_items mi
             ${whereClause}
             ORDER BY mi.${sortField} ${sortDir}
@@ -150,6 +154,10 @@ class Menu {
         rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
         is_popular: Boolean(item.is_popular),
         available: Boolean(item.available),
+        is_new: Boolean(item.is_new),
+        is_soldout: Boolean(item.is_soldout),
+        prep_time: item.prep_time !== null ? parseInt(item.prep_time) : null,
+        notes: item.notes || "",
         categories: item.categories || [],
       })),
       pagination: {
@@ -170,6 +178,7 @@ class Menu {
                 mi.id,
                 mi.name,
                 mi.description_full,
+                mi.description_short,
                 mi.images,
                 mi.price,
                 mi.sale_price,
@@ -177,6 +186,11 @@ class Menu {
                 mi.rating_avg,
                 mi.rating_count,
                 mi.available,
+                mi.is_popular,
+                mi.is_new,
+                mi.is_soldout,
+                mi.prep_time,
+                mi.notes,
                 ms.name as section_name
             FROM menu_items mi
             LEFT JOIN menu_sections ms ON mi.section_id = ms.id
@@ -199,6 +213,7 @@ class Menu {
       id: item.id,
       name: item.name,
       description_full: item.description_full,
+      description_short: item.description_short || "",
       images: item.images || [],
       price: item.price !== null ? parseFloat(item.price) : null,
       sale_price: item.sale_price !== null ? parseFloat(item.sale_price) : null,
@@ -210,6 +225,11 @@ class Menu {
       rating_avg: item.rating_avg !== null ? parseFloat(item.rating_avg) : 0,
       rating_count: item.rating_count,
       available: Boolean(item.available),
+      is_popular: Boolean(item.is_popular),
+      is_new: Boolean(item.is_new),
+      is_soldout: Boolean(item.is_soldout),
+      prep_time: item.prep_time !== null ? parseInt(item.prep_time) : null,
+      notes: item.notes || "",
     };
   }
 
@@ -223,9 +243,16 @@ class Menu {
       description,
       category_ids = [],
       image,
+      images,
       sale_price = null,
       section_id = 1,
       description_short = null,
+      available = true,
+      is_popular = false,
+      is_new = false,
+      is_soldout = false,
+      prep_time = null,
+      notes = null,
     } = data;
 
     try {
@@ -233,20 +260,33 @@ class Menu {
 
       const insertQuery = `
                 INSERT INTO menu_items 
-                    (name, price, sale_price, description_short, description_full, images, section_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    (name, price, sale_price, description_short, description_full, images, section_id, available, is_popular, is_new, is_soldout, prep_time, notes)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id
             `;
 
-      const images = image ? JSON.stringify([image]) : null;
+      // Xử lý images: ưu tiên images array, fallback về image string
+      let imagesJson = null;
+      if (images && Array.isArray(images) && images.length > 0) {
+        imagesJson = JSON.stringify(images);
+      } else if (image) {
+        imagesJson = JSON.stringify([image]);
+      }
+
       const insertResult = await pool.query(insertQuery, [
         name,
         price,
         sale_price,
         description_short || description,
         description,
-        images,
+        imagesJson,
         section_id,
+        available,
+        is_popular,
+        is_new,
+        is_soldout,
+        prep_time,
+        notes,
       ]);
 
       const menuItemId = insertResult.rows[0].id;
@@ -284,6 +324,8 @@ class Menu {
       category_ids,
       available,
       is_popular,
+      is_new,
+      is_soldout,
       prep_time,
       notes,
     } = data;
@@ -317,7 +359,11 @@ class Menu {
       }
       if (images !== undefined) {
         updateFields.push(`images = $${idx++}`);
-        updateParams.push(JSON.stringify([images]));
+        // Nếu images là array thì stringify, nếu là string đơn thì wrap trong array
+        const imagesJson = Array.isArray(images) 
+          ? JSON.stringify(images) 
+          : JSON.stringify([images]);
+        updateParams.push(imagesJson);
       }
       if (section_id !== undefined) {
         updateFields.push(`section_id = $${idx++}`);
@@ -330,6 +376,14 @@ class Menu {
       if (is_popular !== undefined) {
         updateFields.push(`is_popular = $${idx++}`);
         updateParams.push(is_popular);
+      }
+      if (is_new !== undefined) {
+        updateFields.push(`is_new = $${idx++}`);
+        updateParams.push(is_new);
+      }
+      if (is_soldout !== undefined) {
+        updateFields.push(`is_soldout = $${idx++}`);
+        updateParams.push(is_soldout);
       }
       if (prep_time !== undefined) {
         updateFields.push(`prep_time = $${idx++}`);
@@ -390,6 +444,82 @@ class Menu {
       id,
     ]);
     return result.rowCount > 0;
+  }
+
+  /**
+   * Cập nhật Section
+   */
+  static async updateSection(id, data) {
+    const { section_name, description, display_order } = data;
+
+    const updateFields = [];
+    const updateParams = [];
+    let idx = 1;
+
+    if (section_name !== undefined) {
+      updateFields.push(`name = $${idx++}`);
+      updateParams.push(section_name);
+    }
+    if (description !== undefined) {
+      updateFields.push(`description = $${idx++}`);
+      updateParams.push(description);
+    }
+    if (display_order !== undefined) {
+      updateFields.push(`sort_order = $${idx++}`);
+      updateParams.push(display_order);
+    }
+
+    if (updateFields.length === 0) {
+      throw new Error("Không có trường nào để cập nhật");
+    }
+
+    const updateQuery = `UPDATE menu_sections SET ${updateFields.join(
+      ", "
+    )} WHERE id = $${idx} RETURNING *`;
+    updateParams.push(id);
+
+    const result = await pool.query(updateQuery, updateParams);
+    return result.rowCount > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Cập nhật Category
+   */
+  static async updateCategory(id, data) {
+    const { category_name, description, section_id, display_order } = data;
+
+    const updateFields = [];
+    const updateParams = [];
+    let idx = 1;
+
+    if (category_name !== undefined) {
+      updateFields.push(`name = $${idx++}`);
+      updateParams.push(category_name);
+    }
+    if (description !== undefined) {
+      updateFields.push(`description = $${idx++}`);
+      updateParams.push(description);
+    }
+    if (section_id !== undefined) {
+      updateFields.push(`section_id = $${idx++}`);
+      updateParams.push(section_id);
+    }
+    if (display_order !== undefined) {
+      updateFields.push(`display_order = $${idx++}`);
+      updateParams.push(display_order);
+    }
+
+    if (updateFields.length === 0) {
+      throw new Error("Không có trường nào để cập nhật");
+    }
+
+    const updateQuery = `UPDATE menu_categories SET ${updateFields.join(
+      ", "
+    )} WHERE id = $${idx} RETURNING *`;
+    updateParams.push(id);
+
+    const result = await pool.query(updateQuery, updateParams);
+    return result.rowCount > 0 ? result.rows[0] : null;
   }
 }
 

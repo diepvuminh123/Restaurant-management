@@ -10,17 +10,31 @@ const menuValidation = require("../validations/menuValidation");
  */
 router.get("/menu/sections", MenuController.getSections);
 
-// /**
-//  * Put /api/menu/sections
-//  * Cập nhập các phần menu (Món chính, Đồ uống, Món tráng miệng)
-//  */
-// router.put("/menu/sections", MenuController.getSections);
+/**
+ * PUT /api/menu/sections/:id
+ * Cập nhật phần menu
+ */
+router.put(
+  "/menu/sections/:id",
+  validate(menuValidation.updateSection),
+  MenuController.updateSection
+);
 
 /**
  * GET /api/menu/categories
  * Lấy danh mục theo phần menu
  */
 router.get("/menu/categories", MenuController.getCategories);
+
+/**
+ * PUT /api/menu/categories/:id
+ * Cập nhật danh mục
+ */
+router.put(
+  "/menu/categories/:id",
+  validate(menuValidation.updateCategory),
+  MenuController.updateCategory
+);
 
 /**
  * GET /api/menus
