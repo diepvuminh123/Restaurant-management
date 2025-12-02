@@ -128,7 +128,7 @@ const MenuManagement = ({ user }) => {
     if (item.is_soldout) {
       return <span className="status-badge status-badge--out">Đang hết món</span>;
     }
-    if(item.is_new){
+    if(item.is_new ){
       return <span className = "status-badge status-badge--new"> Món mới </span>
     }
 

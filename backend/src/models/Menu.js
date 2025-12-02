@@ -31,8 +31,11 @@ class Menu {
       category_id,
       available,
       is_popular,
+      is_new,
+      is_soldout,
       search,
-
+      price_min,
+      price_max,
       sort_by = "price",
       sort_order = "ASC",
       page = 1,
@@ -65,12 +68,33 @@ class Menu {
       params.push(is_popular);
     }
 
+    if (is_new !== undefined) {
+      whereConditions.push(`mi.is_new = $${idx++}`);
+      params.push(is_new);
+    }
+
+    if (is_soldout !== undefined) {
+      whereConditions.push(`mi.is_soldout = $${idx++}`);
+      params.push(is_soldout);
+    }
+
     if (search !== undefined && search !== "") {
       whereConditions.push(
         `(mi.name ILIKE $${idx} OR mi.description_short ILIKE $${idx})` //ILike kệ chữ hoa và thường
       );
       params.push(`%${search}%`);
       idx++;
+    }
+
+    // Price filters
+    if (price_min !== undefined && price_min !== null) {
+      whereConditions.push(`COALESCE(mi.sale_price, mi.price) >= $${idx++}`);
+      params.push(price_min);
+    }
+
+    if (price_max !== undefined && price_max !== null) {
+      whereConditions.push(`COALESCE(mi.sale_price, mi.price) <= $${idx++}`);
+      params.push(price_max);
     }
 
     const whereClause =
@@ -86,7 +110,7 @@ class Menu {
     console.log("TOTAL ITEMS ABC:", total);
     console.log("countResult: ", countResult);
 
-    const allowedSortFields = ["name", "price", "rating_avg", "created_at"];
+    const allowedSortFields = ["name", "price", "rating_avg", "created_at", "is_popular", "is_new", "id"];
     const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
     console.log("SORT FIELD:", sortField);
     const sortDir =

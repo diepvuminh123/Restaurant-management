@@ -11,11 +11,28 @@ export default function DishCard({ dish, onAdd }) {
     sale_price,
     rating_avg,
     is_popular,
+    is_new,
+    is_soldout,
     images
   } = dish;
 
   // Lấy ảnh đầu tiên từ array images
   const mainImage = images && images.length > 0 ? images[0] : null;
+
+  // Xác định badge và class dựa trên trạng thái (ưu tiên: soldout > new > popular)
+  let badgeText = null;
+  let badgeClass = "";
+  
+  if (is_soldout) {
+    badgeText = "Đang hết hàng";
+    badgeClass = "soldout";
+  } else if (is_new) {
+    badgeText = "Món mới";
+    badgeClass = "new";
+  } else if (is_popular) {
+    badgeText = "Phổ biến";
+    badgeClass = "popular";
+  }
 
   return (
     <div className="dish-card">
@@ -25,7 +42,7 @@ export default function DishCard({ dish, onAdd }) {
         ) : (
           <div className="dish-thumb__placeholder" />
         )}
-        {is_popular && <span className="dish-badge">Phổ biến</span>}
+        {badgeText && <span className={`dish-badge ${badgeClass}`}>{badgeText}</span>}
       </div>
 
       <div className="dish-body">

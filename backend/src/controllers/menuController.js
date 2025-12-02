@@ -59,6 +59,8 @@ class MenuController {
         category_id: req.query.category_id,
         available: req.query.available !== undefined ? req.query.available === "true" : undefined,
         is_popular: req.query.is_popular !== undefined ? req.query.is_popular === "true" : undefined,
+        is_new: req.query.is_new !== undefined ? req.query.is_new === "true" : undefined,
+        is_soldout: req.query.is_soldout !== undefined ? req.query.is_soldout === "true" : undefined,
         search: req.query.search,
         price_min: req.query.price_min ? parseFloat(req.query.price_min) : undefined,
         price_max: req.query.price_max ? parseFloat(req.query.price_max) : undefined,

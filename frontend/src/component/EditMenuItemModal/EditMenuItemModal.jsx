@@ -43,9 +43,9 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
     if (status === 'popular') {
       setFormData(prev => ({ ...prev, is_popular: true, available: true, is_soldout:false, is_new: false }));
     } else if (status === 'out_of_stock') {
-      setFormData(prev => ({ ...prev, available: false, is_soldout: true }));
+      setFormData(prev => ({ ...prev, available: false, is_soldout: true, is_popular: false, is_new: false }));
     } else {
-      setFormData(prev => ({ ...prev, is_new: true, available: true, is_soldout: false }));
+      setFormData(prev => ({ ...prev, is_new: true, available: true, is_soldout: false, is_popular: false }));
     }
   };
 

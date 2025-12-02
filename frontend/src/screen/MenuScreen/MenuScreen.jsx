@@ -14,6 +14,7 @@ export default function MenuScreen() {
   const [activeTab, setActiveTab] = useState(1); 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState(""); 
+  const [statusFilter, setStatusFilter] = useState(""); // Trạng thái: popular, new, soldout, hoặc ""
   const [selectedCats, setSelectedCats] = useState([]);
   const [price, setPrice] = useState(500000);
   const [page, setPage] = useState(1);
@@ -25,6 +26,7 @@ export default function MenuScreen() {
   const [loading, setLoading] = useState(false);
   const [loadingSections, setLoadingSections] = useState(false);
   const [error, setError] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
 
   const sectionId = activeTab; 
 
@@ -61,6 +63,8 @@ export default function MenuScreen() {
 
         const filters = {
           section_id: sectionId,
+          page: page,
+          limit: PAGE_SIZE,
         };
 
         // Thêm category filter nếu có
@@ -68,20 +72,67 @@ export default function MenuScreen() {
           filters.category_id = selectedCats.join(',');
         }
 
-        // Thêm price filter
-        filters.max_price = price;
+        // Thêm price filter (backend expects price_max, not max_price)
+        if (price) {
+          filters.price_max = price;
+        }
 
         // Thêm search
         if (search.trim()) {
           filters.search = search.trim();
         }
 
-        //sort
+        // Xử lý sort - chuyển từ sort key sang sort_by và sort_order
+        if (sort) {
+          switch (sort) {
+            case 'popular':
+              filters.sort_by = 'is_popular';
+              filters.sort_order = 'DESC';
+              break;
+            case 'rating':
+              filters.sort_by = 'rating_avg';
+              filters.sort_order = 'DESC';
+              break;
+            case 'newest':
+              filters.sort_by = 'is_new';
+              filters.sort_order = 'DESC';
+              break;
+            case 'priceAsc':
+              filters.sort_by = 'price';
+              filters.sort_order = 'ASC';
+              break;
+            case 'priceDesc':
+              filters.sort_by = 'price';
+              filters.sort_order = 'DESC';
+              break;
+            default:
+              break;
+          }
+        }
+
+        // Xử lý status filter
+        if (statusFilter) {
+          switch (statusFilter) {
+            case 'popular':
+              filters.is_popular = true;
+              break;
+            case 'new':
+              filters.is_new = true;
+              break;
+            case 'soldout':
+              filters.is_soldout = true;
+              break;
+            default:
+              // Không filter gì (all)
+              break;
+          }
+        }
 
         const response = await ApiService.getMenuItems(filters);
         
         if (response.success) {
           setMenuItems(response.items || []);
+          setTotalPages(response.pagination?.total_pages || 0);
         } else {
           setError(response.message || 'Không thể tải menu');
         }
@@ -97,7 +148,7 @@ export default function MenuScreen() {
     if (sectionId) {
       fetchMenuItems();
     }
-  }, [sectionId, selectedCats, price, search]);
+  }, [sectionId, selectedCats, price, search, sort, statusFilter, page]);
 
   const toggleCat = (c) => {
     setPage(1);
@@ -109,6 +160,11 @@ export default function MenuScreen() {
   const handleSortChange = (newSort) => {
     setPage(1);
     setSort((prev) => (prev === newSort ? "" : newSort));
+  };
+
+  const handleStatusFilterChange = (newStatus) => {
+    setPage(1);
+    setStatusFilter((prev) => (prev === newStatus ? "" : newStatus));
   };
 
   const handleTabChange = (tab) => {
@@ -123,65 +179,6 @@ export default function MenuScreen() {
     const currentSection = sections.find(s => s.id === activeTab);
     return currentSection ? currentSection.name : "Menu";
   };
-
-  // Sort dữ liệu ở Frontend
-  const data = useMemo(() => {
-    if (!menuItems || menuItems.length === 0) return [];
-
-    const sortedItems = [...menuItems];
-
-    switch (sort) {
-      case 'popular':
-        // Món phổ biến lên đầu
-        sortedItems.sort((a, b) => {
-          if (a.is_popular && !b.is_popular) return -1;
-          if (!a.is_popular && b.is_popular) return 1;
-          return 0;
-        });
-        break;
-
-      case 'rating':
-        // Đánh giá cao nhất
-        sortedItems.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
-        break;
-
-      case 'newest':
-        // Mới nhất (giả sử id cao hơn = mới hơn)
-        sortedItems.sort((a, b) => b.id - a.id);
-        break;
-
-      case 'priceAsc':
-        // Giá thấp đến cao (ưu tiên sale_price nếu có)
-        sortedItems.sort((a, b) => {
-          const priceA = a.sale_price || a.price || 0;
-          const priceB = b.sale_price || b.price || 0;
-          return priceA - priceB;
-        });
-        break;
-
-      case 'priceDesc':
-        // Giá cao đến thấp (ưu tiên sale_price nếu có)
-        sortedItems.sort((a, b) => {
-          const priceA = a.sale_price || a.price || 0;
-          const priceB = b.sale_price || b.price || 0;
-          return priceB - priceA;
-        });
-        break;
-
-      default:
-        // Không sort - giữ nguyên thứ tự từ API
-        break;
-    }
-
-    return sortedItems;
-  }, [menuItems, sort]);
-
-  const totalPages = Math.ceil(data.length / PAGE_SIZE);
-
-  const current = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return data.slice(start, start + PAGE_SIZE);
-  }, [page, data]);
 
   return (
     <div className="menu-page">
@@ -207,6 +204,34 @@ export default function MenuScreen() {
         <main className="menu-main">
           <FilterBar sortKey={sort} onSortChange={handleSortChange} />
 
+          {/* Status Filter Buttons */}
+          <div className="status-filter-bar">
+            <button
+              className={`status-filter-btn ${statusFilter === "" ? "active" : ""}`}
+              onClick={() => handleStatusFilterChange("")}
+            >
+              Tất cả
+            </button>
+            <button
+              className={`status-filter-btn ${statusFilter === "popular" ? "active" : ""}`}
+              onClick={() => handleStatusFilterChange("popular")}
+            >
+              Phổ biến
+            </button>
+            <button
+              className={`status-filter-btn ${statusFilter === "new" ? "active" : ""}`}
+              onClick={() => handleStatusFilterChange("new")}
+            >
+              Món mới
+            </button>
+            <button
+              className={`status-filter-btn ${statusFilter === "soldout" ? "active" : ""}`}
+              onClick={() => handleStatusFilterChange("soldout")}
+            >
+              Đang hết hàng
+            </button>
+          </div>
+
           <h2>{getTabTitle()}</h2>
 
           {loading && (
@@ -222,16 +247,16 @@ export default function MenuScreen() {
             </div>
           )}
 
-          {!loading && !error && current.length === 0 && (
+          {!loading && !error && menuItems.length === 0 && (
             <div className="menu-empty">
               <p>Không tìm thấy món ăn phù hợp</p>
             </div>
           )}
 
-          {!loading && !error && current.length > 0 && (
+          {!loading && !error && menuItems.length > 0 && (
             <>
               <div className="dish-grid">
-                {current.map((d) => (
+                {menuItems.map((d) => (
                   <DishCard key={d.id} dish={d} onAdd={() => setCart(cart + 1)} />
                 ))}
               </div>

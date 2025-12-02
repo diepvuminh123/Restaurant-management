@@ -40,6 +40,19 @@
   font-weight: 600;
 }
 
+/* Badge variants */
+.dish-badge.popular {
+  background: #e36a2d;
+}
+
+.dish-badge.new {
+  background: #27ae60;
+}
+
+.dish-badge.soldout {
+  background: #95a5a6;
+}
+
 .dish-body {
   padding: 14px;
 }
