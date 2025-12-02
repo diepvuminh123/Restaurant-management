@@ -8,14 +8,19 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
     description_short: item.description_short || '',
     price: item.price || 0,
     sale_price: item.sale_price || '',
-    available: item.available !== undefined ? item.available : true,
+    available: item.available,
     is_popular: item.is_popular || false,
+    is_soldout: item.is_soldout || false,
+    is_new: item.is_new || false,
     prep_time: item.prep_time || 20,
     notes: item.notes || '',
+
+
+    
   });
 
   const [selectedStatus, setSelectedStatus] = useState(
-    item.is_popular ? 'popular' : item.available ? 'new' : 'out-of-stock'
+    item.is_popular ? 'popular' : item.available ? 'new' : 'out_of_stock'
   );
 
   const isEmployee = userRole === 'employee';
@@ -30,24 +35,17 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
   };
 
   const handleStatusChange = (status) => {
-    if (status === 'new') {
-      alert('Database chưa hỗ trợ trạng thái "Món mới". Đang chờ BE.');
-      return;
-    }
-    if (status === 'out-of-stock') {
-      alert('Database chưa hỗ trợ trạng thái "Đang hết món" độc lập. Đang chờ BE.');
-      return;
-    }
+    
     
     setSelectedStatus(status);
     
     // Cập nhật form data
     if (status === 'popular') {
-      setFormData(prev => ({ ...prev, is_popular: true, available: true }));
-    } else if (status === 'out-of-stock') {
-      setFormData(prev => ({ ...prev, is_popular: false, available: false }));
+      setFormData(prev => ({ ...prev, is_popular: true, available: true, is_soldout:false, is_new: false }));
+    } else if (status === 'out_of_stock') {
+      setFormData(prev => ({ ...prev, available: false, is_soldout: true }));
     } else {
-      setFormData(prev => ({ ...prev, is_popular: false, available: true }));
+      setFormData(prev => ({ ...prev, is_new: true, available: true, is_soldout: false }));
     }
   };
 
@@ -171,8 +169,8 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
               </button>
               <button
                 type="button"
-                className={`status-btn ${selectedStatus === 'out-of-stock' ? 'status-btn--active status-btn--out' : ''}`}
-                onClick={() => handleStatusChange('out-of-stock')}
+                className={`status-btn ${selectedStatus === 'out_of_stock' ? 'status-btn--active status-btn--out' : ''}`}
+                onClick={() => handleStatusChange('out_of_stock')}
               >
                 Đang hết món
               </button>

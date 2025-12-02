@@ -124,13 +124,18 @@ const MenuManagement = ({ user }) => {
   };
 
   const getStatusBadge = (item) => {
-    if (item.is_popular) {
-      return <span className="status-badge status-badge--popular">Món phổ biến</span>;
-    }
-    if (!item.available) {
+   
+    if (item.is_soldout) {
       return <span className="status-badge status-badge--out">Đang hết món</span>;
     }
-    return <span className="status-badge status-badge--new">Món mới</span>;
+    if(item.is_new){
+      return <span className = "status-badge status-badge--new"> Món mới </span>
+    }
+
+     if (item.is_popular) {
+      return <span className="status-badge status-badge--popular">Món phổ biến</span>;
+    }
+
   };
 
   return (

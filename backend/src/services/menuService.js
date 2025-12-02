@@ -127,6 +127,10 @@ class MenuService {
     if (!data.section_name) {
       throw new Error("Tên phần menu là bắt buộc");
     }
+    const existSort_order = await Menu.checkOrderSecion(data.display_order);
+    if(existSort_order){
+      throw new Error("vui lòng chọn thứ tự hiển thị khác vì đã tồn tại");
+    }
 
     const section = await Menu.createSection(data);
     return section;

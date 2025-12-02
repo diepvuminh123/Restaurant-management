@@ -465,6 +465,14 @@ class Menu {
     
     return result.rows[0];
   }
+  static async checkOrderSecion(id){
+    const result = await pool.query(
+      "SELECT sort_order FROM menu_sections WHERE id=$1",[id]
+    );
+    return result.rowCount >0 ? result.rows[0]: null;
+  };
+
+
 
   /**
    * Cập nhật Section
@@ -503,7 +511,7 @@ class Menu {
    */
   static async deleteSection(id) {
     const result = await pool.query(
-      "UPDATE menu_sections SET is_active = false WHERE id = $1 RETURNING *",
+      "DELETE FROM menu_sections WHERE id = $1 RETURNING *",
       [id]
     );
     return result.rowCount > 0;
