@@ -11,6 +11,16 @@ const menuValidation = require("../validations/menuValidation");
 router.get("/menu/sections", MenuController.getSections);
 
 /**
+ * POST /api/menu/sections
+ * Tạo phần menu mới
+ */
+router.post(
+  "/menu/sections",
+  validate(menuValidation.createSection),
+  MenuController.createSection
+);
+
+/**
  * PUT /api/menu/sections/:id
  * Cập nhật phần menu
  */
@@ -21,10 +31,26 @@ router.put(
 );
 
 /**
+ * DELETE /api/menu/sections/:id
+ * Xóa phần menu
+ */
+router.delete("/menu/sections/:id", MenuController.deleteSection);
+
+/**
  * GET /api/menu/categories
  * Lấy danh mục theo phần menu
  */
 router.get("/menu/categories", MenuController.getCategories);
+
+/**
+ * POST /api/menu/categories
+ * Tạo danh mục mới
+ */
+router.post(
+  "/menu/categories",
+  validate(menuValidation.createCategory),
+  MenuController.createCategory
+);
 
 /**
  * PUT /api/menu/categories/:id
@@ -35,6 +61,12 @@ router.put(
   validate(menuValidation.updateCategory),
   MenuController.updateCategory
 );
+
+/**
+ * DELETE /api/menu/categories/:id
+ * Xóa danh mục
+ */
+router.delete("/menu/categories/:id", MenuController.deleteCategory);
 
 /**
  * GET /api/menus

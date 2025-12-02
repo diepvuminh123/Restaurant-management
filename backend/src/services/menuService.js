@@ -121,6 +121,18 @@ class MenuService {
   }
 
   /**
+   * Tạo Section mới
+   */
+  static async createSection(data) {
+    if (!data.section_name) {
+      throw new Error("Tên phần menu là bắt buộc");
+    }
+
+    const section = await Menu.createSection(data);
+    return section;
+  }
+
+  /**
    * Cập nhật Section
    */
   static async updateSection(id, data) {
@@ -137,6 +149,32 @@ class MenuService {
   }
 
   /**
+   * Xóa Section
+   */
+  static async deleteSection(id) {
+    if (!id) {
+      throw new Error("ID phần menu là bắt buộc");
+    }
+
+    const deleted = await Menu.deleteSection(id);
+    if (!deleted) {
+      throw new Error("Phần menu không tồn tại");
+    }
+  }
+
+  /**
+   * Tạo Category mới
+   */
+  static async createCategory(data) {
+    if (!data.category_name || !data.section_id) {
+      throw new Error("Tên danh mục và ID phần menu là bắt buộc");
+    }
+
+    const category = await Menu.createCategory(data);
+    return category;
+  }
+
+  /**
    * Cập nhật Category
    */
   static async updateCategory(id, data) {
@@ -150,6 +188,20 @@ class MenuService {
     }
 
     return updated;
+  }
+
+  /**
+   * Xóa Category
+   */
+  static async deleteCategory(id) {
+    if (!id) {
+      throw new Error("ID danh mục là bắt buộc");
+    }
+
+    const deleted = await Menu.deleteCategory(id);
+    if (!deleted) {
+      throw new Error("Danh mục không tồn tại");
+    }
   }
 }
 

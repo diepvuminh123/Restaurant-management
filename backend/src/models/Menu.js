@@ -124,7 +124,7 @@ class Menu {
             LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
         `;
 
-    // truy vấn nè
+    // truy vấn 
     const itemsParams = [...params, limit, offset];
     const itemsResult = await pool.query(itemsQuery, itemsParams);
     const items = itemsResult.rows;
@@ -447,10 +447,30 @@ class Menu {
   }
 
   /**
+   * Tạo Section mới
+   */
+  static async createSection(data) {
+    const { section_name, display_order } = data;
+    
+    const query = `
+      INSERT INTO menu_sections (name, sort_order, is_active)
+      VALUES ($1, $2, true)
+      RETURNING *
+    `;
+    
+    const result = await pool.query(query, [
+      section_name,
+      display_order || 0,
+    ]);
+    
+    return result.rows[0];
+  }
+
+  /**
    * Cập nhật Section
    */
   static async updateSection(id, data) {
-    const { section_name, description, display_order } = data;
+    const { section_name, display_order } = data;
 
     const updateFields = [];
     const updateParams = [];
@@ -459,10 +479,6 @@ class Menu {
     if (section_name !== undefined) {
       updateFields.push(`name = $${idx++}`);
       updateParams.push(section_name);
-    }
-    if (description !== undefined) {
-      updateFields.push(`description = $${idx++}`);
-      updateParams.push(description);
     }
     if (display_order !== undefined) {
       updateFields.push(`sort_order = $${idx++}`);
@@ -483,10 +499,41 @@ class Menu {
   }
 
   /**
+   * Xóa Section
+   */
+  static async deleteSection(id) {
+    const result = await pool.query(
+      "UPDATE menu_sections SET is_active = false WHERE id = $1 RETURNING *",
+      [id]
+    );
+    return result.rowCount > 0;
+  }
+
+  /**
+   * Tạo Category mới
+   */
+  static async createCategory(data) {
+    const { category_name, section_id } = data;
+    
+    const query = `
+      INSERT INTO menu_categories (name, section_id)
+      VALUES ($1, $2)
+      RETURNING *
+    `;
+    
+    const result = await pool.query(query, [
+      category_name,
+      section_id,
+    ]);
+    
+    return result.rows[0];
+  }
+
+  /**
    * Cập nhật Category
    */
   static async updateCategory(id, data) {
-    const { category_name, description, section_id, display_order } = data;
+    const { category_name, section_id } = data;
 
     const updateFields = [];
     const updateParams = [];
@@ -496,17 +543,9 @@ class Menu {
       updateFields.push(`name = $${idx++}`);
       updateParams.push(category_name);
     }
-    if (description !== undefined) {
-      updateFields.push(`description = $${idx++}`);
-      updateParams.push(description);
-    }
     if (section_id !== undefined) {
       updateFields.push(`section_id = $${idx++}`);
       updateParams.push(section_id);
-    }
-    if (display_order !== undefined) {
-      updateFields.push(`display_order = $${idx++}`);
-      updateParams.push(display_order);
     }
 
     if (updateFields.length === 0) {
@@ -520,6 +559,17 @@ class Menu {
 
     const result = await pool.query(updateQuery, updateParams);
     return result.rowCount > 0 ? result.rows[0] : null;
+  }
+
+  /**
+   * Xóa Category
+   */
+  static async deleteCategory(id) {
+    const result = await pool.query(
+      "DELETE FROM menu_categories WHERE id = $1",
+      [id]
+    );
+    return result.rowCount > 0;
   }
 }
 

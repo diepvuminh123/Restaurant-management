@@ -263,6 +263,52 @@ class MenuController {
   }
 
   /**
+   * POST /api/menu/sections
+   * Tạo Section mới
+   */
+  static async createSection(req, res) {
+    try {
+      const section = await MenuService.createSection(req.body);
+      res.status(201).json({
+        success: true,
+        message: "Tạo phần menu thành công",
+        data: section,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * DELETE /api/menu/sections/:id
+   * Xóa Section
+   */
+  static async deleteSection(req, res) {
+    try {
+      const { id } = req.params;
+      await MenuService.deleteSection(id);
+      res.json({
+        success: true,
+        message: "Xóa phần menu thành công",
+      });
+    } catch (error) {
+      if (error.message === "Phần menu không tồn tại") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
    * PUT /api/menu/categories/:id
    * Cập nhật Category
    */
@@ -283,6 +329,52 @@ class MenuController {
         });
       }
       res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * POST /api/menu/categories
+   * Tạo Category mới
+   */
+  static async createCategory(req, res) {
+    try {
+      const category = await MenuService.createCategory(req.body);
+      res.status(201).json({
+        success: true,
+        message: "Tạo danh mục thành công",
+        data: category,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * DELETE /api/menu/categories/:id
+   * Xóa Category
+   */
+  static async deleteCategory(req, res) {
+    try {
+      const { id } = req.params;
+      await MenuService.deleteCategory(id);
+      res.json({
+        success: true,
+        message: "Xóa danh mục thành công",
+      });
+    } catch (error) {
+      if (error.message === "Danh mục không tồn tại") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(500).json({
         success: false,
         message: error.message,
       });
