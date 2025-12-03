@@ -56,7 +56,7 @@ class MenuController {
     try {
       const filters = {
         section_id: req.query.section_id,
-        category_id: req.query.category_id,
+        category_id: req.query.category_id ? req.query.category_id.split(",") .map(Number): undefined,
         available: req.query.available !== undefined ? req.query.available === "true" : undefined,
         is_popular: req.query.is_popular !== undefined ? req.query.is_popular === "true" : undefined,
         is_new: req.query.is_new !== undefined ? req.query.is_new === "true" : undefined,

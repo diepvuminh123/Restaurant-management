@@ -19,7 +19,7 @@ export default function DishCard({ dish, onAdd }) {
   // Lấy ảnh đầu tiên từ array images
   const mainImage = images && images.length > 0 ? images[0] : null;
 
-  // Xác định badge và class dựa trên trạng thái (ưu tiên: soldout > new > popular)
+  // Xác định badge và class dựa trên trạng thái (ưu tiên: soldout > new > popular) Vì popular để đầu nó sẽ ăn mất :> này code lại sau hơi lỏ
   let badgeText = null;
   let badgeClass = "";
   

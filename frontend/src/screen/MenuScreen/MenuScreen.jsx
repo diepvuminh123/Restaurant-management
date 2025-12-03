@@ -52,7 +52,7 @@ export default function MenuScreen() {
     };
 
     fetchSections();
-  }, []); // Chỉ chạy 1 lần khi mount
+  }, []); // Chỉ chạy 1 lần
 
   // Fetch menu items từ API
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function MenuScreen() {
           filters.category_id = selectedCats.join(',');
         }
 
-        // Thêm price filter (backend expects price_max, not max_price)
+        // Thêm price filter
         if (price) {
           filters.price_max = price;
         }
@@ -242,7 +242,7 @@ export default function MenuScreen() {
 
           {error && (
             <div className="menu-error">
-              <p>❌ {error}</p>
+              <p>Lỗi:  {error}</p>
               <button onClick={() => window.location.reload()}>Thử lại</button>
             </div>
           )}

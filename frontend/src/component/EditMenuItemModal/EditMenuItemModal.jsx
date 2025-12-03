@@ -39,7 +39,7 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
     
     setSelectedStatus(status);
     
-    // Cập nhật form data
+    // Cập nhật form data. Note1:  Cái này em minh code hơi lỏ nói thẳng là code vá tạm thôi.Coi lại sau
     if (status === 'popular') {
       setFormData(prev => ({ ...prev, is_popular: true, available: true, is_soldout:false, is_new: false }));
     } else if (status === 'out_of_stock') {
@@ -52,7 +52,7 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
   const handleSubmit = (e) => {
   e.preventDefault();
   
-  // Chuẩn hóa dữ liệu trước khi gửi
+  // Chuẩn hóa dữ liệu trước khi gửi -> sau cứ thấy lỗi dữ liệu không hợp lệ thì làm như ở dưới nhé.
   const normalizedData = {
     ...formData,
     name: formData.name.trim(), 
@@ -61,7 +61,7 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
     notes: formData.notes.trim() || null, 
   };
 
-  // Employee only chinhr quyenf trạng thái món ăn
+  // Employee only chỉnh quyền trạng thái món ăn
   if (isEmployee) {
     onSave({
       available: normalizedData.available,
