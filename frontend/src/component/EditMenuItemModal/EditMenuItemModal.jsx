@@ -61,11 +61,13 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
     notes: formData.notes.trim() || null, 
   };
 
-  // Employee chỉ được cập nhật available và is_popular
+  // Employee only chinhr quyenf trạng thái món ăn
   if (isEmployee) {
     onSave({
       available: normalizedData.available,
-      is_popular: normalizedData.is_popular
+      is_popular: normalizedData.is_popular,
+      is_soldout: normalizedData.is_soldout,
+      is_new: normalizedData.is_new,
     });
   } else {
     // Admin có full quyền

@@ -46,7 +46,7 @@
 }
 
 .dish-badge.new {
-  background: #27ae60;
+  background: rgb(77, 166, 255);
 }
 
 .dish-badge.soldout {
