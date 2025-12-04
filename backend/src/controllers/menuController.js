@@ -56,14 +56,32 @@ class MenuController {
     try {
       const filters = {
         section_id: req.query.section_id,
-        category_id: req.query.category_id ? req.query.category_id.split(",") .map(Number): undefined,
-        available: req.query.available !== undefined ? req.query.available === "true" : undefined,
-        is_popular: req.query.is_popular !== undefined ? req.query.is_popular === "true" : undefined,
-        is_new: req.query.is_new !== undefined ? req.query.is_new === "true" : undefined,
-        is_soldout: req.query.is_soldout !== undefined ? req.query.is_soldout === "true" : undefined,
+        category_id: req.query.category_id
+          ? req.query.category_id.split(",").map(Number)
+          : undefined,
+        available:
+          req.query.available !== undefined
+            ? req.query.available === "true"
+            : undefined,
+        is_popular:
+          req.query.is_popular !== undefined
+            ? req.query.is_popular === "true"
+            : undefined,
+        is_new:
+          req.query.is_new !== undefined
+            ? req.query.is_new === "true"
+            : undefined,
+        is_soldout:
+          req.query.is_soldout !== undefined
+            ? req.query.is_soldout === "true"
+            : undefined,
         search: req.query.search,
-        price_min: req.query.price_min ? parseFloat(req.query.price_min) : undefined,
-        price_max: req.query.price_max ? parseFloat(req.query.price_max) : undefined,
+        price_min: req.query.price_min
+          ? parseFloat(req.query.price_min)
+          : undefined,
+        price_max: req.query.price_max
+          ? parseFloat(req.query.price_max)
+          : undefined,
         sort_by: req.query.sort_by || "id",
         sort_order: req.query.sort_order || "ASC",
         page: req.query.page ? parseInt(req.query.page) : 1,
@@ -127,7 +145,8 @@ class MenuController {
         message: error.message,
       });
 
-      console.log("Test");    }
+      console.log("Test");
+    }
   }
 
   /**
@@ -376,6 +395,35 @@ class MenuController {
           message: error.message,
         });
       }
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+  static async uploadMenuItemImage(req, res) {
+    try {
+      const { id } = req.params;
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng tải lên hình ảnh",
+        });
+      }
+      const imageUrl = `/images/upload/${req.file.filename}`;
+      console.log("FILE:", req.file);
+
+
+      await MenuService.updateMenuItemImage(id, imageUrl);
+      console.log("RETURNING SUCCESS!");
+
+
+      
+      res.json({
+        success: true,
+        message: "Tải lên hình ảnh thành công",
+      });
+    } catch (error) {
       res.status(500).json({
         success: false,
         message: error.message,

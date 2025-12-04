@@ -3,6 +3,7 @@ const router = express.Router();
 const MenuController = require("../controllers/menuController");
 const validate  = require("../middlewares/validate");
 const menuValidation = require("../validations/menuValidation");
+const upload = require("../middlewares/upload");
 
 /**
  * GET /api/menu/sections
@@ -121,5 +122,16 @@ router.patch(
  * Xóa món ăn
  */
 router.delete("/menus/:id", MenuController.deleteMenuItem);
+
+/**
+ * UPLOAD /api/menus/upload/:id/image
+ * Upload hình ảnh món ăn
+ */
+router.post(
+  "/menus/upload/:id/image",
+  upload.single('image'),
+  MenuController.uploadMenuItemImage
+);
+
 
 module.exports = router;

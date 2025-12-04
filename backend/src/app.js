@@ -1,5 +1,7 @@
 ﻿const express = require("express");
 const session = require('express-session');
+
+
 const cors = require("cors");
 require('dotenv').config();
 
@@ -34,6 +36,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api', menuRoutes);
+
 
 // Error Handler
 app.use((err, req, res, next) => {

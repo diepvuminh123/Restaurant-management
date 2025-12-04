@@ -128,7 +128,7 @@ class MenuService {
       throw new Error("Tên phần menu là bắt buộc");
     }
     const existSort_order = await Menu.checkOrderSecion(data.display_order);
-    if(existSort_order){
+    if (existSort_order) {
       throw new Error("vui lòng chọn thứ tự hiển thị khác vì đã tồn tại");
     }
 
@@ -207,6 +207,17 @@ class MenuService {
       throw new Error("Danh mục không tồn tại");
     }
   }
+
+  static async updateMenuItemImage(id, imageUrl) {
+  if (!id) throw new Error("ID món ăn là bắt buộc");
+
+  const updated = await Menu.updateMenuItem(id, { images: imageUrl });
+
+  if (!updated) throw new Error("Món ăn không tồn tại");
+
+  return updated;
+}
+
 }
 
 module.exports = MenuService;
