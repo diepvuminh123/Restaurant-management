@@ -124,6 +124,32 @@ class ApiService {
 
   }
 
+    static async uploadMenuImage(id, file) {
+    const formData = new FormData();
+    formData.append("image", file); 
+
+    const url = `${API_BASE_URL}/menus/upload/${id}/image`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData, 
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  
+
   // Lấy facets (categories, price range) cho filtering
   // ĐÃ XÓA API NÀY Ở BACKEND
   // static async getMenuFacets(sectionId) {

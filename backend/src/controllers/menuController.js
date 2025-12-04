@@ -422,6 +422,7 @@ class MenuController {
       res.json({
         success: true,
         message: "Tải lên hình ảnh thành công",
+        image: imageUrl,
       });
     } catch (error) {
       res.status(500).json({

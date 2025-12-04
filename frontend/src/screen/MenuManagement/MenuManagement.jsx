@@ -94,7 +94,7 @@ const MenuManagement = ({ user }) => {
   };
 
   const handleAddNewClick = () => {
-    alert('Tính năng "Thêm món mới" đang được phát triển.\nVui lòng dùng Backend API để thêm món.');
+     alert( "đang phát triển")
   };
 
   const handleSaveItem = async (updatedData) => {
