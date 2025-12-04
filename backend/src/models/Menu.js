@@ -52,10 +52,31 @@ class Menu {
     }
 
     if (category_id !== undefined) {
-      whereConditions.push(
-        `EXISTS (SELECT 1 FROM menu_item_categories mic WHERE mic.menu_item_id = mi.id AND mic.category_id = $${idx++})`
-      );
-      params.push(category_id);
+      if (Array.isArray(category_id) && category_id.length > 0) {
+        const placeholders = category_id.map(() => `$${idx++}`).join(", ");
+
+        whereConditions.push(`
+      EXISTS (
+        SELECT 1
+        FROM menu_item_categories mic
+        WHERE mic.menu_item_id = mi.id
+          AND mic.category_id IN (${placeholders})
+      )
+    `);
+
+        params.push(...category_id);
+      } else {
+        whereConditions.push(`
+      EXISTS (
+        SELECT 1
+        FROM menu_item_categories mic
+        WHERE mic.menu_item_id = mi.id
+          AND mic.category_id = $${idx++}
+      )
+    `);
+
+        params.push(category_id);
+      }
     }
 
     if (available !== undefined) {
@@ -110,7 +131,15 @@ class Menu {
     console.log("TOTAL ITEMS ABC:", total);
     console.log("countResult: ", countResult);
 
-    const allowedSortFields = ["name", "price", "rating_avg", "created_at", "is_popular", "is_new", "id"];
+    const allowedSortFields = [
+      "name",
+      "price",
+      "rating_avg",
+      "created_at",
+      "is_popular",
+      "is_new",
+      "id",
+    ];
     const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
     console.log("SORT FIELD:", sortField);
     const sortDir =
@@ -148,7 +177,7 @@ class Menu {
             LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
         `;
 
-    // truy vấn 
+    // truy vấn
     const itemsParams = [...params, limit, offset];
     const itemsResult = await pool.query(itemsQuery, itemsParams);
     const items = itemsResult.rows;
@@ -161,7 +190,7 @@ class Menu {
   `;
 
       const { rows: catRows } = await pool.query(categoriesQuery, [item.id]);
-      
+
       item.categories = catRows.map((r) => r.name);
     }
 
@@ -384,8 +413,8 @@ class Menu {
       if (images !== undefined) {
         updateFields.push(`images = $${idx++}`);
         // Nếu images là array thì stringify, nếu là string đơn thì wrap trong array
-        const imagesJson = Array.isArray(images) 
-          ? JSON.stringify(images) 
+        const imagesJson = Array.isArray(images)
+          ? JSON.stringify(images)
           : JSON.stringify([images]);
         updateParams.push(imagesJson);
       }
@@ -475,28 +504,24 @@ class Menu {
    */
   static async createSection(data) {
     const { section_name, display_order } = data;
-    
+
     const query = `
       INSERT INTO menu_sections (name, sort_order, is_active)
       VALUES ($1, $2, true)
       RETURNING *
     `;
-    
-    const result = await pool.query(query, [
-      section_name,
-      display_order || 0,
-    ]);
-    
+
+    const result = await pool.query(query, [section_name, display_order || 0]);
+
     return result.rows[0];
   }
-  static async checkOrderSecion(id){
+  static async checkOrderSecion(id) {
     const result = await pool.query(
-      "SELECT sort_order FROM menu_sections WHERE id=$1",[id]
+      "SELECT sort_order FROM menu_sections WHERE id=$1",
+      [id]
     );
-    return result.rowCount >0 ? result.rows[0]: null;
-  };
-
-
+    return result.rowCount > 0 ? result.rows[0] : null;
+  }
 
   /**
    * Cập nhật Section
@@ -546,18 +571,15 @@ class Menu {
    */
   static async createCategory(data) {
     const { category_name, section_id } = data;
-    
+
     const query = `
       INSERT INTO menu_categories (name, section_id)
       VALUES ($1, $2)
       RETURNING *
     `;
-    
-    const result = await pool.query(query, [
-      category_name,
-      section_id,
-    ]);
-    
+
+    const result = await pool.query(query, [category_name, section_id]);
+
     return result.rows[0];
   }
 
