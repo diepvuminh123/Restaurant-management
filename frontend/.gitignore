@@ -1,4 +1,4 @@
 .vercel
 node_modules/
 .env
-.public/images/upload/
+public/images/upload/
