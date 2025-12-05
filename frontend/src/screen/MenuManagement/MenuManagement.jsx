@@ -1,21 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { IoArrowBack, IoSearchOutline } from 'react-icons/io5';
-import { MdEdit, MdMoreVert } from 'react-icons/md';
-import { AiOutlinePlus } from 'react-icons/ai';
-import ApiService from '../../services/apiService';
-import EditMenuItemModal from '../../component/EditMenuItemModal/EditMenuItemModal';
-import Loading from '../../component/Loading/Loading';
-import './MenuManagement.css';
+import React, { useState, useEffect } from "react";
+import { IoArrowBack, IoSearchOutline } from "react-icons/io5";
+import { MdEdit, MdDeleteOutline  } from "react-icons/md";
+import { AiOutlinePlus } from "react-icons/ai";
+import ApiService from "../../services/apiService";
+import EditMenuItemModal from "../../component/EditMenuItemModal/EditMenuItemModal";
+import Loading from "../../component/Loading/Loading";
+import "./MenuManagement.css";
 
 const MenuManagement = ({ user }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
   const [selectedItem, setSelectedItem] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [sections, setSections] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchMeta = async () => {
+      //  Lấy sections
+      try {
+        const secRes = await ApiService.getMenuSections();
+        if (secRes.success) {
+          setSections(secRes.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+      }
+      
+    };
+
+    fetchMeta();
+  }, []);
 
   // Fetch menu items
   useEffect(() => {
@@ -31,17 +50,21 @@ const MenuManagement = ({ user }) => {
     try {
       setLoading(true);
       const response = await ApiService.getMenuItems({});
-      console.log('API Response:', response); // Debug
+      console.log("API Response:", response); // Debug
       if (response.success) {
         // Backend trả về { success: true, items: [], pagination: {} }
         setMenuItems(response.items || []);
       } else {
-        console.error('API returned error:', response);
-        alert('Lỗi: ' + (response.message || 'Không thể tải danh sách món'));
+        console.error("API returned error:", response);
+        alert("Lỗi: " + (response.message || "Không thể tải danh sách món"));
       }
     } catch (error) {
-      console.error('Error fetching menu items:', error);
-      alert('Lỗi kết nối: ' + error.message + '\nVui lòng kiểm tra Backend đã chạy chưa.');
+      console.error("Error fetching menu items:", error);
+      alert(
+        "Lỗi kết nối: " +
+          error.message +
+          "\nVui lòng kiểm tra Backend đã chạy chưa."
+      );
     } finally {
       setLoading(false);
     }
@@ -52,26 +75,26 @@ const MenuManagement = ({ user }) => {
 
     // Search filter
     if (searchQuery) {
-      filtered = filtered.filter(item =>
+      filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Status filter
-    if (activeFilter === 'popular') {
-      filtered = filtered.filter(item => item.is_popular);
-    } else if (activeFilter === 'new') {
+    if (activeFilter === "popular") {
+      filtered = filtered.filter((item) => item.is_popular);
+    } else if (activeFilter === "new") {
       // Chưa có trong DB - sẽ thông báo
       filtered = [];
-    } else if (activeFilter === 'out-of-stock') {
-      filtered = filtered.filter(item => !item.available);
+    } else if (activeFilter === "out-of-stock") {
+      filtered = filtered.filter((item) => !item.available);
     }
 
     // Sort
     filtered.sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name, 'vi');
-      } else if (sortBy === 'price') {
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name, "vi");
+      } else if (sortBy === "price") {
         return (a.sale_price || a.price) - (b.sale_price || b.price);
       }
       return 0;
@@ -81,8 +104,8 @@ const MenuManagement = ({ user }) => {
   };
 
   const handleFilterClick = (filter) => {
-    if (filter === 'new' || filter === 'out-of-stock') {
-      alert('Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.');
+    if (filter === "new" || filter === "out-of-stock") {
+      alert("Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.");
       return;
     }
     setActiveFilter(filter);
@@ -94,48 +117,77 @@ const MenuManagement = ({ user }) => {
   };
 
   const handleAddNewClick = () => {
-     alert( "đang phát triển")
+    setSelectedItem(null);
+    setShowEditModal(true);
   };
 
-  const handleSaveItem = async (updatedData) => {
+  const handleSaveItem = async (data) => {
     try {
-      const response = await ApiService.updateMenuItem(selectedItem.id, updatedData);
+      let response;
+
+      if (selectedItem) {
+        // SỬA
+        response = await ApiService.updateMenuItem(selectedItem.id, data);
+      } else {
+        // TẠO MỚI
+        response = await ApiService.createMenuItem(data);
+      }
+
       if (response.success) {
-        alert('Cập nhật thành công!');
+        alert(
+          selectedItem ? "Cập nhật thành công!" : "Tạo món mới thành công!"
+        );
         fetchMenuItems();
         setShowEditModal(false);
       }
     } catch (error) {
-      alert(selectedItem.id);
-      alert('Lỗi: ' + error.message);
+      console.error("Error saving menu item:", error);
+      alert("Lỗi: " + error.message);
     }
   };
+  const handleDelete = async (itemId)=>{
+    const confirmDelte = window.confirm("Bạn có chắc chắn muốn xóa món này hay không ? ");
+    if(!confirmDelte) return;
+    try {
+      const response = await ApiService.deleteMenuItem(itemId);
+      if(response.success){
+        alert(" Xóa món thành công!");
+        fetchMenuItems();
+      }
+    }
+    catch ( error){
+      console.error("Error delteting menu item:", error);
+      alert("Lỗi:" + error.message);
+    }
+  }
 
   // Đếm số lượng theo trạng thái
   const getStatusCount = (status) => {
-    if (status === 'popular') {
-      return menuItems.filter(item => item.is_popular).length;
-    } else if (status === 'new') {
-      return 0; // Chưa có trong DB
-    } else if (status === 'out-of-stock') {
-      return menuItems.filter(item => !item.available).length;
+    if (status === "popular") {
+      return menuItems.filter((item) => item.is_popular).length;
+    } else if (status === "new") {
+       return menuItems.filter((item) => item.is_new).length;
+    } else if (status === "out-of-stock") {
+      return menuItems.filter((item) => item.is_soldout).length;
     }
     return menuItems.length;
   };
 
   const getStatusBadge = (item) => {
-   
     if (item.is_soldout) {
-      return <span className="status-badge status-badge--out">Đang hết món</span>;
+      return (
+        <span className="status-badge status-badge--out">Đang hết món</span>
+      );
     }
-    if(item.is_new ){
-      return <span className = "status-badge status-badge--new"> Món mới </span>
-    }
-
-     if (item.is_popular) {
-      return <span className="status-badge status-badge--popular">Món phổ biến</span>;
+    if (item.is_new) {
+      return <span className="status-badge status-badge--new"> Món mới </span>;
     }
 
+    if (item.is_popular) {
+      return (
+        <span className="status-badge status-badge--popular">Món phổ biến</span>
+      );
+    }
   };
 
   return (
@@ -164,26 +216,34 @@ const MenuManagement = ({ user }) => {
       {/* Filter tabs */}
       <div className="menu-management__filters">
         <button
-          className={`filter-btn ${activeFilter === 'all' ? 'filter-btn--active' : ''}`}
-          onClick={() => setActiveFilter('all')}
+          className={`filter-btn ${
+            activeFilter === "all" ? "filter-btn--active" : ""
+          }`}
+          onClick={() => setActiveFilter("all")}
         >
           Tất cả
         </button>
         <button
-          className={`filter-btn ${activeFilter === 'popular' ? 'filter-btn--active' : ''}`}
-          onClick={() => handleFilterClick('popular')}
+          className={`filter-btn ${
+            activeFilter === "popular" ? "filter-btn--active" : ""
+          }`}
+          onClick={() => handleFilterClick("popular")}
         >
           Món phổ biến
         </button>
         <button
-          className={`filter-btn ${activeFilter === 'new' ? 'filter-btn--active' : ''}`}
-          onClick={() => handleFilterClick('new')}
+          className={`filter-btn ${
+            activeFilter === "new" ? "filter-btn--active" : ""
+          }`}
+          onClick={() => handleFilterClick("new")}
         >
           Món mới
         </button>
         <button
-          className={`filter-btn ${activeFilter === 'out-of-stock' ? 'filter-btn--active' : ''}`}
-          onClick={() => handleFilterClick('out-of-stock')}
+          className={`filter-btn ${
+            activeFilter === "out-of-stock" ? "filter-btn--active" : ""
+          }`}
+          onClick={() => handleFilterClick("out-of-stock")}
         >
           Đang hết món
         </button>
@@ -193,15 +253,17 @@ const MenuManagement = ({ user }) => {
       <div className="menu-management__stats">
         <div className="stat-card stat-card--popular">
           <p className="stat-card__label">Món phổ biến</p>
-          <p className="stat-card__value">{getStatusCount('popular')} món</p>
+          <p className="stat-card__value">{getStatusCount("popular")} món</p>
         </div>
         <div className="stat-card stat-card--new">
           <p className="stat-card__label">Món mới</p>
-          <p className="stat-card__value">{getStatusCount('new')} món</p>
+          <p className="stat-card__value">{getStatusCount("new")} món</p>
         </div>
         <div className="stat-card stat-card--out">
           <p className="stat-card__label">Đang hết món</p>
-          <p className="stat-card__value">{getStatusCount('out-of-stock')} món</p>
+          <p className="stat-card__value">
+            {getStatusCount("out-of-stock")} món
+          </p>
         </div>
       </div>
 
@@ -220,7 +282,7 @@ const MenuManagement = ({ user }) => {
         ) : filteredItems.length === 0 ? (
           <div className="no-data">
             <p>Không có món ăn nào.</p>
-            <p style={{ fontSize: '14px', color: '#999' }}>
+            <p style={{ fontSize: "14px", color: "#999" }}>
               Vui lòng kiểm tra Backend đã chạy và có dữ liệu chưa.
             </p>
           </div>
@@ -237,7 +299,7 @@ const MenuManagement = ({ user }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map(item => (
+              {filteredItems.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <div className="menu-table__image">
@@ -257,16 +319,23 @@ const MenuManagement = ({ user }) => {
                   <td>
                     {item.sale_price && (
                       <span className="price-original">
-                        {Number(item.price).toLocaleString('vi-VN')}đ
+                        {Number(item.price).toLocaleString("vi-VN")}đ
                       </span>
                     )}
                     <span className="price">
-                      {Number(item.sale_price || item.price).toLocaleString('vi-VN')}đ
+                      {Number(item.sale_price || item.price).toLocaleString(
+                        "vi-VN"
+                      )}
+                      đ
                     </span>
                   </td>
                   <td>{getStatusBadge(item)}</td>
-                  <td className ="name">{item.categories}</td>
-            
+                  <td className="name">
+                    {Array.isArray(item.categories)
+                      ? item.categories.join(", ")
+                      : ""}
+                  </td>
+
                   <td>
                     <div className="menu-table__actions">
                       <button
@@ -275,8 +344,11 @@ const MenuManagement = ({ user }) => {
                       >
                         <MdEdit />
                       </button>
-                      <button className="btn-more">
-                        <MdMoreVert />
+                      <button 
+                      className="btn-more"
+                      onClick={() => handleDelete(item.id)}
+                       >
+                       <MdDeleteOutline />
                       </button>
                     </div>
                   </td>
@@ -292,6 +364,7 @@ const MenuManagement = ({ user }) => {
         <EditMenuItemModal
           item={selectedItem}
           userRole={user.role}
+          sections={sections}
           onClose={() => setShowEditModal(false)}
           onSave={handleSaveItem}
         />

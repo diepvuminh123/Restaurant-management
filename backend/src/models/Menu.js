@@ -51,7 +51,7 @@ class Menu {
       params.push(section_id);
     }
 
-    if (category_id !== undefined) {
+    if (category_id !== undefined) {    // 
       if (Array.isArray(category_id) && category_id.length > 0) {
         const placeholders = category_id.map(() => `$${idx++}`).join(", ");
 
@@ -170,7 +170,8 @@ class Menu {
                 mi.is_new,
                 mi.is_soldout,
                 mi.prep_time,
-                mi.notes
+                mi.notes,
+                mi.section_id
             FROM menu_items mi
             ${whereClause}
             ORDER BY mi.${sortField} ${sortDir}
@@ -183,7 +184,7 @@ class Menu {
     const items = itemsResult.rows;
     for (const item of items) {
       const categoriesQuery = `
-    SELECT mc.name
+    SELECT mc.name, mc.id
     FROM menu_item_categories mic
     INNER JOIN menu_categories mc ON mc.id = mic.category_id
     WHERE mic.menu_item_id = $1
@@ -192,6 +193,8 @@ class Menu {
       const { rows: catRows } = await pool.query(categoriesQuery, [item.id]);
 
       item.categories = catRows.map((r) => r.name);
+      item.category_ids = catRows.map((r) => r.id);
+
     }
 
     return {
@@ -212,6 +215,8 @@ class Menu {
         prep_time: item.prep_time !== null ? parseInt(item.prep_time) : null,
         notes: item.notes || "",
         categories: item.categories || [],
+        section_id: item.section_id,
+        category_ids: item.category_ids || [],
       })),
       pagination: {
         page: parseInt(page, 10),
@@ -295,7 +300,6 @@ class Menu {
       price,
       description,
       category_ids = [],
-      image,
       images,
       sale_price = null,
       section_id = 1,
@@ -317,14 +321,10 @@ class Menu {
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id
             `;
-
-      // Xử lý images: ưu tiên images array, fallback về image string
       let imagesJson = null;
       if (images && Array.isArray(images) && images.length > 0) {
         imagesJson = JSON.stringify(images);
-      } else if (image) {
-        imagesJson = JSON.stringify([image]);
-      }
+      };
 
       const insertResult = await pool.query(insertQuery, [
         name,
@@ -357,9 +357,7 @@ class Menu {
     } catch (error) {
       await pool.query("ROLLBACK");
       throw error;
-    } finally {
-      pool.release();
-    }
+    } 
   }
 
   /**

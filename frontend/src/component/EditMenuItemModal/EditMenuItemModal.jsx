@@ -1,30 +1,62 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { IoClose, IoCloudUploadOutline } from "react-icons/io5";
 import "./EditMenuItemModal.css";
 import ApiService from "../../services/apiService";
-const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    name: item.name || "",
-    description_short: item.description_short || "",
-    price: item.price || 0,
-    sale_price: item.sale_price || "",
-    available: item.available,
-    is_popular: item.is_popular || false,
-    is_soldout: item.is_soldout || false,
-    is_new: item.is_new || false,
-    prep_time: item.prep_time || 20,
-    notes: item.notes || "",
-  });
+const EditMenuItemModal = ({
+  item,
+  userRole,
+  sections,
+  onClose,
+  onSave,
+}) => {
+  const safeItem = item || {};
+  console.log("sections in modal:", sections);
 
-  const [selectedStatus, setSelectedStatus] = useState(
-    item.is_popular ? "popular" : item.available ? "new" : "out_of_stock"
-  );
+  const [formData, setFormData] = useState({
+    name: safeItem.name || "",
+    description_short: safeItem.description_short || "",
+    price: safeItem.price || 0,
+    sale_price: safeItem.sale_price ?? "",
+    available: safeItem.available ?? true,
+    is_popular: safeItem.is_popular ?? false,
+    is_soldout: safeItem.is_soldout || false,
+    is_new: safeItem.is_new || false,
+    prep_time: safeItem.prep_time || 20,
+    notes: safeItem.notes || "",
+    section_id: safeItem.section_id || 1,
+    category_ids: safeItem.category_ids || [],
+  });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(
-    item.images && item.images[0] ? item.images[0] : ""
+    safeItem.images && safeItem.images[0] ? safeItem.images[0] : ""
   );
-
   const fileInputRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        if (!formData.section_id) return;
+
+        const res = await ApiService.getMenuCategories(formData.section_id);
+        console.log("Fetched categories:", res);
+        if (res.success) {
+          setCategories(res.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+
+    fetchCategories();
+  }, [formData.section_id]);
+  const [selectedStatus, setSelectedStatus] = useState(() => {
+    if (safeItem.is_soldout || safeItem.available === false)
+      return "out_of_stock";
+    if (safeItem.is_popular) return "popular";
+    if (safeItem.is_new) return "new";
+    return "new";
+  });
 
   const isEmployee = userRole === "employee";
   const isAdmin = userRole === "admin";
@@ -36,6 +68,18 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const handleCategoryToggle = (categoryId) => {
+    setFormData((prev) => {
+      const exists = prev.category_ids.includes(categoryId);
+      return {
+        ...prev,
+        category_ids: exists
+          ? prev.category_ids.filter((id) => id !== categoryId)
+          : [...prev.category_ids, categoryId],
+      };
+    });
+  };
+
   const handleClickUpload = () => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
@@ -86,6 +130,7 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
       const normalizedData = {
         ...formData,
         name: formData.name.trim(),
+        description: formData.description_short || null,
         sale_price:
           formData.sale_price === "" ? null : Number(formData.sale_price),
         prep_time:
@@ -94,8 +139,8 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
       };
       let uploadedImageUrl = null;
 
-      if (isAdmin && imageFile) {
-        const res = await ApiService.uploadMenuImage(item.id, imageFile);
+      if (isAdmin && imageFile && safeItem.id) {
+        const res = await ApiService.uploadMenuImage(safeItem.id, imageFile);
         uploadedImageUrl = res.image;
       }
       if (uploadedImageUrl) {
@@ -137,7 +182,7 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
               <div className="image-upload">
                 <div className="image-preview">
                   {imagePreview ? (
-                    <img src={imagePreview} alt={item.name} />
+                    <img src={imagePreview} alt={safeItem.name} />
                   ) : (
                     <div className="no-image" />
                   )}
@@ -174,6 +219,50 @@ const EditMenuItemModal = ({ item, userRole, onClose, onSave }) => {
                 placeholder="Nhập tên món"
                 required
               />
+            </div>
+          )}
+          {isAdmin && (
+            <div className="form-group">
+              <label>Section</label>
+              <select
+                name="section_id"
+                value={formData.section_id} 
+                onChange={handleChange}
+              >
+                {sections && sections.length > 0 ? (
+                  sections.map((sec) => (
+                    <option key={sec.id} value={sec.id}>
+                      {sec.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value={1}>Mặc định</option>
+                )}
+              </select>
+            </div>
+          )}
+          {isAdmin && (
+            <div className="form-group">
+              <label>Loại món</label>
+              <div className="category-list">
+                {categories && categories.length > 0 ? (
+                  (
+                  categories.map((cat) => (
+                    <label key={cat.id} className="category-item">
+                      <input
+                        type="checkbox"
+                        checked={formData.category_ids.includes(cat.id)}
+                        onChange={() => handleCategoryToggle(cat.id)}
+                      />
+                      <span>{cat.name}</span>
+                    </label>
+                  )))
+                ) : (
+                  <p style={{ fontSize: 12, color: "#888" }}>
+                    Không có danh mục á.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
