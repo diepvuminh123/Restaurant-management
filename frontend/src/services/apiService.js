@@ -99,7 +99,7 @@ class ApiService {
   }
 static async deleteMenuSections( id ) {
     return this.request(`/menu/sections/${id}`, {
-      method: "POST",
+      method: "DELETE",
     });
   }
   
