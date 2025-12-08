@@ -91,6 +91,18 @@ class ApiService {
     });
   }
 
+  static async createMenuSections(section_name, display_order) {
+    return this.request("/menu/sections", {
+      body: { section_name, display_order },
+      method: "POST",
+    });
+  }
+static async deleteMenuSections( id ) {
+    return this.request(`/menu/sections/${id}`, {
+      method: "POST",
+    });
+  }
+  
   // Lấy danh sách categories theo section_id
   static async getMenuCategories(sectionId) {
     const query = sectionId ? `?section_id=${sectionId}` : "";
@@ -98,6 +110,21 @@ class ApiService {
       method: "GET",
     });
   }
+
+  static async createMenuCategory(category_name, section_id) {
+    return this.request("/menu/categories", {
+      body: { category_name, section_id },
+      method: "POST",
+    });
+  }
+
+  static async deleteMenuCategory( id ) {
+    return this.request(`/menu/categories/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+
 
   // Lấy danh sách món ăn với filters
   // filters: { section_id, category_id, search, min_price, max_price, sort }
@@ -164,16 +191,10 @@ class ApiService {
     });
 
    }
+  
 
 
-  // Lấy facets (categories, price range) cho filtering
-  // ĐÃ XÓA API NÀY Ở BACKEND
-  // static async getMenuFacets(sectionId) {
-  //   const query = sectionId ? `?section_id=${sectionId}` : '';
-  //   return this.request(`/menus/facets${query}`, {
-  //     method: 'GET',
-  //   });
-  // }
+  
 }
 
 export default ApiService;

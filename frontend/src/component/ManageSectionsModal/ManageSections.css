@@ -1,0 +1,74 @@
+.manage-sections {
+  padding: 20px;
+}
+
+.columns {
+  display: flex;
+  gap: 20px;
+}
+
+.panel {
+  flex: 1;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.form input,
+.form select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.add {
+  background: #ff7a21;
+  color: white;
+}
+
+.delete {
+  background: #e11d48;
+  color: white;
+  padding: 4px 10px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  background: #f8fafc;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.item.active {
+  border-left: 4px solid #ff7a21;
+}
+
+.empty {
+  padding: 8px;
+  text-align: center;
+  color: #666;
+}

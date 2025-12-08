@@ -4,6 +4,7 @@ import { MdEdit, MdDeleteOutline  } from "react-icons/md";
 import { AiOutlinePlus } from "react-icons/ai";
 import ApiService from "../../services/apiService";
 import EditMenuItemModal from "../../component/EditMenuItemModal/EditMenuItemModal";
+import MenuManagementSection from "../../component/ManageSectionsModal/ManageSections";
 import Loading from "../../component/Loading/Loading";
 import "./MenuManagement.css";
 
@@ -16,6 +17,7 @@ const MenuManagement = ({ user }) => {
   const [sortBy, setSortBy] = useState("name");
   const [selectedItem, setSelectedItem] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditSectionModal, setshowEditSectionModal] = useState(false);
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -121,6 +123,11 @@ const MenuManagement = ({ user }) => {
     setShowEditModal(true);
   };
 
+  const handleClickEditSection = () => {
+    // setSelectedItem(null);
+    setshowEditSectionModal(true);
+  };
+
   const handleSaveItem = async (data) => {
     try {
       let response;
@@ -197,8 +204,13 @@ const MenuManagement = ({ user }) => {
           <IoArrowBack className="menu-management__back-icon" />
           <h1>Trạng thái món ăn</h1>
         </div>
+        
         <button className="btn-add-item" onClick={handleAddNewClick}>
           <AiOutlinePlus /> Thêm món mới
+        </button>
+
+        <button className="btn-add-item" onClick={handleClickEditSection}>
+          <AiOutlinePlus /> Chỉnh sửa danh mục món ăn 
         </button>
       </div>
 
@@ -369,6 +381,11 @@ const MenuManagement = ({ user }) => {
           onSave={handleSaveItem}
         />
       )}
+      {showEditSectionModal && (
+       <MenuManagementSection />
+      )}
+
+
     </div>
   );
 };
