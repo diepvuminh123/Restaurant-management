@@ -51,7 +51,8 @@ class Menu {
       params.push(section_id);
     }
 
-    if (category_id !== undefined) {    // 
+    if (category_id !== undefined) {
+      //
       if (Array.isArray(category_id) && category_id.length > 0) {
         const placeholders = category_id.map(() => `$${idx++}`).join(", ");
 
@@ -194,7 +195,6 @@ class Menu {
 
       item.categories = catRows.map((r) => r.name);
       item.category_ids = catRows.map((r) => r.id);
-
     }
 
     return {
@@ -324,7 +324,7 @@ class Menu {
       let imagesJson = null;
       if (images && Array.isArray(images) && images.length > 0) {
         imagesJson = JSON.stringify(images);
-      };
+      }
 
       const insertResult = await pool.query(insertQuery, [
         name,
@@ -357,7 +357,7 @@ class Menu {
     } catch (error) {
       await pool.query("ROLLBACK");
       throw error;
-    } 
+    }
   }
 
   /**
@@ -501,18 +501,23 @@ class Menu {
    * Tạo Section mới
    */
   static async createSection(data) {
-    const { section_name, display_order } = data;
+    const { section_name } = data;
 
     const query = `
-      INSERT INTO menu_sections (name, sort_order, is_active)
-      VALUES ($1, $2, true)
-      RETURNING *
-    `;
+    INSERT INTO menu_sections (name, sort_order, is_active)
+    VALUES (
+      $1,
+      (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_sections),
+      true
+    )
+    RETURNING *
+  `;
 
-    const result = await pool.query(query, [section_name, display_order || 0]);
+    const result = await pool.query(query, [section_name]);
 
     return result.rows[0];
   }
+
   static async checkOrderSecion(id) {
     const result = await pool.query(
       "SELECT sort_order FROM menu_sections WHERE id=$1",
@@ -526,31 +531,65 @@ class Menu {
    */
   static async updateSection(id, data) {
     const { section_name, display_order } = data;
+    const client = await pool.connect();
 
-    const updateFields = [];
-    const updateParams = [];
-    let idx = 1;
+    try {
+      await client.query("BEGIN");
 
-    if (section_name !== undefined) {
-      updateFields.push(`name = $${idx++}`);
-      updateParams.push(section_name);
+      if (display_order !== undefined) {
+        const cur = await client.query(
+          "SELECT sort_order FROM menu_sections WHERE id = $1",
+          [id]
+        );
+
+        if (cur.rowCount === 0) throw new Error("Không tìm thấy section");
+        const currentOrder = cur.rows[0].sort_order;
+
+        if (display_order !== currentOrder) {
+          if (display_order < currentOrder) {
+            await client.query(
+              `
+            UPDATE menu_sections
+            SET sort_order = sort_order + 1
+            WHERE sort_order >= $1 AND sort_order < $2
+          `,
+              [display_order, currentOrder]
+            );
+          } else {
+            await client.query(
+              `
+            UPDATE menu_sections
+            SET sort_order = sort_order - 1
+            WHERE sort_order <= $1 AND sort_order > $2
+          `,
+              [display_order, currentOrder]
+            );
+          }
+        }
+      }
+
+      const updateQuery = `
+      UPDATE menu_sections
+      SET name = COALESCE($1, name),
+          sort_order = COALESCE($2, sort_order)
+      WHERE id = $3
+      RETURNING *;
+    `;
+
+      const result = await client.query(updateQuery, [
+        section_name || null,
+        display_order || null,
+        id,
+      ]);
+
+      await client.query("COMMIT");
+      return result.rows[0];
+    } catch (Err) {
+      await client.query("ROLLBACK");
+      throw Err;
+    } finally {
+      client.release();
     }
-    if (display_order !== undefined) {
-      updateFields.push(`sort_order = $${idx++}`);
-      updateParams.push(display_order);
-    }
-
-    if (updateFields.length === 0) {
-      throw new Error("Không có trường nào để cập nhật");
-    }
-
-    const updateQuery = `UPDATE menu_sections SET ${updateFields.join(
-      ", "
-    )} WHERE id = $${idx} RETURNING *`;
-    updateParams.push(id);
-
-    const result = await pool.query(updateQuery, updateParams);
-    return result.rowCount > 0 ? result.rows[0] : null;
   }
 
   /**
