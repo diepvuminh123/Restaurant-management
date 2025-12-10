@@ -10,7 +10,7 @@ const BackButton = ({ text = "Quay lại Trang chủ", onClick }) => {
     if (onClick) {
       onClick();
     } else {
-      navigate(-1); // Quay lại trang trước
+      navigate('/home'); // Quay lại trang chủ
     }
   };
 

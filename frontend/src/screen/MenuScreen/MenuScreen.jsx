@@ -7,7 +7,7 @@ import Sidebar from "../../component/Menu/Sidebar/Sidebar";
 import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
 import Loading from "../../component/Loading/Loading";
-
+import CartPopUp from "../../component/Menu/CardPopUp/CardPopUp";
 const PAGE_SIZE = 12;
 
 export default function MenuScreen() {
@@ -19,6 +19,10 @@ export default function MenuScreen() {
   const [price, setPrice] = useState(500000);
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState(0);
+
+  //Cart Pop Up
+  const [cartItems, setcartItems] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // State cho API data
   const [menuItems, setMenuItems] = useState([]);
@@ -179,7 +183,67 @@ export default function MenuScreen() {
     const currentSection = sections.find(s => s.id === activeTab);
     return currentSection ? currentSection.name : "Menu";
   };
+  
 
+  //Khi thêm một món hàng vô Card mua hàng
+  const handleAddToCart = (dish) => {
+    setcartItems(prevItems => {
+            const existingItem = prevItems.find(item => item.id === dish.id);
+            const itemPrice = Number(dish.sale_price || dish.price);
+            
+            if (existingItem) {
+                return prevItems.map(item =>
+                    item.id === dish.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            } else {
+                return [
+                    ...prevItems,
+                    {
+                        id: dish.id,
+                        name: dish.name,
+                        price: itemPrice, 
+                        imageUrl: dish.images && dish.images.length > 0 ? dish.images[0] : null,
+                        quantity: 1,
+                    }
+                ]
+            }
+        });
+    };
+  // Khi người dùng nhấn vô "Thêm" thì giỏ hàng sẽ tự cập nhật ngầm, nhưng không pop up liền
+  const handleAddOnly = (dish) => {
+        handleAddToCart(dish);
+  };
+  //Giả sử người dùng chỉ chọn một món, thì họ nhấn "Đặt mang về". Lúc này ngay lập tức pop up giỏ hàng
+  const handleOpenCartModal = (dish) => {
+        if (dish) {
+           handleAddToCart(dish); 
+        }
+        
+        setIsCartOpen(true); 
+    };
+
+  const handleCloseCart = () => setIsCartOpen(false);
+  
+  //Quản lý update đơn hàng (Thêm, điều chỉnh số lượng)
+  const handleUpdateQuantity = (id, change) => {
+    setcartItems(prevItems => 
+    prevItems
+      .map(item => 
+        item.id === id 
+          ? { ...item, quantity: item.quantity + change } 
+          : item
+      )
+      .filter(item => item.quantity > 0)
+  );
+}
+
+  const handleRemoveItem = (id) => {
+    setcartItems(prevItems => prevItems.filter(item => item.id !== id));
+  }
+
+const cartTotalCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
   return (
     <div className="menu-page">
       <Header
@@ -187,7 +251,8 @@ export default function MenuScreen() {
         onTabChange={handleTabChange}
         searchValue={search}
         onSearchChange={setSearch}
-        cartCount={cart}
+        cartCount={cartTotalCount}
+        onOpenCart={() => setIsCartOpen(true)}
         sections={sections}
         loadingSections={loadingSections}
       />
@@ -200,7 +265,14 @@ export default function MenuScreen() {
           onPrice={setPrice}
           sectionId={sectionId}
         />
-
+        {isCartOpen && (
+          <CartPopUp 
+          cartItems={cartItems}
+          onClose={() => setIsCartOpen(false)}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          />
+        )}
         <main className="menu-main">
           <FilterBar sortKey={sort} onSortChange={handleSortChange} />
 
@@ -257,7 +329,7 @@ export default function MenuScreen() {
             <>
               <div className="dish-grid">
                 {menuItems.map((d) => (
-                  <DishCard key={d.id} dish={d} onAdd={() => setCart(cart + 1)} />
+                  <DishCard key={d.id} dish={d} onAddOnly={handleAddOnly} onOpenCart={handleOpenCartModal} />
                 ))}
               </div>
 

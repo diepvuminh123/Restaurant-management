@@ -14,6 +14,7 @@ export default function Header({
   cartCount = 0,
   sections = [], // Nhận sections từ API
   loadingSections = false,
+  onOpenCart, //Khi nhấn vô thì sẽ hiển thị giỏ hàng của khách hàng
 }) {
   return (
     <header className="menu-header">
@@ -50,8 +51,11 @@ export default function Header({
           />
         </div>
 
-        <button className="cart-btn">
+        <button className="cart-btn" onClick={onOpenCart}>
           <span className="cart-icon"><ShoppingCart /></span>
+         {cartCount > 0 && (
+          <span className="cart-items-quantity">{cartCount}</span>
+         )}
         </button>
       </div>
     </header>

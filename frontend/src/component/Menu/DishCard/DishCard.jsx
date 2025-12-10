@@ -1,8 +1,9 @@
 import React from "react";
 import "./DishCard.css";
 import { Star } from "lucide-react";
-
-export default function DishCard({ dish, onAdd }) {
+import CardPopUp from "../CardPopUp/CardPopUp";
+import OrderItem from "../CardPopUp/OrderItem/OrderItem";
+export default function DishCard({ dish, onAddOnly, onOpenCart }) {
   // Map database fields to component
   const {
     name,
@@ -23,6 +24,12 @@ export default function DishCard({ dish, onAdd }) {
   let badgeText = null;
   let badgeClass = "";
   
+  const handleAddClick = () => {
+    onAddOnly(dish)
+  }
+  const handleOrderClick = () => {
+    onOpenCart(dish)
+  }
   if (is_soldout) {
     badgeText = "Đang hết hàng";
     badgeClass = "soldout";
@@ -66,10 +73,10 @@ export default function DishCard({ dish, onAdd }) {
         </div>
 
         <div className="dish-actions">
-          <button className="btn-outline" onClick={() => onAdd(dish)}>
+          <button className="btn-outline" onClick={handleAddClick}>
             + Thêm
           </button>
-          <button className="btn-solid">Đặt mang về</button>
+          <button className="btn-solid" onClick={handleOrderClick}>Đặt mang về</button>
         </div>
       </div>
     </div>

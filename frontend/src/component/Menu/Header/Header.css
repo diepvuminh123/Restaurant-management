@@ -98,3 +98,37 @@
   background: transparent;
   font-size: 20px;
 }
+.cart-items-quantity {
+   position: absolute;
+    top: -5px; 
+    right: -5px;
+    background-color: #ff4d4f; 
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    
+    border-radius: 50%;
+    padding: 2px 6px;
+    min-width: 15px; 
+    height: 15px; /* Thêm chiều cao để đảm bảo hình tròn đẹp */
+    display: flex; /* Dùng flex để căn số ở giữa */
+    align-items: center;
+    justify-content: center;
+    
+    z-index: 10; 
+    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes pop-in {
+    0% {
+        transform: scale(0.8) rotate(10deg); /* Bắt đầu nhỏ và xoay nhẹ */
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(-5deg); /* Phóng to hơn mức bình thường */
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg); /* Trở về trạng thái bình thường */
+        opacity: 1;
+    }
+}
