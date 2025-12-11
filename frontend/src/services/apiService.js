@@ -97,7 +97,15 @@ class ApiService {
       method: "POST",
     });
   }
-static async deleteMenuSections( id ) {
+
+  static async updateMenuSectionOrder(id, sort_order) {
+    return this.request(`/menu/sections/${id}/order`, {
+      body: { sort_order },
+      method: "PATCH",
+    });
+  }
+
+  static async deleteMenuSections( id ) {
     return this.request(`/menu/sections/${id}`, {
       method: "DELETE",
     });

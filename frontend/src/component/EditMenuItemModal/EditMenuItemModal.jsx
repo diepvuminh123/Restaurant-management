@@ -12,6 +12,19 @@ const EditMenuItemModal = ({
   const safeItem = item || {};
   console.log("sections in modal:", sections);
 
+  // Xác định section_id hợp lệ: ưu tiên section của item, nếu không có thì lấy section đầu tiên
+  const getValidSectionId = () => {
+    if (safeItem.section_id && sections && sections.length > 0) {
+      // Kiểm tra xem section_id của item có còn tồn tại không
+      const sectionExists = sections.some(sec => sec.id === safeItem.section_id);
+      if (sectionExists) {
+        return safeItem.section_id;
+      }
+    }
+    // Nếu không có hoặc section đã bị xóa, lấy section đầu tiên
+    return sections && sections.length > 0 ? sections[0].id : 1;
+  };
+
   const [formData, setFormData] = useState({
     name: safeItem.name || "",
     description_short: safeItem.description_short || "",
@@ -23,7 +36,7 @@ const EditMenuItemModal = ({
     is_new: safeItem.is_new || false,
     prep_time: safeItem.prep_time || 20,
     notes: safeItem.notes || "",
-    section_id: safeItem.section_id || 1,
+    section_id: getValidSectionId(),
     category_ids: safeItem.category_ids || [],
   });
   const [imageFile, setImageFile] = useState(null);
@@ -92,9 +105,22 @@ const EditMenuItemModal = ({
   };
 
   const handleStatusChange = (status) => {
+    // Nếu click vào trạng thái đang active thì bỏ chọn (reset về giá trị false)
+    if (selectedStatus === status) {
+      setSelectedStatus(null);
+      setFormData((prev) => ({
+        ...prev,
+        is_popular: false,
+        available: true,
+        is_soldout: false,
+        is_new: false,
+      }));
+      return;
+    }
+
     setSelectedStatus(status);
 
-    // Cập nhật form data. Note1:  Cái này em minh code hơi lỏ nói thẳng là code vá tạm thôi.Coi lại sau
+    // Cập nhật form data theo trạng thái được chọn
     if (status === "popular") {
       setFormData((prev) => ({
         ...prev,
@@ -111,7 +137,7 @@ const EditMenuItemModal = ({
         is_popular: false,
         is_new: false,
       }));
-    } else {
+    } else if (status === "new") {
       setFormData((prev) => ({
         ...prev,
         is_new: true,
@@ -210,13 +236,15 @@ const EditMenuItemModal = ({
           {/* Tên món - Chỉ admin */}
           {isAdmin && (
             <div className="form-group">
-              <label>Tên món</label>
+              <label>
+                Tên món <span className="required"></span>
+              </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Nhập tên món"
+                placeholder=""
                 required
               />
             </div>
@@ -292,6 +320,7 @@ const EditMenuItemModal = ({
                   onChange={handleChange}
                   placeholder="95.000"
                   required
+                  max="500000"
                 />
                 <span className="currency">đ</span>
               </div>

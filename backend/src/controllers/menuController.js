@@ -284,6 +284,42 @@ class MenuController {
   }
 
   /**
+   * PATCH /api/menu/sections/:id/order
+   * Cập nhật thứ tự hiển thị của Section
+   */
+  static async updateSectionOrder(req, res) {
+    try {
+      const { id } = req.params;
+      const { sort_order } = req.body;
+
+      if (!sort_order || isNaN(parseInt(sort_order))) {
+        return res.status(400).json({
+          success: false,
+          message: "sort_order phải là một số hợp lệ",
+        });
+      }
+
+      const updated = await MenuService.updateSectionOrder(id, parseInt(sort_order));
+      res.json({
+        success: true,
+        message: "Cập nhật thứ tự hiển thị thành công",
+        data: updated,
+      });
+    } catch (error) {
+      if (error.message === "Phần menu không tồn tại") {
+        return res.status(404).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
    * POST /api/menu/sections
    * Tạo Section mới
    */

@@ -153,6 +153,25 @@ class MenuService {
   }
 
   /**
+   * Cập nhật thứ tự hiển thị của Section
+   */
+  static async updateSectionOrder(id, sortOrder) {
+    if (!id) {
+      throw new Error("ID phần menu là bắt buộc");
+    }
+    if (!sortOrder || isNaN(sortOrder)) {
+      throw new Error("Thứ tự hiển thị phải là một số hợp lệ");
+    }
+
+    const updated = await Menu.updateSectionOrder(id, sortOrder);
+    if (!updated) {
+      throw new Error("Phần menu không tồn tại");
+    }
+
+    return updated;
+  }
+
+  /**
    * Xóa Section
    */
   static async deleteSection(id) {

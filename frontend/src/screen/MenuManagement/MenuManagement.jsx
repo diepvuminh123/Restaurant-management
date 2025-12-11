@@ -21,6 +21,9 @@ const MenuManagement = ({ user }) => {
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
 
+  const isEmployee = user.role === "employee";
+  const isAdmin = user.role === "admin";
+
   useEffect(() => {
     const fetchMeta = async () => {
       //  Lấy sections
@@ -205,13 +208,17 @@ const MenuManagement = ({ user }) => {
           <h1>Trạng thái món ăn</h1>
         </div>
         
-        <button className="btn-add-item" onClick={handleAddNewClick}>
-          <AiOutlinePlus /> Thêm món mới
-        </button>
+        {!isEmployee && (
+  <>
+    <button className="btn-add-item" onClick={handleAddNewClick}>
+      <AiOutlinePlus /> Thêm món mới
+    </button>
 
-        <button className="btn-add-item" onClick={handleClickEditSection}>
-          <AiOutlinePlus /> Chỉnh sửa danh mục món ăn 
-        </button>
+    <button className="btn-add-item" onClick={handleClickEditSection}>
+      <AiOutlinePlus /> Chỉnh sửa danh mục món ăn
+    </button>
+  </>
+)}
       </div>
 
       {/* Search */}
@@ -382,7 +389,8 @@ const MenuManagement = ({ user }) => {
         />
       )}
       {showEditSectionModal && (
-       <MenuManagementSection />
+       <MenuManagementSection 
+        onClose={() => setshowEditSectionModal(false)}/>
       )}
 
 
