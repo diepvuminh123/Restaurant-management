@@ -5,6 +5,7 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import MenuHeaderLogo from "../Logo/Logo";
+import SettingTabBar from "../SettingForm/SettingTabBar/SettingTabBar"
 const HomeScreenHeader = ({ user, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -19,6 +20,10 @@ const HomeScreenHeader = ({ user, onLogout }) => {
     navigate("/");
     setIsDropdownOpen(false);
   };
+  const handleSetting = () =>  {
+    navigate("/setting")
+    setIsDropdownOpen(false);
+  }
  
 
   return (
@@ -78,6 +83,12 @@ const HomeScreenHeader = ({ user, onLogout }) => {
                     onClick={handleLogout}
                   >
                     Đăng xuất
+                  </button>
+                  <button
+                    className="dropdown__logout-btn"
+                    onClick={handleSetting}
+                  >
+                   Thông tin cá nhân
                   </button>
                   
                   

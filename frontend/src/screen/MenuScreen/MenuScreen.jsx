@@ -7,7 +7,7 @@ import Sidebar from "../../component/Menu/Sidebar/Sidebar";
 import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
 import Loading from "../../component/Loading/Loading";
-import CartPopUp from "../../component/Menu/CardPopUp/CardPopUp";
+import CartPopUp from "../../component/Menu/CartPopUp/CartPopUp";
 const PAGE_SIZE = 12;
 
 export default function MenuScreen() {
