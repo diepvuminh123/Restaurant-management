@@ -7,7 +7,7 @@ import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import ApiService from './services/apiService';
 import Loading from './component/Loading/Loading';
-
+import SettingScreen from './screen/SettingScreen/SettingScreen';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -85,6 +85,7 @@ function App() {
           path="/forgot-password" 
           element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />} 
         />
+        
 
         {/* Public pages - Không cần đăng nhập */}
         <Route 
@@ -115,6 +116,18 @@ function App() {
         <Route 
           path="*" 
           element={<Navigate to="/home" replace />} 
+        />
+        <Route
+          path="/setting"
+          element={
+            user ? (
+              
+              <SettingScreen user={user} onLogout={handleLogout} />
+            ) : (
+              
+              <Navigate to="/home" replace />
+            )
+          }
         />
       </Routes>
     </BrowserRouter>

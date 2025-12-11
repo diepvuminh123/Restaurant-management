@@ -1,8 +1,8 @@
 import React from "react";
 import "./DishCard.css";
 import { Star } from "lucide-react";
-import CardPopUp from "../CardPopUp/CardPopUp";
-import OrderItem from "../CardPopUp/OrderItem/OrderItem";
+import CartPopUp from "../CartPopUp/CartPopUp";
+import OrderItem from "../CartPopUp/OrderItem/OrderItem";
 export default function DishCard({ dish, onAddOnly, onOpenCart }) {
   // Map database fields to component
   const {

@@ -32,6 +32,12 @@ router.put(
 );
 
 /**
+ * PATCH /api/menu/sections/:id/order
+ * Cập nhật thứ tự hiển thị của phần menu
+ */
+router.patch("/menu/sections/:id/order", MenuController.updateSectionOrder);
+
+/**
  * DELETE /api/menu/sections/:id
  * Xóa phần menu
  */

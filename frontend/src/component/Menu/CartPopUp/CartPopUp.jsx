@@ -1,6 +1,6 @@
 import React from 'react';
 import OrderItem from './OrderItem/OrderItem.jsx'; 
-import './CardPopUp.css';
+import './CartPopUp.css';
 
 const CartPopUp = ({ cartItems, onClose, onUpdateQuantity, onRemoveItem }) => {
   

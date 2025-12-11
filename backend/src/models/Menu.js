@@ -593,6 +593,21 @@ class Menu {
   }
 
   /**
+   * Cập nhật thứ tự hiển thị của Section
+   */
+  static async updateSectionOrder(id, sortOrder) {
+    const query = `
+      UPDATE menu_sections
+      SET sort_order = $1
+      WHERE id = $2
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, [sortOrder, id]);
+    return result.rows[0];
+  }
+
+  /**
    * Xóa Section
    */
   static async deleteSection(id) {

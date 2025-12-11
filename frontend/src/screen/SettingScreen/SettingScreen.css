@@ -1,0 +1,54 @@
+
+
+.setting-screen {
+    display: flex;
+    flex-direction: column; 
+    padding: 40px 30px; 
+    margin: 0 auto; 
+    
+    width: 100%;
+    min-height: 100vh;
+    background-color: #FBF8F4;
+}
+
+
+.back-btn-container { 
+    
+    margin-bottom: 25px; 
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.setting-screen-container {
+    display: flex;
+    gap: 50px; 
+    width: 100%; 
+    align-items: flex-start;
+}
+
+.setting-content-area {
+    flex-grow: 1; 
+    max-width: 800px;
+}
+
+.setting-content-card, .user-info-form-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+@media (max-width: 992px) {
+    .setting-screen {
+        padding: 30px 15px;
+    }
+    .setting-screen-container {
+        flex-direction: column; 
+        gap: 20px; 
+    }
+    
+    .setting-tab-bar {
+        width: 100% !important; 
+    }
+}
