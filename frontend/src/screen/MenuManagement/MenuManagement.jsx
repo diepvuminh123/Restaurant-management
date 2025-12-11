@@ -141,15 +141,18 @@ const MenuManagement = ({ user }) => {
       }
 
       if (response.success) {
-        alert(
-          selectedItem ? "Cập nhật thành công!" : "Tạo món mới thành công!"
-        );
-        fetchMenuItems();
-        setShowEditModal(false);
+        // Đợi một chút để backend xử lý xong, sau đó refresh
+        setTimeout(() => {
+          fetchMenuItems();
+        }, 500);
       }
+      
+      // Trả về response để modal có thể sử dụng ID mới tạo
+      return response;
     } catch (error) {
       console.error("Error saving menu item:", error);
       alert("Lỗi: " + error.message);
+      throw error;
     }
   };
   const handleDelete = async (itemId)=>{

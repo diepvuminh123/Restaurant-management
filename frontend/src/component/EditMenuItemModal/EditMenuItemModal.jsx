@@ -125,8 +125,7 @@ const EditMenuItemModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Chuẩn hóa dữ liệu trước khi gửi -> sau cứ thấy lỗi dữ liệu không hợp lệ thì làm như ở dưới nhé.
-
+      // Chuẩn hóa dữ liệu trước khi gửi
       const normalizedData = {
         ...formData,
         name: formData.name.trim(),
@@ -137,28 +136,38 @@ const EditMenuItemModal = ({
           formData.prep_time === "" ? null : Number(formData.prep_time),
         notes: formData.notes.trim() || null,
       };
-      let uploadedImageUrl = null;
 
-      if (isAdmin && imageFile && safeItem.id) {
-        const res = await ApiService.uploadMenuImage(safeItem.id, imageFile);
-        uploadedImageUrl = res.image;
-      }
-      if (uploadedImageUrl) {
-        normalizedData.images = [uploadedImageUrl];
-      }
-
-      // Employee only chỉnh quyền trạng thái món ăn
+      // Employee chỉ chỉnh trạng thái món ăn
       if (isEmployee) {
-        onSave({
+        await onSave({
           available: normalizedData.available,
           is_popular: normalizedData.is_popular,
           is_soldout: normalizedData.is_soldout,
           is_new: normalizedData.is_new,
         });
-      } else {
-        // Admin có full quyền
-        onSave(normalizedData);
+        onClose();
+        return;
       }
+
+      // Admin: Lưu món ăn trước
+      const response = await onSave(normalizedData);
+      
+      // Sau đó upload ảnh nếu có
+      if (isAdmin && imageFile && response && response.data) {
+        const itemId = safeItem.id || response.data.id;
+        
+        if (itemId) {
+          try {
+            await ApiService.uploadMenuImage(itemId, imageFile);
+          } catch (uploadErr) {
+            console.error("Lỗi upload ảnh:", uploadErr);
+            alert("Món đã được tạo nhưng upload ảnh thất bại: " + uploadErr.message);
+          }
+        }
+      }
+      
+      // Đóng modal sau khi hoàn tất
+      onClose();
     } catch (err) {
       console.error(err);
       alert(err.message || "Có lỗi xảy ra khi lưu món ăn");
