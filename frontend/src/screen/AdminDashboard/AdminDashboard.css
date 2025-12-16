@@ -1,0 +1,29 @@
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.admin-dashboard__body {
+  display: flex;
+  flex: 1;
+}
+
+.admin-dashboard__content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.admin-dashboard__content h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.admin-dashboard__content p {
+  font-size: 16px;
+  color: #666;
+}

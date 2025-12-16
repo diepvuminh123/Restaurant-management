@@ -1,0 +1,38 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1.5px solid #e36a2d;
+  border-radius: 50px;
+  color: #e36a2d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  width: fit-content;
+}
+
+.back-button:hover {
+  background: #e36a2d;
+  color: white;
+}
+
+.back-button:active {
+  transform: scale(0.98);
+}
+
+.back-button__icon {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover .back-button__icon {
+  transform: translateX(-3px);
+}
+
+.back-button__text {
+  white-space: nowrap;
+}

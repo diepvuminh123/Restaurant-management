@@ -1,0 +1,81 @@
+/* SettingTabBar.css */
+
+.Setting-tab-bar {
+    width: 250px; 
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+    height: fit-content; 
+}
+
+/* --- Phần Thông tin Tài khoản (AccountInfo) --- */
+.AccountInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee; 
+}
+
+.userAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e36a2d; 
+    color: #fff;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.userName {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.userEmail {
+    font-size: 14px;
+    color: #888;
+}
+
+/* --- Phần Danh sách Cài đặt (settingList) --- */
+.settingList {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; 
+}
+
+.setting-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    border-radius: 8px; 
+    transition: all 0.2s ease;
+}
+
+.setting-btn:hover {
+    background-color: #f7f7f7;
+}
+
+
+.setting-btn.active {
+    
+    background-color: #e36a2d; 
+    color: #fff; 
+    font-weight: 600;
+}

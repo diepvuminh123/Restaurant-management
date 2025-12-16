@@ -1,0 +1,118 @@
+.menu-page {
+  background: #fafafa;
+  min-height: 100vh;
+}
+
+.menu-content {
+  display: flex;
+  gap: 18px;
+  padding: 18px;
+}
+
+.menu-main {
+  flex: 1;
+}
+
+.dish-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pagination button {
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.pagination .active {
+  background: #e36a2d;
+  color: white;
+  border-color: #e36a2d;
+}
+
+.menu-loading,
+.menu-error,
+.menu-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.menu-loading p {
+  color: #3498db;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.menu-error {
+  background: #fef5f5;
+  border: 1px solid #fdd;
+}
+
+.menu-error p {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.menu-error button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.menu-error button:hover {
+  background: #c0392b;
+}
+
+.menu-empty p {
+  color: #999;
+  font-size: 16px;
+}
+
+/* Status Filter Bar */
+.status-filter-bar {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.status-filter-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.status-filter-btn:hover {
+  background: #f5f5f5;
+  border-color: #e36a2d;
+}
+
+.status-filter-btn.active {
+  background: #e36a2d;
+  color: white;
+  border-color: #e36a2d;
+}
+

@@ -1,152 +1,163 @@
-/* LoginForm Styles */
-
 .loginFormWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  font-family: sans-serif;
 }
 
 .formLogo {
-  display: block;
-  max-width: 80px;
-  height: auto;
-  margin-bottom: 20px;
+  width: 64px;
+  height: 64px;
+  background: #c66b33;
+  color: white;
+  font-size: 28px;
+  border-radius: 18px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .formTitle {
-  text-align: center;
-  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 600;
   color: #333;
-  font-size: 28px;
-  font-weight: 700;
 }
 
 .formSubtitle {
-  text-align: center;
-  color: #666;
   font-size: 14px;
-  margin-bottom: 30px;
+  color: #888;
+  margin-bottom: 24px;
 }
 
-.group {
-  width: 100%;
-  margin-bottom: 20px;
+.formContainer {
   text-align: left;
 }
 
 .label {
-  display: block;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
   font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 6px;
+  display: block;
 }
 
 .required {
-  color: #ff4444;
-  margin-left: 4px;
+  color: #e03d2e;
 }
 
 .input {
   width: 100%;
-  padding: 12px 14px;
-  border: 2px solid #e0e0e0;
+  padding: 12px;
   border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  margin-bottom: 16px;
   font-size: 14px;
-  font-family: inherit;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
 }
+
 
 .input:focus {
-  outline: none;
-  border-color: #ff6b35;
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+  border-color: #c66b33;
+  background: white;
 }
 
-.input::placeholder {
-  color: #999;
+.passwordBox {
+  position: relative;
+  width: 95%;
+}
+
+.togglePass {
+  position: absolute;
+  right: 0px !important;
+  top: 50%;
+  background: none;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 20px;
 }
 
 .optionsRow {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin: 16px 0 24px 0;
-  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
 }
 
-.checkboxLabel {
+.checkRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #555;
-  font-size: 14px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.checkboxLabel input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: #ff6b35;
+  gap: 6px;
 }
 
 .forgot {
-  color: #ff6b35;
-  font-size: 14px;
-  text-decoration: none;
+  color: #c66b33;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.forgot:hover {
-  text-decoration: underline;
-  color: #e55a2b;
+.errorMessage {
+  color: #d93025;
+  font-size: 13px;
+  margin-bottom: 12px;
 }
 
-.button {
-  width: 100%;
-  padding: 14px;
-  background: #ff6b35;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-  margin-top: 8px;
+.primaryButton {
+  all: unset !important;  /* bỏ tất cả style mặc định */
+  width: 100% !important;
+  min-height: 44px !important;
+  border-radius: 8px !important;
+  background: #c66b33 !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-top: 8px !important;
+  padding: 1px !important;
 }
 
-.button:hover {
-  background: #e55a2b;
-  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
-  transform: translateY(-2px);
-}
 
-.button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .formFooter {
-  text-align: center;
   margin-top: 20px;
   font-size: 14px;
-  color: #666;
 }
 
 .signupLink {
-  color: #ff6b35;
+  color: #c66b33;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
 }
 
-.signupLink:hover {
-  text-decoration: underline;
+/* Role buttons */
+.orRole {
+  margin-top: 30px;
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+.roleButtons {
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+}
+
+.roleButton {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 14px;
+  cursor: pointer;
 }

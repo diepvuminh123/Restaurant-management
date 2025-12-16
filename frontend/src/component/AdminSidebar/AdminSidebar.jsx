@@ -1,0 +1,71 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { AiOutlineHome } from 'react-icons/ai';
+import { BsCalendar3 } from 'react-icons/bs';
+import { LuUtensilsCrossed } from 'react-icons/lu';
+import { IoRestaurantOutline } from 'react-icons/io5';
+import { IoLogOutOutline } from 'react-icons/io5';
+import { HiOutlineUsers } from 'react-icons/hi2';
+import './AdminSidebar.css';
+
+const AdminSidebar = ({ onLogout, userRole }) => {
+  const menuItems = [
+    {
+      path: '/admin/dashboard',
+      icon: <AiOutlineHome />,
+      label: 'Trang chủ',
+    },
+    {
+      path: '/admin/bookings',
+      icon: <BsCalendar3 />,
+      label: 'Đặt bàn (tại nhà hàng)',
+    },
+    {
+      path: '/admin/takeaway',
+      icon: <IoRestaurantOutline />,
+      label: 'Đặt món mang đi',
+    },
+    {
+      path: '/admin/menu',
+      icon: <LuUtensilsCrossed />,
+      label: 'Trạng thái món ăn',
+    },
+  ];
+
+  // Chỉ admin mới thấy menu Quản lý người dùng
+  if (userRole === 'admin') {
+    menuItems.push({
+      path: '/admin/users',
+      icon: <HiOutlineUsers />,
+      label: 'Quản lý người dùng',
+    });
+  }
+
+  return (
+    <aside className="admin-sidebar">
+      <nav className="admin-sidebar__nav">
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `admin-sidebar__item ${isActive ? 'admin-sidebar__item--active' : ''}`
+            }
+          >
+            <span className="admin-sidebar__icon">{item.icon}</span>
+            <span className="admin-sidebar__label">{item.label}</span>
+          </NavLink>
+        ))}
+
+        <button className="admin-sidebar__item admin-sidebar__logout" onClick={onLogout}>
+          <span className="admin-sidebar__icon">
+            <IoLogOutOutline />
+          </span>
+          <span className="admin-sidebar__label">Đăng xuất</span>
+        </button>
+      </nav>
+    </aside>
+  );
+};
+
+export default AdminSidebar;

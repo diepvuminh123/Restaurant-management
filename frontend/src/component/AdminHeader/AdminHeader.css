@@ -1,0 +1,112 @@
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-header__logo {
+  width: 40px;
+  height: 40px;
+  background: #c66b33;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.admin-header__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-header__brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header__brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e36a2d;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-header__brand-subtitle {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-header__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-header__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8f8f8;
+  border-radius: 8px;
+}
+
+.admin-header__user-icon {
+  font-size: 24px;
+  color: #c66b33;
+}
+
+.admin-header__user-info {
+  display: flex;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.admin-header__user-role {
+  color: #666;
+  font-weight: 500;
+}
+
+.admin-header__user-name {
+  color: #333;
+  font-weight: 600;
+}
+
+.admin-header__logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid #e36a2d;
+  border-radius: 6px;
+  color: #e36a2d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-header__logout:hover {
+  background: #e36a2d;
+  color: #fff;
+}
+
+.admin-header__logout-icon {
+  font-size: 18px;
+}

@@ -32,10 +32,34 @@ const createMenuItem = Joi.object({
   image: Joi.string().allow("").optional().messages({
     "string.base": "Hình ảnh phải là chuỗi",
   }),
+  images: Joi.array().items(Joi.string()).optional().messages({
+    "array.base": "Danh sách ảnh phải là mảng",
+    "string.base": "Đường dẫn ảnh phải là chuỗi",
+  }),
   section_id: Joi.number().integer().positive().optional().messages({
     "number.base": "ID phần menu phải là số",
     "number.integer": "ID phần menu phải là số nguyên",
     "number.positive": "ID phần menu phải là số dương",
+  }),
+  available: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái có sẵn phải là boolean",
+  }),
+  is_popular: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái phổ biến phải là boolean",
+  }),
+  is_new: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái món mới phải là boolean",
+  }),
+  is_soldout: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái hết món phải là boolean",
+  }),
+  prep_time: Joi.number().integer().positive().optional().messages({
+    "number.base": "Thời gian chuẩn bị phải là số",
+    "number.integer": "Thời gian chuẩn bị phải là số nguyên",
+    "number.positive": "Thời gian chuẩn bị phải là số dương",
+  }),
+  notes: Joi.string().allow("", null).optional().messages({
+    "string.base": "Ghi chú phải là chuỗi",
   }),
 });
 
@@ -68,13 +92,34 @@ const updateMenuItem = Joi.object({
   image: Joi.string().allow("").optional().messages({
     "string.base": "Hình ảnh phải là chuỗi",
   }),
+  images: Joi.array().items(Joi.string()).optional().messages({
+    "array.base": "Danh sách ảnh phải là mảng",
+    "string.base": "Đường dẫn ảnh phải là chuỗi",
+  }),
   section_id: Joi.number().integer().positive().optional().messages({
     "number.base": "ID phần menu phải là số",
     "number.integer": "ID phần menu phải là số nguyên",
     "number.positive": "ID phần menu phải là số dương",
   }),
   available: Joi.boolean().optional().messages({
-    "boolean.base": "Trạng thái còn hàng phải là boolean",
+    "boolean.base": "Trạng thái có sẵn phải là boolean",
+  }),
+  is_popular: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái phổ biến phải là boolean",
+  }),
+  is_new: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái món mới phải là boolean",
+  }),
+  is_soldout: Joi.boolean().optional().messages({
+    "boolean.base": "Trạng thái hết món phải là boolean",
+  }),
+  prep_time: Joi.number().integer().positive().optional().messages({
+    "number.base": "Thời gian chuẩn bị phải là số",
+    "number.integer": "Thời gian chuẩn bị phải là số nguyên",
+    "number.positive": "Thời gian chuẩn bị phải là số dương",
+  }),
+  notes: Joi.string().allow("", null).optional().messages({
+    "string.base": "Ghi chú phải là chuỗi",
   }),
 })
   .min(1)
@@ -90,8 +135,73 @@ const updateAvailability = Joi.object({
   }),
 });
 
+// TẠO SECTION MỚI
+const createSection = Joi.object({
+  section_name: Joi.string().min(1).max(100).required().messages({
+    "string.min": "Tên phần menu phải có ít nhất 1 ký tự",
+    "string.max": "Tên phần menu không được quá 100 ký tự",
+    "any.required": "Tên phần menu là bắt buộc",
+  }),
+  display_order: Joi.number().integer().optional().messages({
+    "number.base": "Thứ tự hiển thị phải là số",
+    "number.integer": "Thứ tự hiển thị phải là số nguyên",
+  }),
+});
+
+// CẬP NHẬT SECTION
+const updateSection = Joi.object({
+  section_name: Joi.string().min(1).max(100).optional().messages({
+    "string.min": "Tên phần menu phải có ít nhất 1 ký tự",
+    "string.max": "Tên phần menu không được quá 100 ký tự",
+  }),
+  display_order: Joi.number().integer().optional().messages({
+    "number.base": "Thứ tự hiển thị phải là số",
+    "number.integer": "Thứ tự hiển thị phải là số nguyên",
+  }),
+})
+  .min(1)
+  .messages({
+    "object.min": "Phải có ít nhất một trường để cập nhật",
+  });
+
+// TẠO CATEGORY MỚI
+const createCategory = Joi.object({
+  category_name: Joi.string().min(1).max(100).required().messages({
+    "string.min": "Tên danh mục phải có ít nhất 1 ký tự",
+    "string.max": "Tên danh mục không được quá 100 ký tự",
+    "any.required": "Tên danh mục là bắt buộc",
+  }),
+  section_id: Joi.number().integer().positive().required().messages({
+    "number.base": "ID phần menu phải là số",
+    "number.integer": "ID phần menu phải là số nguyên",
+    "number.positive": "ID phần menu phải là số dương",
+    "any.required": "ID phần menu là bắt buộc",
+  }),
+});
+
+// CẬP NHẬT CATEGORY
+const updateCategory = Joi.object({
+  category_name: Joi.string().min(1).max(100).optional().messages({
+    "string.min": "Tên danh mục phải có ít nhất 1 ký tự",
+    "string.max": "Tên danh mục không được quá 100 ký tự",
+  }),
+  section_id: Joi.number().integer().positive().optional().messages({
+    "number.base": "ID phần menu phải là số",
+    "number.integer": "ID phần menu phải là số nguyên",
+    "number.positive": "ID phần menu phải là số dương",
+  }),
+})
+  .min(1)
+  .messages({
+    "object.min": "Phải có ít nhất một trường để cập nhật",
+  });
+
 module.exports = {
   createMenuItem,
   updateMenuItem,
   updateAvailability,
+  createSection,
+  updateSection,
+  createCategory,
+  updateCategory,
 };

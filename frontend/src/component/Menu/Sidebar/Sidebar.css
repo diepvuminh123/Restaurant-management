@@ -1,0 +1,84 @@
+.sidebar {
+  width: 240px;
+}
+
+.sidebar-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  position: sticky;
+  top: 90px;
+}
+
+.sidebar-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sidebar-title.mt {
+  margin-top: 20px;
+}
+
+.price-display {
+  color: #e36a2d;
+  font-size: 14px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: #fff5f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.price-display strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sidebar-item {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.sidebar-range {
+  width: 100%;
+  accent-color: #e36a2d;
+  margin-top: 10px;
+}
+
+.sidebar-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.sidebar-price-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e36a2d;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.sidebar-price-input:focus {
+  border-color: #e36a2d;
+  box-shadow: 0 0 0 3px rgba(227, 106, 45, 0.1);
+}
+
+.sidebar-price-input::-webkit-outer-spin-button,
+.sidebar-price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.sidebar-price-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+

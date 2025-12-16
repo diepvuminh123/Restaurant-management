@@ -138,14 +138,44 @@ class AuthService {
     if (!user) {
       throw new Error("Email hoặc mật khẩu không đúng");
     }
+    const is_verified = await User.checkIs_verified(user.user_id);
+    console.log("is_verifiedABC",is_verified);
+    if (is_verified.is_verified === false) {
+      throw new Error("Bạn vui lòng xác thực tài khoản trước khi đăng nhập");
+    }
+    if (user.locked_until && new Date(user.locked_until) < new Date()) {
+       await User.resetFailLoginAttempts(user.user_id);
+    }
+    // if( user.fail_login_attempts >=5 ) {
+    //   // const lockDurationMinutes = 12 * 60; 
+    //   const lockDurationMinutes = 50 * 1000;
+    //   // const lockUntil = new Date(Date.now() + lockDurationMinutes * 60000);
+    //   const lockUntil = new Date(Date.now() + lockDurationMinutes);
+    //   await User.lockAccount(user.user_id,lockUntil);
+
+    // }
+    if( user.locked_until && new Date(user.locked_until) > new Date()) {
+     
+      const minutesLeft = Math.ceil((new Date(user.locked_until) - new Date()) / 60000);
+      throw new Error(`Tài khoản của bạn đã bị khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau ${minutesLeft} phút.`);
+    }
+
 
     const isValidPassword = await User.verifyPassword(
       password,
       user.password_hash
     );
     if (!isValidPassword) {
-      throw new Error("Email hoặc mật khẩu không đúng");
+      if(user.fail_login_attempts >=5) {
+        const lockDurationMinutes = 12 * 60 * 60 *  1000;
+        const lockUntil = new Date(Date.now() + lockDurationMinutes);
+      await User.lockAccount(lockUntil,user.user_id);
+        throw new Error("Tài khoản của bạn đã bị khóa do đăng nhập sai nhiều lần.");
+      }
+      await User.incrementFailLoginAttempts(user.user_id);
+      throw new Error("Email hoặc mật khẩu không đúng. Bạn còn " + (5 - (user.fail_login_attempts + 1)) + " lần thử nữa trước khi tài khoản bị khóa.");
     }
+    await User.resetFailLoginAttempts(user.user_id);
 
     const { password_hash, ...userWithoutPassword } = user;
     return userWithoutPassword;

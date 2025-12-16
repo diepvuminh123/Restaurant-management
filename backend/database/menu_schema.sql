@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS menu_items (
     description_full TEXT,
     price DECIMAL(10, 2) NOT NULL,
     sale_price DECIMAL(10, 2) DEFAULT NULL,
-    image_cover VARCHAR(500),
     images JSONB,
     section_id INT NOT NULL,
     rating_avg DECIMAL(3, 2) DEFAULT 0.0,

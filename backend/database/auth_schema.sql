@@ -8,13 +8,16 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
     phone VARCHAR(15),
     role VARCHAR(20) NOT NULL CHECK (role IN ('customer', 'employee', 'admin')),
+    is_verified BOOLEAN DEFAULT FALSE,
+    fail_login_attempts INT DEFAULT 0,
+    locked_until TIMESTAMP DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-ROLLBACK; -- Khi Lỗi mới chạy lệnh này để tránh tạo database trùng lặp
+
 
 
 -- Tạo index cho các cột thường xuyên tìm kiếm

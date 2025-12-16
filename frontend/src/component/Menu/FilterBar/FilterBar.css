@@ -1,0 +1,32 @@
+.filterbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 4px;
+}
+
+.filter-chip {
+  border: 1.6px solid #e36a2d;
+  color: #e36a2d;
+  background: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;       
+  color: currentColor;     
+}
+
+.filter-chip.active {
+  background: #e36a2d;
+  color: #fff;
+}

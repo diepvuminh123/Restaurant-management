@@ -1,0 +1,116 @@
+/* Container chính của Form */
+.quick-booking-container {
+    /* Tạo hiệu ứng nền trắng bo góc và đổ bóng mờ */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 350px; /* Chiều rộng cố định theo thiết kế */
+    margin: 20px auto; /* Căn giữa form để dễ test */
+    font-family: Arial, sans-serif;
+}
+
+/* Header Form */
+.booking-header h3 {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.booking-header p {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Các nhóm trường nhập liệu */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #4A4A4A;
+    margin-bottom: 8px;
+}
+
+.form-icon {
+    font-size: 1.2em;
+    color: #D36C2F; /* Màu cam đất cho icon */
+    margin-right: 5px;
+}
+
+/* Các trường input/select */
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #E0E0E0; /* Viền nhẹ */
+    border-radius: 8px; /* Bo góc nhẹ nhàng */
+    background-color: #F8F8F8; /* Màu nền xám nhạt */
+    box-sizing: border-box;
+    font-size: 1em;
+    color: #333;
+    appearance: none; /* Bỏ giao diện mặc định của trình duyệt */
+    /* Loại bỏ mũi tên mặc định của select trong Firefox */
+    -moz-appearance: none; 
+    /* Loại bỏ mũi tên mặc định của select trong Chrome/Safari */
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+/* Placeholder text color */
+.form-input::placeholder {
+    color: #AAAAAA;
+}
+
+/* Style cho select để hiển thị mũi tên drop-down */
+.form-input.select-arrow {
+    /* Thêm icon mũi tên custom bằng background image */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2C114.7L154.5%2C247.3c-2.4%2C2.4-5.4%2C3.6-8.7%2C3.6c-3.3%2C0-6.3-1.2-8.7-3.6L5.4%2C114.7C0%2C109.3%2C0%2C99.7%2C5.4%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0l120.3%2C120.3L267.6%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0C292.4%2C99.7%2C292.4%2C109.3%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center; /* Vị trí mũi tên */
+    background-size: 10px; /* Kích thước mũi tên */
+    padding-right: 40px; /* Đảm bảo chữ không đè lên mũi tên */
+}
+
+/* Nút Submit */
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 15px;
+    background-color: #D3A588; /* Màu cam đất nhạt giống Figma */
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #C19478; /* Màu đậm hơn khi hover */
+}
+
+/* Footer (Chú thích nhanh chóng) */
+.booking-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #EEEEEE; /* Đường kẻ mỏng phân cách */
+    color: #666;
+    font-size: 0.85em;
+}
+
+.footer-icon {
+    font-size: 1.2em;
+    color: #D36C2F; /* Màu cam đất */
+    margin-right: 5px;
+}

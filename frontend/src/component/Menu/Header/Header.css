@@ -1,0 +1,134 @@
+.menu-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.menu-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-header__logo {
+    
+    width: 40px; 
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #c66b33; 
+    border-radius: 8px;
+}
+
+
+.brand-title {
+  font-weight: 700;
+  color: #e36a2d;
+}
+.brand-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+.menu-header__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tabs-loading {
+  padding: 9px 14px;
+  color: #999;
+  font-size: 14px;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: #555;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #f5f5f5;
+}
+
+.tab-btn.active {
+  background: #e36a2d;
+  color: white;
+}
+
+.menu-header__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f6f6f6;
+  border-radius: 10px;
+  padding: 8px 10px;
+  gap: 6px;
+}
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+.cart-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+}
+.cart-items-quantity {
+   position: absolute;
+    top: -5px; 
+    right: -5px;
+    background-color: #ff4d4f; 
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    
+    border-radius: 50%;
+    padding: 2px 6px;
+    min-width: 15px; 
+    height: 15px; /* Thêm chiều cao để đảm bảo hình tròn đẹp */
+    display: flex; /* Dùng flex để căn số ở giữa */
+    align-items: center;
+    justify-content: center;
+    
+    z-index: 10; 
+    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes pop-in {
+    0% {
+        transform: scale(0.8) rotate(10deg); /* Bắt đầu nhỏ và xoay nhẹ */
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(-5deg); /* Phóng to hơn mức bình thường */
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg); /* Trở về trạng thái bình thường */
+        opacity: 1;
+    }
+}

@@ -3,6 +3,7 @@ const router = express.Router();
 const MenuController = require("../controllers/menuController");
 const validate  = require("../middlewares/validate");
 const menuValidation = require("../validations/menuValidation");
+const upload = require("../middlewares/upload");
 
 /**
  * GET /api/menu/sections
@@ -11,10 +12,68 @@ const menuValidation = require("../validations/menuValidation");
 router.get("/menu/sections", MenuController.getSections);
 
 /**
+ * POST /api/menu/sections
+ * Tạo phần menu mới
+ */
+router.post(
+  "/menu/sections",
+  validate(menuValidation.createSection),
+  MenuController.createSection
+);
+
+/**
+ * PUT /api/menu/sections/:id
+ * Cập nhật phần menu
+ */
+router.put(
+  "/menu/sections/:id",
+  validate(menuValidation.updateSection),
+  MenuController.updateSection
+);
+
+/**
+ * PATCH /api/menu/sections/:id/order
+ * Cập nhật thứ tự hiển thị của phần menu
+ */
+router.patch("/menu/sections/:id/order", MenuController.updateSectionOrder);
+
+/**
+ * DELETE /api/menu/sections/:id
+ * Xóa phần menu
+ */
+router.delete("/menu/sections/:id", MenuController.deleteSection);
+
+/**
  * GET /api/menu/categories
  * Lấy danh mục theo phần menu
  */
 router.get("/menu/categories", MenuController.getCategories);
+
+/**
+ * POST /api/menu/categories
+ * Tạo danh mục mới
+ */
+router.post(
+  "/menu/categories",
+  validate(menuValidation.createCategory),
+  MenuController.createCategory
+);
+
+/**
+ * PUT /api/menu/categories/:id
+ * Cập nhật danh mục
+ */
+router.put(
+  "/menu/categories/:id",
+  validate(menuValidation.updateCategory),
+  MenuController.updateCategory
+);
+
+/**
+ * DELETE /api/menu/categories/:id
+ * Xóa danh mục
+ */
+router.delete("/menu/categories/:id", MenuController.deleteCategory);
 
 /**
  * GET /api/menus
@@ -22,11 +81,11 @@ router.get("/menu/categories", MenuController.getCategories);
  */
 router.get("/menus", MenuController.getMenuItems);
 
-/**
- * GET /api/menus/facets
- * Lấy facets để filter (giá min/max, danh mục)
- */
-router.get("/menus/facets", MenuController.getFacets);
+// /**
+//  * GET /api/menus/facets
+//  * Lấy facets để filter (giá min/max, danh mục)
+//  */
+// router.get("/menus/facets", MenuController.getFacets);
 
 /**
  * GET /api/menus/:id
@@ -69,5 +128,16 @@ router.patch(
  * Xóa món ăn
  */
 router.delete("/menus/:id", MenuController.deleteMenuItem);
+
+/**
+ * UPLOAD /api/menus/upload/:id/image
+ * Upload hình ảnh món ăn
+ */
+router.post(
+  "/menus/upload/:id/image",
+  upload.single('image'),
+  MenuController.uploadMenuItemImage
+);
+
 
 module.exports = router;
