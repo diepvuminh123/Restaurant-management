@@ -59,7 +59,7 @@ const MenuManagement = ({ user }) => {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const response = await ApiService.getMenuItems({});
+      const response = await ApiService.getMenuItems({ limit: 1000 });
       console.log("API Response:", response); // Debug
       if (response.success) {
         // Backend trả về { success: true, items: [], pagination: {} }
@@ -94,8 +94,7 @@ const MenuManagement = ({ user }) => {
     if (activeFilter === "popular") {
       filtered = filtered.filter((item) => item.is_popular);
     } else if (activeFilter === "new") {
-      // Chưa có trong DB - sẽ thông báo
-      filtered = [];
+      filtered = filtered.filter((item) => item.is_new);
     } else if (activeFilter === "out-of-stock") {
       filtered = filtered.filter((item) => !item.available);
     }
@@ -114,10 +113,10 @@ const MenuManagement = ({ user }) => {
   };
 
   const handleFilterClick = (filter) => {
-    if (filter === "new" || filter === "out-of-stock") {
-      toast.info("Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.");
-      return;
-    }
+    // if (filter === "new" || filter === "out-of-stock") {
+    //   toast.info("Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.");
+    //   return;
+    // }
     setActiveFilter(filter);
   };
 
