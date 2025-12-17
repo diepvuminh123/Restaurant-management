@@ -6,6 +6,9 @@ import ApiService from "../../services/apiService";
 import EditMenuItemModal from "../../component/EditMenuItemModal/EditMenuItemModal";
 import MenuManagementSection from "../../component/ManageSectionsModal/ManageSections";
 import Loading from "../../component/Loading/Loading";
+import ConfirmDialog from "../../component/ConfirmDialog/ConfirmDialog";
+import { useConfirm } from "../../hooks/useConfirm";
+import { useToastContext } from "../../context/ToastContext";
 import "./MenuManagement.css";
 
 const MenuManagement = ({ user }) => {
@@ -20,6 +23,8 @@ const MenuManagement = ({ user }) => {
   const [showEditSectionModal, setshowEditSectionModal] = useState(false);
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
+  const { confirmState, showConfirm } = useConfirm();
+  const toast = useToastContext();
 
   const isEmployee = user.role === "employee";
   const isAdmin = user.role === "admin";
@@ -61,11 +66,11 @@ const MenuManagement = ({ user }) => {
         setMenuItems(response.items || []);
       } else {
         console.error("API returned error:", response);
-        alert("Lỗi: " + (response.message || "Không thể tải danh sách món"));
+        toast.error("Lỗi: " + (response.message || "Không thể tải danh sách món"));
       }
     } catch (error) {
       console.error("Error fetching menu items:", error);
-      alert(
+      toast.error(
         "Lỗi kết nối: " +
           error.message +
           "\nVui lòng kiểm tra Backend đã chạy chưa."
@@ -110,7 +115,7 @@ const MenuManagement = ({ user }) => {
 
   const handleFilterClick = (filter) => {
     if (filter === "new" || filter === "out-of-stock") {
-      alert("Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.");
+      toast.info("Tính năng này đang chờ BE hỗ trợ. Database chưa có trường này.");
       return;
     }
     setActiveFilter(filter);
@@ -154,25 +159,32 @@ const MenuManagement = ({ user }) => {
       return response;
     } catch (error) {
       console.error("Error saving menu item:", error);
-      alert("Lỗi: " + error.message);
+      toast.error("Lỗi: " + error.message);
       throw error;
     }
   };
-  const handleDelete = async (itemId)=>{
-    const confirmDelte = window.confirm("Bạn có chắc chắn muốn xóa món này hay không ? ");
-    if(!confirmDelte) return;
+  const handleDelete = async (itemId) => {
+    const confirmed = await showConfirm({
+      title: "Xác nhận xóa món",
+      message: "Bạn có chắc chắn muốn xóa món này? Hành động này không thể hoàn tác.",
+      confirmText: "Xóa",
+      cancelText: "Hủy",
+      type: "danger",
+    });
+
+    if (!confirmed) return;
+
     try {
       const response = await ApiService.deleteMenuItem(itemId);
-      if(response.success){
-        alert(" Xóa món thành công!");
+      if (response.success) {
+        toast.success("Xóa món thành công!");
         fetchMenuItems();
       }
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+      toast.error("Lỗi: " + error.message);
     }
-    catch ( error){
-      console.error("Error delteting menu item:", error);
-      alert("Lỗi:" + error.message);
-    }
-  }
+  };
 
   // Đếm số lượng theo trạng thái
   const getStatusCount = (status) => {
@@ -207,7 +219,6 @@ const MenuManagement = ({ user }) => {
     <div className="menu-management">
       <div className="menu-management__header">
         <div className="menu-management__title">
-          <IoArrowBack className="menu-management__back-icon" />
           <h1>Trạng thái món ăn</h1>
         </div>
         
@@ -391,12 +402,16 @@ const MenuManagement = ({ user }) => {
           onSave={handleSaveItem}
         />
       )}
+
+      {/* Section Management Modal */}
       {showEditSectionModal && (
-       <MenuManagementSection 
-        onClose={() => setshowEditSectionModal(false)}/>
+        <MenuManagementSection 
+          onClose={() => setshowEditSectionModal(false)}
+        />
       )}
 
-
+      {/* Confirm Dialog */}
+      <ConfirmDialog {...confirmState} />
     </div>
   );
 };

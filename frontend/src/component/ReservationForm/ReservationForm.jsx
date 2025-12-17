@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import './ReservationForm.css';
 // Import các icon cần thiết từ react-icons (Giả định bạn đã cài đặt)
 import { CiCalendar, CiClock2, CiUser, CiCircleCheck } from 'react-icons/ci';
+import { useToastContext } from '../../context/ToastContext';
 
 const ReservationForm = () => {
+    // Toast notification
+    const toast = useToastContext();
+    
     // 1. Khởi tạo state cho các trường input
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -13,13 +17,13 @@ const ReservationForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!date || !time || !guests) {
-            alert("Vui lòng điền đầy đủ thông tin để đặt bàn.");
+            toast.warning("Vui lòng điền đầy đủ thông tin để đặt bàn.");
             return;
         }
         
         // Logic gửi dữ liệu đặt bàn đến server sẽ ở đây
         console.log({ date, time, guests });
-        alert(`Đã đặt bàn thành công:\nNgày: ${date}\nGiờ: ${time}\nSố lượng: ${guests}`);
+        toast.success(`Đã đặt bàn thành công!\nNgày: ${date}\nGiờ: ${time}\nSố lượng: ${guests}`);
         
         // Reset form
         setDate('');

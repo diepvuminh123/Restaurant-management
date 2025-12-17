@@ -4,9 +4,11 @@ import { LuUtensilsCrossed } from "react-icons/lu";
 import ApiService from "../../services/apiService";
 import VerifyOTP from "../VerifyOTP/VerifyOTP";
 import Loading from "../Loading/Loading";
+import { useToastContext } from "../../context/ToastContext";
 import "./ForgotPassword.css";
 
 export default function ForgotPassword({ onBackToLogin }) {
+  const toast = useToastContext();
   const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -51,7 +53,7 @@ export default function ForgotPassword({ onBackToLogin }) {
     try {
       const response = await ApiService.resetPassword(newPassword);
       if (response.success) {
-        alert("Đặt lại mật khẩu thành công!");
+        toast.success("Đặt lại mật khẩu thành công!");
         onBackToLogin();
       }
     } catch (err) {

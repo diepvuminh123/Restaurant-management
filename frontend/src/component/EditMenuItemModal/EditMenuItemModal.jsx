@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoClose, IoCloudUploadOutline } from "react-icons/io5";
 import "./EditMenuItemModal.css";
 import ApiService from "../../services/apiService";
+import { useToastContext } from "../../context/ToastContext";
+
 const EditMenuItemModal = ({
   item,
   userRole,
@@ -10,6 +12,7 @@ const EditMenuItemModal = ({
   onSave,
 }) => {
   const safeItem = item || {};
+  const toast = useToastContext();
   console.log("sections in modal:", sections);
 
   // Xác định section_id hợp lệ: ưu tiên section của item, nếu không có thì lấy section đầu tiên
@@ -187,7 +190,7 @@ const EditMenuItemModal = ({
             await ApiService.uploadMenuImage(itemId, imageFile);
           } catch (uploadErr) {
             console.error("Lỗi upload ảnh:", uploadErr);
-            alert("Món đã được tạo nhưng upload ảnh thất bại: " + uploadErr.message);
+            toast.warning("Món đã được lưu nhưng upload ảnh thất bại: " + uploadErr.message);
           }
         }
       }
@@ -196,7 +199,7 @@ const EditMenuItemModal = ({
       onClose();
     } catch (err) {
       console.error(err);
-      alert(err.message || "Có lỗi xảy ra khi lưu món ăn");
+      toast.error(err.message || "Có lỗi xảy ra khi lưu món ăn");
     }
   };
 

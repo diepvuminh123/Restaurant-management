@@ -14,7 +14,7 @@
 .icon {
     font-size: 1.2em; /* Kích thước icon nhỏ hơn một chút */
     color: #4A4A4A; /* Màu xám đậm cho icon */
-    margin-right: 5px; /* Khoảng cách giữa icon và chữ */
+    /* margin-right: 5px; Khoảng cách giữa icon và chữ */
 }
 
 /* Phần bên trái: Logo và Tên Nhà hàng */

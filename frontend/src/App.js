@@ -8,6 +8,10 @@ import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import ApiService from './services/apiService';
 import Loading from './component/Loading/Loading';
 import SettingScreen from './screen/SettingScreen/SettingScreen';
+import Error404 from './screen/Error404/Error404';
+import Unauthorized from './screen/Unauthorized/Unauthorized';
+import { ToastProvider } from './context/ToastContext';
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,8 +64,9 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Public routes - Không cần đăng nhập */}
         <Route 
           path="/login" 
@@ -103,34 +108,41 @@ function App() {
           element={
             user && (user.role === 'admin' || user.role === 'employee') ? 
             <AdminDashboard user={user} onLogout={handleLogout} /> : 
-            user ? <Navigate to={getDefaultRoute(user.role)} replace /> :
+            user ? <Unauthorized /> :
             <Navigate to="/login" replace />
           } 
         />
+
+        {/* Setting route */}
+        <Route
+          path="/setting"
+          element={
+            user ? (
+              <SettingScreen user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/home" replace />
+            )
+          }
+        />
+
+        {/* Error pages */}
+        <Route path="/403" element={<Unauthorized />} />
+        <Route path="/404" element={<Error404 />} />
 
         {/* Default redirect */}
         <Route 
           path="/" 
           element={<Navigate to="/home" replace />} 
         />
+        
+        {/* 404 - Catch all undefined routes */}
         <Route 
           path="*" 
-          element={<Navigate to="/home" replace />} 
-        />
-        <Route
-          path="/setting"
-          element={
-            user ? (
-              
-              <SettingScreen user={user} onLogout={handleLogout} />
-            ) : (
-              
-              <Navigate to="/home" replace />
-            )
-          }
+          element={<Error404 />} 
         />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   );
 }
 
