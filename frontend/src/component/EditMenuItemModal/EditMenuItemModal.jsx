@@ -36,7 +36,7 @@ const EditMenuItemModal = ({
     available: safeItem.available ?? true,
     is_popular: safeItem.is_popular ?? false,
     is_soldout: safeItem.is_soldout || false,
-    is_new: safeItem.is_new || false,
+    is_new: safeItem.is_new ?? true, // Mặc định là true khi thêm món mới
     prep_time: safeItem.prep_time || 20,
     notes: safeItem.notes || "",
     section_id: getValidSectionId(),
