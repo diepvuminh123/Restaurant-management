@@ -144,8 +144,6 @@ class MenuController {
         success: false,
         message: error.message,
       });
-
-      console.log("Test");
     }
   }
 
@@ -447,14 +445,9 @@ class MenuController {
         });
       }
       const imageUrl = `/images/upload/${req.file.filename}`;
-      console.log("FILE:", req.file);
-
 
       await MenuService.updateMenuItemImage(id, imageUrl);
-      console.log("RETURNING SUCCESS!");
 
-
-      
       res.json({
         success: true,
         message: "Tải lên hình ảnh thành công",

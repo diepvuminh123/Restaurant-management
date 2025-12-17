@@ -123,14 +123,11 @@ class Menu {
       whereConditions.length > 0
         ? "WHERE " + whereConditions.join(" AND ")
         : "";
-    console.log("WHERE CLAUSE:", whereClause, "PARAMS:", params);
 
     // Đếm tổng số items
     const countQuery = `SELECT COUNT(*) as total FROM menu_items mi ${whereClause}`;
     const countResult = await pool.query(countQuery, params);
     const total = parseInt(countResult.rows[0].total, 10) || 0;
-    console.log("TOTAL ITEMS ABC:", total);
-    console.log("countResult: ", countResult);
 
     const allowedSortFields = [
       "name",
@@ -142,14 +139,11 @@ class Menu {
       "id",
     ];
     const sortField = allowedSortFields.includes(sort_by) ? sort_by : "price";
-    console.log("SORT FIELD:", sortField);
     const sortDir =
       sort_order && sort_order.toUpperCase() === "DESC" ? "DESC" : "ASC"; //toUpperCase() -> vuminh -> VUMINH
-    console.log("SORT DIRECTION:", sortDir);
 
     // tính phân trang
     const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-    console.log("OFFSET:", offset, "LIMIT:", limit);
 
     // Add limit & offset placeholders
     const limitPlaceholder = `$${idx++}`;

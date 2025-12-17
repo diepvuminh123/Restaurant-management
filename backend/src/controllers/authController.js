@@ -55,7 +55,6 @@ class AuthController {
   static async sendOtp(req, res) {
     try {
       const { email, OTPType } = req.body;
-      console.log("userDataABC", { email, OTPType });
 
       const user = await AuthService.getUserByEmail(email);
       if (!user) {

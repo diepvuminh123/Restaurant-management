@@ -62,7 +62,6 @@ class AuthService {
 
     const user_id = user.user_id;
     const record = await Mail.getOtpDataByUserId(user_id);
-    console.log("recordABC", record);
     if (!record || !record.code_hash) {
       throw new Error("K tìm thấy OTP");
     }
@@ -71,10 +70,8 @@ class AuthService {
       throw new Error("Mã OTP đã hết hạn, vui lòng yêu cầu mã mới");
     }
     const isValidCode = await Mail.verifycode(code, record.code_hash);
-    console.log("isValidCodeABC", isValidCode);
 
     if (!isValidCode) {
-      console.log("isValidCode", isValidCode);
       throw new Error("Mã code không đúng");
     }
     if (record.otp_type === "signup") {
@@ -120,7 +117,6 @@ class AuthService {
 
     const user_id = user.user_id;
     const code = generateOtp6();
-    console.log("resendMailABC", { email, user_id });
     await sendVerificationEmail({
       to: email,
       code: code,
@@ -139,7 +135,6 @@ class AuthService {
       throw new Error("Email hoặc mật khẩu không đúng");
     }
     const is_verified = await User.checkIs_verified(user.user_id);
-    console.log("is_verifiedABC",is_verified);
     if (is_verified.is_verified === false) {
       throw new Error("Bạn vui lòng xác thực tài khoản trước khi đăng nhập");
     }
@@ -206,12 +201,10 @@ class AuthService {
    */
   static async resetPassword(userData) {
     const { newPassword, userId } = userData;
-    console.log("userIdABC",userId);
     const user = await User.findById(userId);
     if (!userId) {
       throw new Error("User không tồn tại");
     }
-    console.log("user.password_hash",user.password_hash);
     const isValidPassword = await User.verifyPassword(
       newPassword,
       user.password_hash
