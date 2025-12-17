@@ -139,13 +139,16 @@ const MenuManagement = ({ user }) => {
   const handleSaveItem = async (data) => {
     try {
       let response;
+      const isEditing = !!selectedItem;
 
-      if (selectedItem) {
+      if (isEditing) {
         // SỬA
         response = await ApiService.updateMenuItem(selectedItem.id, data);
+        toast.success("Cập nhật món thành công!");
       } else {
         // TẠO MỚI
         response = await ApiService.createMenuItem(data);
+        toast.success("Thêm món mới thành công!");
       }
 
       if (response.success) {

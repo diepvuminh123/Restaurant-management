@@ -10,11 +10,12 @@ import Loading from './component/Loading/Loading';
 import SettingScreen from './screen/SettingScreen/SettingScreen';
 import Error404 from './screen/Error404/Error404';
 import Unauthorized from './screen/Unauthorized/Unauthorized';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider, useToastContext } from './context/ToastContext';
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const toast = useToastContext();
 
   // Restore user from sessionStorage on page load
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
     sessionStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     console.log("Logged in user:", userData);
+    toast.success("Đăng nhập thành công!");
   };
 
   // Helper function để xác định default route dựa trên role
@@ -49,8 +51,10 @@ function App() {
     try {
       // Call backend logout API
       await ApiService.logout();
+      toast.success("Đăng xuất thành công!");
     } catch (err) {
       console.error('Logout API error:', err);
+      toast.error("Đăng xuất thất bại!");
     } finally {
       // Clear sessionStorage
       sessionStorage.removeItem('user');
@@ -64,17 +68,16 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        <Routes>
-        {/* Public routes - Không cần đăng nhập */}
-        <Route 
-          path="/login" 
-          element={
-            user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
-            <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="login" />
-          } 
-        />
+    <BrowserRouter>
+      <Routes>
+      {/* Public routes - Không cần đăng nhập */}
+      <Route 
+        path="/login" 
+        element={
+          user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
+          <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="login" />
+        } 
+      />
         <Route 
           path="/signup" 
           element={
@@ -142,6 +145,13 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
     </ToastProvider>
   );
 }

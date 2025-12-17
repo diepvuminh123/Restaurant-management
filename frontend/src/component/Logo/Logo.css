@@ -12,7 +12,7 @@
 
 /* .header__left-section:hover {
   transform: translateX(2px);
-} */
+} */  
 
 .header__logo-wrapper {
   width: 48px;
@@ -22,7 +22,6 @@
   justify-content: center;
   background: linear-gradient(135deg, #e36a2d 0%, #c66b33 100%);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(227, 106, 45, 0.3);
   transition: all 0.3s ease;
   flex-shrink: 0;
 }

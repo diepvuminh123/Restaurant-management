@@ -1,6 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IoLockClosedOutline, IoShieldCheckmarkOutline, IoHomeOutline, IoArrowBackOutline } from 'react-icons/io5';
+import { 
+  IoLockClosed, 
+  IoHomeOutline, 
+  IoArrowBackOutline,
+  IoKeyOutline 
+} from 'react-icons/io5';
 import './Unauthorized.css';
 
 export default function Unauthorized() {
@@ -29,17 +34,11 @@ export default function Unauthorized() {
       </div>
 
       <div className="unauthorized-content">
-        {/* Lock icon with animation */}
-        <div className="lock-container">
-          <div className="lock-glow"></div>
-          <IoLockClosedOutline className="lock-icon" />
-          <div className="shield-icon-wrapper">
-            <IoShieldCheckmarkOutline className="shield-icon" />
-          </div>
-        </div>
-
-        {/* Error code */}
+        {/* Error code with lock icon on top */}
         <div className="error-code-section">
+          <div className="lock-icon-wrapper">
+            <IoLockClosed className="lock-icon" />
+          </div>
           <h1 className="error-403">403</h1>
           <div className="error-line"></div>
         </div>
@@ -55,7 +54,9 @@ export default function Unauthorized() {
         {/* Info box */}
         <div className="info-box">
           <div className="info-item">
-            <div className="info-icon">🔐</div>
+            <div className="info-icon">
+              <IoKeyOutline />
+            </div>
             <div className="info-text">
               <strong>Yêu cầu đăng nhập</strong>
               <p>Vui lòng đăng nhập với tài khoản có quyền phù hợp</p>

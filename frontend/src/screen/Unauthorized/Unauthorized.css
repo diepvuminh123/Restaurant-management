@@ -98,11 +98,11 @@
 }
 
 /* Lock icon section - NO GLOW OR ANIMATIONS */
-.lock-container {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  margin: 0 auto 30px;
+.lock-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0;
 }
 
 .lock-glow {
@@ -110,31 +110,18 @@
 }
 
 .lock-icon {
-  position: relative;
   font-size: 80px;
   color: #D36C2F;
   filter: drop-shadow(0 4px 12px rgba(211, 108, 47, 0.2));
 }
 
-.shield-icon-wrapper {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  background: white;
-  border-radius: 50%;
-  padding: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.shield-icon {
-  font-size: 32px;
-  color: #f56565;
-  display: block;
-}
-
 /* Error code section */
 .error-code-section {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
 .error-403 {
@@ -188,6 +175,10 @@
 .info-icon {
   font-size: 32px;
   flex-shrink: 0;
+  color: #D36C2F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .info-text strong {
@@ -285,11 +276,6 @@
     padding: 50px 30px;
   }
 
-  .lock-container {
-    width: 120px;
-    height: 120px;
-  }
-
   .lock-icon {
     font-size: 70px;
   }
@@ -321,17 +307,8 @@
     padding: 40px 20px;
   }
 
-  .lock-container {
-    width: 100px;
-    height: 100px;
-  }
-
   .lock-icon {
     font-size: 60px;
-  }
-
-  .shield-icon {
-    font-size: 24px;
   }
 
   .error-403 {
