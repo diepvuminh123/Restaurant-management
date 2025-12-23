@@ -182,12 +182,13 @@ const EditMenuItemModal = ({
       const response = await onSave(normalizedData);
       
       // Sau đó upload ảnh nếu có
-      if (isAdmin && imageFile && response && response.data) {
-        const itemId = safeItem.id || response.data.id;
+      if (isAdmin && imageFile) {
+        const itemId = safeItem.id || (response && response.data && response.data.id);
         
         if (itemId) {
           try {
             await ApiService.uploadMenuImage(itemId, imageFile);
+            toast.success("Cập nhật hình ảnh thành công");
           } catch (uploadErr) {
             console.error("Lỗi upload ảnh:", uploadErr);
             toast.warning("Món đã được lưu nhưng upload ảnh thất bại: " + uploadErr.message);

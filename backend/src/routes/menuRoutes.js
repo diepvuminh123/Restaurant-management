@@ -10,6 +10,15 @@ const upload = require("../middlewares/upload");
  * Lấy tất cả các phần menu (Món chính, Đồ uống, Món tráng miệng)
  */
 router.get("/menu/sections", MenuController.getSections);
+/**
+ * UPLOAD /api/menus/upload/:id/image
+ * Upload hình ảnh món ăn
+ */
+router.post(
+  "/menus/upload/:id/image",
+  upload.single('image'),
+  MenuController.uploadMenuItemImage
+);
 
 /**
  * POST /api/menu/sections
@@ -129,15 +138,7 @@ router.patch(
  */
 router.delete("/menus/:id", MenuController.deleteMenuItem);
 
-/**
- * UPLOAD /api/menus/upload/:id/image
- * Upload hình ảnh món ăn
- */
-router.post(
-  "/menus/upload/:id/image",
-  upload.single('image'),
-  MenuController.uploadMenuItemImage
-);
+
 
 
 module.exports = router;
