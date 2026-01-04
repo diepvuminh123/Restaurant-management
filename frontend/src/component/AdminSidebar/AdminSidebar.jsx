@@ -3,8 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { AiOutlineHome } from 'react-icons/ai';
 import { BsCalendar3 } from 'react-icons/bs';
 import { LuUtensilsCrossed } from 'react-icons/lu';
-import { IoRestaurantOutline } from 'react-icons/io5';
-import { IoLogOutOutline } from 'react-icons/io5';
+import { IoBagHandleOutline, IoLogOutOutline } from 'react-icons/io5';
 import { HiOutlineUsers } from 'react-icons/hi2';
 import './AdminSidebar.css';
 
@@ -22,7 +21,7 @@ const AdminSidebar = ({ onLogout, userRole }) => {
     },
     {
       path: '/admin/takeaway',
-      icon: <IoRestaurantOutline />,
+      icon: <IoBagHandleOutline />,
       label: 'Đặt món mang đi',
     },
     {

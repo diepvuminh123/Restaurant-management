@@ -22,6 +22,12 @@
   margin: 0;
 }
 
+.menu-management__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .menu-management__back-icon {
   font-size: 24px;
   color: #666;

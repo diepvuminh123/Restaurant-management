@@ -225,16 +225,16 @@ const MenuManagement = ({ user }) => {
         </div>
         
         {!isEmployee && (
-  <>
-    <button className="btn-add-item" onClick={handleAddNewClick}>
-      <AiOutlinePlus /> Thêm món mới
-    </button>
+          <div className="menu-management__actions">
+            <button className="btn-add-item" onClick={handleAddNewClick}>
+              <AiOutlinePlus /> Thêm món mới
+            </button>
 
-    <button className="btn-add-item" onClick={handleClickEditSection}>
-      <AiOutlinePlus /> Chỉnh sửa danh mục món ăn
-    </button>
-  </>
-)}
+            <button className="btn-add-item" onClick={handleClickEditSection}>
+              <AiOutlinePlus /> Chỉnh sửa danh mục món ăn
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Search */}
