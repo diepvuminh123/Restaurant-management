@@ -54,8 +54,8 @@ const HomeScreenHeader = ({ user, onLogout }) => {
         <div className="header__language">
           <AiOutlineGlobal className="icon icon-global" />
           <select className="language-select">
-            <option value="vi">EN</option> {/* Figma hiển thị EN */}
             <option value="en">VI</option>
+            <option value="vi">EN</option>   
           </select>
         </div>
 

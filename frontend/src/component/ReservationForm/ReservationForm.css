@@ -1,116 +1,203 @@
-/* Container chính của Form */
+/* Container chính */
 .quick-booking-container {
-    /* Tạo hiệu ứng nền trắng bo góc và đổ bóng mờ */
     background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     padding: 30px;
-    width: 350px; /* Chiều rộng cố định theo thiết kế */
-    margin: 20px auto; /* Căn giữa form để dễ test */
-    font-family: Arial, sans-serif;
+    width: 350px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Header Form */
+/* Header */
 .booking-header h3 {
-    font-size: 1.4em;
-    font-weight: bold;
+    font-size: 1.5em;
+    font-weight: 700;
     color: #333;
-    margin-top: 0;
-    margin-bottom: 5px;
+    margin: 0 0 5px 0;
 }
 
 .booking-header p {
     font-size: 0.9em;
-    color: #666;
-    margin-bottom: 20px;
+    color: #777;
+    margin-bottom: 25px;
 }
 
-/* Các nhóm trường nhập liệu */
+/* Form Groups */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
+    position: relative; /* Quan trọng để dropdown không bị lệch */
 }
 
 .form-group label {
     display: flex;
     align-items: center;
-    font-size: 0.95em;
-    font-weight: 500;
-    color: #4A4A4A;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #444;
     margin-bottom: 8px;
 }
 
 .form-icon {
     font-size: 1.2em;
-    color: #D36C2F; /* Màu cam đất cho icon */
-    margin-right: 5px;
+    color: #D36C2F;
+    margin-right: 6px;
 }
 
-/* Các trường input/select */
+/* Input Ngày mặc định */
 .form-input {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #E0E0E0; /* Viền nhẹ */
-    border-radius: 8px; /* Bo góc nhẹ nhàng */
-    background-color: #F8F8F8; /* Màu nền xám nhạt */
-    box-sizing: border-box;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    background-color: #F9F9F9;
     font-size: 1em;
     color: #333;
-    appearance: none; /* Bỏ giao diện mặc định của trình duyệt */
-    /* Loại bỏ mũi tên mặc định của select trong Firefox */
-    -moz-appearance: none; 
-    /* Loại bỏ mũi tên mặc định của select trong Chrome/Safari */
-    -webkit-appearance: none;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    border-color: #D3A588; 
+    background-color: #fff;
+    outline: none; 
+    box-shadow: none; 
+}
+
+/* Custom Select Box */
+.custom-select {
+    position: relative;
+    width: 100%;
     cursor: pointer;
+    user-select: none;
 }
 
-/* Placeholder text color */
-.form-input::placeholder {
-    color: #AAAAAA;
+.select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #F9F9F9;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    font-size: 1em;
+    color: #333;
+    transition: all 0.2s;
 }
 
-/* Style cho select để hiển thị mũi tên drop-down */
-.form-input.select-arrow {
-    /* Thêm icon mũi tên custom bằng background image */
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23AAAAAA%22%20d%3D%22M287%2C114.7L154.5%2C247.3c-2.4%2C2.4-5.4%2C3.6-8.7%2C3.6c-3.3%2C0-6.3-1.2-8.7-3.6L5.4%2C114.7C0%2C109.3%2C0%2C99.7%2C5.4%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0l120.3%2C120.3L267.6%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0C292.4%2C99.7%2C292.4%2C109.3%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 15px center; /* Vị trí mũi tên */
-    background-size: 10px; /* Kích thước mũi tên */
-    padding-right: 40px; /* Đảm bảo chữ không đè lên mũi tên */
+.custom-select:not(.disabled):hover .select-trigger,
+.custom-select.active .select-trigger { 
+    border-color: #D3A588;
+    background-color: #fff;
+    outline: none;
+    box-shadow: none; 
 }
 
-/* Nút Submit */
+.arrow {
+    font-size: 1.1em;
+    color: #999;
+    transition: transform 0.3s ease;
+}
+
+.arrow.active {
+    transform: rotate(180deg);
+    color: #D36C2F;
+}
+
+/* Dropdown List */
+.custom-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-dropdown li {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    color: #555;
+    transition: 0.2s;
+}
+
+.custom-dropdown li:hover {
+    background-color: #F5EBE4;
+    color: #D36C2F;
+    font-weight: 600;
+}
+
+/* Scrollbar mượt cho list */
+.custom-dropdown::-webkit-scrollbar {
+    width: 5px;
+}
+.custom-dropdown::-webkit-scrollbar-thumb {
+    background: #D3A588;
+    border-radius: 10px;
+}
+
+/* Submit Button */
 .submit-button {
     width: 100%;
     padding: 15px;
-    margin-top: 15px;
-    background-color: #D3A588; /* Màu cam đất nhạt giống Figma */
+    margin-top: 10px;
+    background-color: #D3A588;
     color: white;
     font-size: 1.1em;
-    font-weight: bold;
+    font-weight: 700;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s;
 }
 
 .submit-button:hover {
-    background-color: #C19478; /* Màu đậm hơn khi hover */
+    background-color: #C19478;
 }
 
-/* Footer (Chú thích nhanh chóng) */
+/* Footer */
 .booking-footer {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 25px;
     padding-top: 15px;
-    border-top: 1px solid #EEEEEE; /* Đường kẻ mỏng phân cách */
-    color: #666;
+    border-top: 1px solid #F0F0F0;
+    color: #888;
     font-size: 0.85em;
 }
 
 .footer-icon {
     font-size: 1.2em;
-    color: #D36C2F; /* Màu cam đất */
-    margin-right: 5px;
+    color: #D36C2F;
+    margin-right: 6px;
+}
+
+/* Trạng thái disabled */
+.custom-select.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.no-data {
+    color: #999;
+    text-align: center;
+    padding: 15px !important;
+    font-style: italic;
 }
