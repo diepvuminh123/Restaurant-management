@@ -1,14 +1,31 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import OrderItem from './OrderItem/OrderItem.jsx'; 
 import './CartPopUp.css';
 
 const CartPopUp = ({ cartItems, onClose, onUpdateQuantity, onRemoveItem }) => {
+  const navigate = useNavigate();
   
   //Tổng tiền của đơn hàng
   const subTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity, 
     0
   );
+
+  const handleCheckout = () => {
+    // Chuyển đến trang checkout với thông tin giỏ hàng
+    navigate('/checkout', {
+      state: {
+        cartItems: cartItems,
+        totalAmount: subTotal,
+        customerInfo: {
+          name: '',
+          email: '',
+          phone: ''
+        }
+      }
+    });
+  };
 
   return (
     // Khi click vô background nền thì sẽ tạm đóng cái Card 
@@ -61,6 +78,7 @@ const CartPopUp = ({ cartItems, onClose, onUpdateQuantity, onRemoveItem }) => {
           <button 
             className="checkout-button" 
             disabled={cartItems.length === 0} // Vô hiệu hóa nút nếu giỏ hàng trống
+            onClick={handleCheckout}
           >
             Đặt ngay
           </button>

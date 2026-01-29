@@ -5,6 +5,7 @@ import LoginScreen from './screen/LoginScreen/LoginScreen';
 import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
+import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
 import ApiService from './services/apiService';
 import Loading from './component/Loading/Loading';
 import SettingScreen from './screen/SettingScreen/SettingScreen';
@@ -103,6 +104,10 @@ function AppContent() {
         <Route 
           path="/menu" 
           element={<MenuScreen onLogout={handleLogout} user={user} />} 
+        />
+        <Route 
+          path="/checkout" 
+          element={<CheckoutScreen />} 
         />
 
         {/* Admin/Employee routes */}
