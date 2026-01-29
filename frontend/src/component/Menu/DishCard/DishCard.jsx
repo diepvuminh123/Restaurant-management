@@ -73,10 +73,20 @@ export default function DishCard({ dish, onAddOnly, onOpenCart }) {
         </div>
 
         <div className="dish-actions">
-          <button className="btn-outline" onClick={handleAddClick}>
+          <button 
+            className="btn-outline" 
+            onClick={handleAddClick}
+            disabled={is_soldout}
+          >
             + Thêm
           </button>
-          <button className="btn-solid" onClick={handleOrderClick}>Đặt mang về</button>
+          <button 
+            className="btn-solid" 
+            onClick={handleOrderClick}
+            disabled={is_soldout}
+          >
+            Đặt mang về
+          </button>
         </div>
       </div>
     </div>

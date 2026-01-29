@@ -36,7 +36,7 @@ const EditMenuItemModal = ({
     available: safeItem.available ?? true,
     is_popular: safeItem.is_popular ?? false,
     is_soldout: safeItem.is_soldout || false,
-    is_new: safeItem.is_new ?? true, // Mặc định là true khi thêm món mới
+    is_new: safeItem.is_new ?? false, // Mặc định là món bình thường (không phải món mới)
     prep_time: safeItem.prep_time || 20,
     notes: safeItem.notes || "",
     section_id: getValidSectionId(),
@@ -71,7 +71,7 @@ const EditMenuItemModal = ({
       return "out_of_stock";
     if (safeItem.is_popular) return "popular";
     if (safeItem.is_new) return "new";
-    return "new";
+    return "normal"; // Món bình thường (không có trạng thái đặc biệt)
   });
 
   const isEmployee = userRole === "employee";
@@ -108,9 +108,11 @@ const EditMenuItemModal = ({
   };
 
   const handleStatusChange = (status) => {
-    // Nếu click vào trạng thái đang active thì bỏ chọn (reset về giá trị false)
-    if (selectedStatus === status) {
-      setSelectedStatus(null);
+    setSelectedStatus(status);
+
+    // Cập nhật form data theo trạng thái được chọn
+    if (status === "normal") {
+      // Món bình thường - tắt tất cả trạng thái đặc biệt
       setFormData((prev) => ({
         ...prev,
         is_popular: false,
@@ -118,13 +120,7 @@ const EditMenuItemModal = ({
         is_soldout: false,
         is_new: false,
       }));
-      return;
-    }
-
-    setSelectedStatus(status);
-
-    // Cập nhật form data theo trạng thái được chọn
-    if (status === "popular") {
+    } else if (status === "popular") {
       setFormData((prev) => ({
         ...prev,
         is_popular: true,
@@ -344,6 +340,17 @@ const EditMenuItemModal = ({
           <div className="form-group">
             <label>Trạng thái</label>
             <div className="status-buttons">
+              <button
+                type="button"
+                className={`status-btn ${
+                  selectedStatus === "normal"
+                    ? "status-btn--active status-btn--normal"
+                    : ""
+                }`}
+                onClick={() => handleStatusChange("normal")}
+              >
+                Món bình thường
+              </button>
               <button
                 type="button"
                 className={`status-btn ${

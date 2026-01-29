@@ -225,6 +225,12 @@
   transform: translateY(0);
 }
 
+.status-btn--normal.status-btn--active {
+  background: #6b7280;
+  border-color: #6b7280;
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
 .status-btn--popular.status-btn--active {
   background: #e36a2d;
   border-color: #e36a2d;
