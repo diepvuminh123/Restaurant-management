@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MenuScreen.css";
 
 import Header from "../../component/Menu/Header/Header";
@@ -11,6 +12,7 @@ import CartPopUp from "../../component/Menu/CartPopUp/CartPopUp";
 const PAGE_SIZE = 12;
 
 export default function MenuScreen() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(1); 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState(""); 
@@ -215,14 +217,30 @@ export default function MenuScreen() {
   const handleAddOnly = (dish) => {
         handleAddToCart(dish);
   };
-  //Giả sử người dùng chỉ chọn một món, thì họ nhấn "Đặt mang về". Lúc này ngay lập tức pop up giỏ hàng
+  
+  // Khi click "Đặt mang về" - Chuyển thẳng đến trang thanh toán với món đó
   const handleOpenCartModal = (dish) => {
-        if (dish) {
-           handleAddToCart(dish); 
+    if (dish) {
+      // Tạo cartItem với quantity = 1
+      const cartItem = {
+        ...dish,
+        quantity: 1
+      };
+      
+      // Tính tổng tiền (nếu có sale_price thì dùng sale_price, không thì dùng price)
+      const itemPrice = dish.sale_price || dish.price;
+      const totalAmount = itemPrice * 1;
+      
+      // Chuyển thẳng đến CheckoutScreen
+      navigate('/checkout', {
+        state: {
+          cartItems: [cartItem],
+          totalAmount: totalAmount,
+          customerInfo: {}
         }
-        
-        setIsCartOpen(true); 
-    };
+      });
+    }
+  };
 
   const handleCloseCart = () => setIsCartOpen(false);
   
