@@ -1,0 +1,96 @@
+{
+  "common": {
+    "welcome": "Chào mừng",
+    "home": "Trang chủ",
+    "menu": "Thực đơn",
+    "reservation": "Đặt bàn",
+    "contact": "Liên hệ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "signup": "Đăng ký",
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải...",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "aboutUs": "Về chúng tôi",
+    "reviews": "Đánh giá"
+  },
+  "header": {
+    "menu": "Thực đơn",
+    "reservation": "Đặt bàn",
+    "reviews": "Đánh giá",
+    "aboutUs": "Về chúng tôi",
+    "contact": "Liên hệ",
+    "phone": "(+84)90 123 4567",
+    "logout": "Đăng xuất",
+    "profile": "Thông tin cá nhân"
+  },
+  "home": {
+    "restaurantName": "Nhà Hàng Huân Minh Quoah",
+    "restaurantSlogan": "Hương vị truyền thống",
+    "rating": "4.8 • Hơn 500 đánh giá",
+    "description": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm",
+    "bookTable": "Đặt bàn",
+    "takeaway": "Đặt món mang về",
+    "footerDescription": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "loginTitle": "Đăng nhập",
+    "signupTitle": "Đăng ký tài khoản",
+    "verifyOTP": "Xác thực OTP",
+    "otpSent": "Mã OTP đã được gửi đến email của bạn"
+  },
+  "menu": {
+    "title": "Thực đơn của chúng tôi",
+    "categories": "Danh mục",
+    "addToCart": "Thêm vào giỏ",
+    "price": "Giá",
+    "description": "Mô tả"
+  },
+  "reservation": {
+    "title": "Đặt bàn",
+    "name": "Họ tên",
+    "phone": "Số điện thoại",
+    "date": "Ngày",
+    "time": "Giờ",
+    "guests": "Số khách",
+    "notes": "Ghi chú",
+    "confirmReservation": "Xác nhận đặt bàn"
+  },
+  "footer": {
+    "services": "Dịch vụ",
+    "information": "Thông tin",
+    "support": "Hỗ trợ",
+    "bookTable": "Đặt bàn",
+    "menu": "Thực đơn",
+    "takeaway": "Đặt món mang về",
+    "events": "Sự kiện & Tiệc",
+    "aboutUs": "Về chúng tôi",
+    "reviews": "Đánh giá",
+    "news": "Tin tức",
+    "careers": "Tuyển dụng",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản sử dụng",
+    "refund": "Chính sách hoàn tiền",
+    "contact": "Liên hệ",
+    "copyright": "© 2025 Nhà Hàng Huân Minh Quoanh. All rights reserved."
+  },
+  "admin": {
+    "dashboard": "Bảng điều khiển",
+    "menuManagement": "Quản lý thực đơn",
+    "reservations": "Đặt bàn",
+    "settings": "Cài đặt",
+    "addItem": "Thêm món",
+    "editItem": "Sửa món"
+  }
+}

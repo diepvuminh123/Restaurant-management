@@ -1,7 +1,8 @@
 import React from 'react';
 import { Facebook, Instagram, Youtube, Mail, Globe } from 'lucide-react';
 import { LuUtensilsCrossed, LuPhone } from "react-icons/lu";
-import './HomeScreenFooter.css'; 
+import './HomeScreenFooter.css';
+import { useTranslation } from 'react-i18next';
 
 const FooterColumn = ({ title, links }) => (
     <div className="footer-col">
@@ -18,26 +19,28 @@ const FooterColumn = ({ title, links }) => (
 );
 
 const HomeScreenFooter = () => {
+    const { t } = useTranslation();
+    
     // Dữ liệu cho các cột Footer
     const services = [
-        "Đặt bàn", 
-        "Thực đơn", 
-        "Đặt món mang về", 
-        "Sự kiện & Tiệc"
+        t('footer.bookTable'), 
+        t('footer.menu'), 
+        t('footer.takeaway'), 
+        t('footer.events')
     ];
 
     const info = [
-        "Về chúng tôi", 
-        "Đánh giá", 
-        "Tin tức", 
-        "Tuyển dụng"
+        t('footer.aboutUs'), 
+        t('footer.reviews'), 
+        t('footer.news'), 
+        t('footer.careers')
     ];
 
     const support = [
-        "Chính sách bảo mật", 
-        "Điều khoản sử dụng", 
-        "Chính sách hoàn tiền", 
-        "Liên hệ"
+        t('footer.privacy'), 
+        t('footer.terms'), 
+        t('footer.refund'), 
+        t('footer.contact')
     ];
 
     return (
@@ -52,14 +55,13 @@ const HomeScreenFooter = () => {
                             <LuUtensilsCrossed size={32} className="logo-icon" />
                         </div>
                         <div>
-                            <h2 className="restaurant-name">Nhà Hàng Huân Minh Quoanh</h2>
-                            <p className="slogan">Hương vị truyền thống</p>
+                            <h2 className="restaurant-name">{t('home.restaurantName')}</h2>
+                            <p className="slogan">{t('home.restaurantSlogan')}</p>
                         </div>
                     </div>
                     
                     <p className="brand-description">
-                        Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. 
-                        Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất.
+                        {t('home.footerDescription')}
                     </p>
 
                     {/* Các biểu tượng mạng xã hội */}
@@ -72,25 +74,21 @@ const HomeScreenFooter = () => {
                 </div>
 
                 {/* Cột 2: Dịch vụ */}
-                <FooterColumn title="Dịch vụ" links={services} />
+                <FooterColumn title={t('footer.services')} links={services} />
 
                 {/* Cột 3: Thông tin */}
-                <FooterColumn title="Thông tin" links={info} />
+                <FooterColumn title={t('footer.information')} links={info} />
 
                 {/* Cột 4: Hỗ trợ */}
-                <FooterColumn title="Hỗ trợ" links={support} />
+                <FooterColumn title={t('footer.support')} links={support} />
 
             </div>
 
             {/* Phần Copyright và Language Selector */}
             <div className="footer-bottom">
                 <p className="copyright-text">
-                    © 2025 Nhà Hàng Huân Minh Quoanh. All rights reserved.
+                    {t('footer.copyright')}
                 </p>
-                <div className="language-selector">
-                    <Globe size={18} className="lang-icon" />
-                    <span>English</span>
-                </div>
             </div>
         </footer>
     );
