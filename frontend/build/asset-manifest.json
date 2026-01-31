@@ -1,15 +1,17 @@
 {
   "files": {
-    "main.css": "./static/css/main.920cc76e.css",
-    "main.js": "./static/js/main.3cd1fe58.js",
+    "main.css": "./static/css/main.55f6e58b.css",
+    "main.js": "./static/js/main.e4f9df8c.js",
     "static/js/453.24ad7cc8.chunk.js": "./static/js/453.24ad7cc8.chunk.js",
+    "static/media/restaurant.png": "./static/media/restaurant.f5ec397c94a4a57a66c9.png",
+    "static/media/HomeReservation.jpg": "./static/media/HomeReservation.d5d35d19c0138bfb2f53.jpg",
     "index.html": "./index.html",
-    "main.920cc76e.css.map": "./static/css/main.920cc76e.css.map",
-    "main.3cd1fe58.js.map": "./static/js/main.3cd1fe58.js.map",
+    "main.55f6e58b.css.map": "./static/css/main.55f6e58b.css.map",
+    "main.e4f9df8c.js.map": "./static/js/main.e4f9df8c.js.map",
     "453.24ad7cc8.chunk.js.map": "./static/js/453.24ad7cc8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.920cc76e.css",
-    "static/js/main.3cd1fe58.js"
+    "static/css/main.55f6e58b.css",
+    "static/js/main.e4f9df8c.js"
   ]
 }
