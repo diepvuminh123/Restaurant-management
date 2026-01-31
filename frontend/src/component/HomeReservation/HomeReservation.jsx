@@ -2,8 +2,8 @@ import React from 'react';
 import ReservationForm from '../ReservationForm/ReservationForm'; 
 
 import './HomeReservation.css';
-import { CiStar, CiPill } from 'react-icons/ci'; 
-import { CiCalendar } from "react-icons/ci";
+import { CiStar, CiCalendar} from 'react-icons/ci'; 
+
 
 const HomeReservation = () => {
     return (
@@ -21,7 +21,7 @@ const HomeReservation = () => {
                     </div>
 
                     
-                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quoanh</h1>
+                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quanh</h1>
 
                   
                     <p className="restaurant-description">
@@ -31,10 +31,10 @@ const HomeReservation = () => {
 
                     <div className="action-buttons">
                         <button className="btn btn-primary">
-                            Đặt bàn
+                            <CiCalendar className="btn-icon" /> Đặt bàn
                         </button>
                         <button className="btn btn-secondary">
-                            <CiCalendar className="btn-icon" /> Đặt món mang về
+                         Đặt món mang về
                         </button>
                     </div>
                 </div>

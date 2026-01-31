@@ -140,7 +140,7 @@
   box-shadow: 0 0 0 3px rgba(227, 106, 45, 0.1);
 }
 
-.btn {
+.manage-sections .btn {
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;

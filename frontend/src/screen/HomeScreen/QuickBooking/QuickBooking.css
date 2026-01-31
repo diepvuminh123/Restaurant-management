@@ -66,10 +66,11 @@
 /* Các nút hành động */
 .action-buttons {
     display: flex;
+    width: 50%;
     gap: 15px;
 }
 
-.btn {
+.home-quick-booking-section .btn {
     display: flex;
     align-items: center;
     padding: 12px 25px;
@@ -80,28 +81,29 @@
     transition: background-color 0.3s ease;
 }
 
-.btn-icon {
+.home-quick-booking-section .btn-icon {
     font-size: 1.2em;
     margin-right: 8px;
 }
 
-.btn-primary {
+.home-quick-booking-section .btn-primary {
     background-color: #D36C2F; /* Màu cam đất */
     color: white;
 }
 
-.btn-primary:hover {
+.home-quick-booking-section .btn-primary:hover {
     background-color: #C16027;
 }
 
-.btn-secondary {
+.home-quick-booking-section .btn-secondary {
     background-color: white;
     color: #D36C2F;
-    border: 1px solid #D36C2F;
+    border: 2px solid #D36C2F;
 }
 
-.btn-secondary:hover {
-    background-color: #FBF8F4;
+.home-quick-booking-section .btn-secondary:hover {
+    color: white;
+    background-color:#C16027;
 }
 
 
@@ -112,11 +114,6 @@
     display: flex;
     justify-content: flex-end; 
 }
-
-/* Điều chỉnh CSS của QuickBookingForm */
-/* Nếu bạn muốn QuickBookingForm tự động căn giữa trong wrapper, bạn có thể thêm: */
-/* .quick-booking-container { margin: 0; } trong QuickBookingForm.css và */
-/* justify-content: flex-end; sẽ đẩy form sang phải */
 
 
 /* 2. Phần Hình ảnh lớn ở dưới */

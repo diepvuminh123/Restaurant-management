@@ -120,7 +120,7 @@
     margin-top: 10px;
 }
 
-.btn {
+.role-selection-modal .btn {
     flex: 1; /* Make both buttons take equal width */
     text-align: center;
     padding: 14px 20px; /* Adjusted padding */
@@ -133,25 +133,25 @@
 }
 
 
-.btn.btn-primary {
+.role-selection-modal .btn.btn-primary {
     background-color: #E67E22;
     color: white;
     border-color: #E67E22;
 }
 
-.btn.btn-primary:hover {
+.role-selection-modal .btn.btn-primary:hover {
     background-color: #d35400;
     border-color: #d35400;
 }
 
 /* Remove the btn-link specific styles if they are not needed anymore */
-.btn.btn-link {
+.role-selection-modal .btn.btn-link {
     background-color: #fff;
     color: #E67E22;
     border-color: #E67E22;
 }
 
-.btn.btn-link:hover {
+.role-selection-modal .btn.btn-link:hover {
     background-color: #fdf2e9;
     color: #d35400;
     border-color: #d35400;

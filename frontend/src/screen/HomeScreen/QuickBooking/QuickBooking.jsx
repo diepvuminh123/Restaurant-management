@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
 import './QuickBooking.css';
-import { CiStar, CiPill } from 'react-icons/ci'; 
+import { CiStar,  CiCalendar } from 'react-icons/ci'; 
+
 
 const QuickBooking = () => {
+    const navigate = useNavigate();
     return (
         <div className="home-quick-booking-section">
             
@@ -18,7 +21,7 @@ const QuickBooking = () => {
                     </div>
 
                     
-                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quoanh</h1>
+                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quanh</h1>
 
                    
                     <p className="restaurant-description">
@@ -29,10 +32,10 @@ const QuickBooking = () => {
                     
                     <div className="action-buttons">
                         <button className="btn btn-primary">
-                            <CiStar className="btn-icon" /> Đặt bàn
+                            <CiCalendar className="btn-icon" /> Đặt bàn
                         </button>
-                        <button className="btn btn-secondary">
-                            <CiPill className="btn-icon" /> Đặt món mang về
+                        <button className="btn btn-secondary" onClick = {() => navigate('/menu')}>
+                             Đặt món 
                         </button>
                     </div>
                 </div>
