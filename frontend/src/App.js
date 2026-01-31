@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import LoginScreen from './screen/LoginScreen/LoginScreen';
 import HomeScreen from './screen/HomeScreen/HomeScreen';
@@ -12,6 +13,31 @@ import SettingScreen from './screen/SettingScreen/SettingScreen';
 import Error404 from './screen/Error404/Error404';
 import Unauthorized from './screen/Unauthorized/Unauthorized';
 import { ToastProvider, useToastContext } from './context/ToastContext';
+import { STORAGE_KEYS } from './constants/storageKeys';
+
+function AuthEntry({ user, initialView, onLoginSuccess, getDefaultRoute }) {
+  const location = useLocation();
+
+  if (user) {
+    const redirectTo = location.state?.redirectTo;
+    const redirectState = location.state?.redirectState;
+
+    if (redirectTo) {
+      return <Navigate to={redirectTo} state={redirectState} replace />;
+    }
+
+    return <Navigate to={getDefaultRoute(user.role)} replace />;
+  }
+
+  return <LoginScreen onLoginSuccess={onLoginSuccess} initialView={initialView} />;
+}
+
+AuthEntry.propTypes = {
+  user: PropTypes.object,
+  initialView: PropTypes.string.isRequired,
+  onLoginSuccess: PropTypes.func.isRequired,
+  getDefaultRoute: PropTypes.func.isRequired,
+};
 
 function AppContent() {
   const [user, setUser] = useState(null);
@@ -20,21 +46,47 @@ function AppContent() {
 
   // Restore user from sessionStorage on page load
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('user');
+    const storedUser = sessionStorage.getItem(STORAGE_KEYS.USER);
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (err) {
         console.error('Failed to parse user from sessionStorage:', err);
-        sessionStorage.removeItem('user');
+        sessionStorage.removeItem(STORAGE_KEYS.USER);
       }
     }
     setLoading(false);
   }, []);
 
   const handleLoginSuccess = (userData) => {
+    const getUserIdentifier = (u) => {
+      if (!u) return null;
+      return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
+    };
+
+    // Prevent cart leaking across accounts:
+    // - If switching from user A -> user B: clear cart
+    // - If logging in from guest with an existing guest cart: migrate cart to the new user
+    try {
+      const prevOwner = getUserIdentifier(user);
+      const nextOwner = getUserIdentifier(userData);
+      const storedCart = sessionStorage.getItem(STORAGE_KEYS.CART_ITEMS);
+      const storedOwner = sessionStorage.getItem(STORAGE_KEYS.CART_OWNER);
+
+      if (storedCart) {
+        if (prevOwner && nextOwner && String(prevOwner) !== String(nextOwner)) {
+          sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
+          sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
+        } else if (!prevOwner && nextOwner && (!storedOwner || storedOwner === 'guest')) {
+          sessionStorage.setItem(STORAGE_KEYS.CART_OWNER, String(nextOwner));
+        }
+      }
+    } catch (err) {
+      console.error('Cart ownership check failed:', err);
+    }
+
     // Save to sessionStorage
-    sessionStorage.setItem('user', JSON.stringify(userData));
+    sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
     setUser(userData);
     console.log("Logged in user:", userData);
     toast.success("Đăng nhập thành công!");
@@ -58,7 +110,9 @@ function AppContent() {
       toast.error("Đăng xuất thất bại!");
     } finally {
       // Clear sessionStorage
-      sessionStorage.removeItem('user');
+      sessionStorage.removeItem(STORAGE_KEYS.USER);
+      sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
+      sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
       setUser(null);
       console.log('User logged out and sessionStorage cleared');
     }
@@ -75,15 +129,13 @@ function AppContent() {
       <Route 
         path="/login" 
         element={
-          user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
-          <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="login" />
+          <AuthEntry user={user} initialView="login" onLoginSuccess={handleLoginSuccess} getDefaultRoute={getDefaultRoute} />
         } 
       />
         <Route 
           path="/signup" 
           element={
-            user ? <Navigate to={getDefaultRoute(user.role)} replace /> : 
-            <LoginScreen onLoginSuccess={handleLoginSuccess} initialView="signup" />
+            <AuthEntry user={user} initialView="signup" onLoginSuccess={handleLoginSuccess} getDefaultRoute={getDefaultRoute} />
           } 
         />
         <Route 

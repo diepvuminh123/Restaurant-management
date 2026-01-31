@@ -5,7 +5,8 @@
   justify-items: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg,  #F3EFEA 0%);
+  background-color: #F3EFEA;
+  background-image: linear-gradient(135deg, #F3EFEA 0%, #F3EFEA 100%);
   padding: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;

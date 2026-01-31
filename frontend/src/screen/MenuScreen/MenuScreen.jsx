@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import "./MenuScreen.css";
 
@@ -9,9 +10,10 @@ import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
 import Loading from "../../component/Loading/Loading";
 import CartPopUp from "../../component/Menu/CartPopUp/CartPopUp";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
 const PAGE_SIZE = 12;
 
-export default function MenuScreen() {
+export default function MenuScreen({ user }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(1); 
   const [search, setSearch] = useState("");
@@ -20,11 +22,59 @@ export default function MenuScreen() {
   const [selectedCats, setSelectedCats] = useState([]);
   const [price, setPrice] = useState(500000);
   const [page, setPage] = useState(1);
-  const [cart, setCart] = useState(0);
 
   //Cart Pop Up
   const [cartItems, setcartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Restore cart from sessionStorage when coming back from /checkout
+  useEffect(() => {
+    const getUserIdentifier = (u) => {
+      if (!u) return null;
+      return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
+    };
+
+    const currentOwner = getUserIdentifier(user);
+    const currentOwnerKey = currentOwner ? String(currentOwner) : 'guest';
+    const storedOwnerKey = sessionStorage.getItem(STORAGE_KEYS.CART_OWNER);
+
+    // If cart belongs to a different user, do not restore it
+    if (storedOwnerKey && storedOwnerKey !== currentOwnerKey) return;
+
+    const stored = sessionStorage.getItem(STORAGE_KEYS.CART_ITEMS);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        setcartItems(parsed);
+      }
+    } catch (err) {
+      console.error('Failed to parse cartItems from sessionStorage:', err);
+      sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
+    }
+  }, [user]);
+
+  // Persist cart whenever it changes
+  useEffect(() => {
+    try {
+      if (!cartItems || cartItems.length === 0) {
+        sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
+        sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
+        return;
+      }
+
+      const getUserIdentifier = (u) => {
+        if (!u) return null;
+        return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
+      };
+      const currentOwner = getUserIdentifier(user);
+      sessionStorage.setItem(STORAGE_KEYS.CART_OWNER, currentOwner ? String(currentOwner) : 'guest');
+      sessionStorage.setItem(STORAGE_KEYS.CART_ITEMS, JSON.stringify(cartItems));
+    } catch (err) {
+      console.error('Failed to save cartItems to sessionStorage:', err);
+    }
+  }, [cartItems, user]);
 
   // State cho API data
   const [menuItems, setMenuItems] = useState([]);
@@ -221,15 +271,21 @@ export default function MenuScreen() {
   // Khi click "Đặt mang về" - Chuyển thẳng đến trang thanh toán với món đó
   const handleOpenCartModal = (dish) => {
     if (dish) {
-      // Tạo cartItem với quantity = 1
+      // Tạo cartItem chuẩn cho giỏ hàng với quantity = 1
+      const itemPrice = Number(dish.sale_price || dish.price);
       const cartItem = {
-        ...dish,
-        quantity: 1
+        id: dish.id,
+        name: dish.name,
+        price: itemPrice,
+        imageUrl: dish.images && dish.images.length > 0 ? dish.images[0] : null,
+        quantity: 1,
       };
       
       // Tính tổng tiền (nếu có sale_price thì dùng sale_price, không thì dùng price)
-      const itemPrice = dish.sale_price || dish.price;
       const totalAmount = itemPrice * 1;
+
+      // Lưu cart để khi quay lại menu vẫn còn món vừa chọn
+      setcartItems([cartItem]);
       
       // Chuyển thẳng đến CheckoutScreen
       navigate('/checkout', {
@@ -242,8 +298,6 @@ export default function MenuScreen() {
     }
   };
 
-  const handleCloseCart = () => setIsCartOpen(false);
-  
   //Quản lý update đơn hàng (Thêm, điều chỉnh số lượng)
   const handleUpdateQuantity = (id, change) => {
     setcartItems(prevItems => 
@@ -256,6 +310,10 @@ export default function MenuScreen() {
       .filter(item => item.quantity > 0)
   );
 }
+
+MenuScreen.propTypes = {
+  user: PropTypes.object,
+};
 
   const handleRemoveItem = (id) => {
     setcartItems(prevItems => prevItems.filter(item => item.id !== id));

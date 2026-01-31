@@ -21,7 +21,7 @@ const HomeReservation = () => {
                     </div>
 
                     
-                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quoah</h1>
+                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quoanh</h1>
 
                   
                     <p className="restaurant-description">

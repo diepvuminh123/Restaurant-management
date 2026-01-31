@@ -22,6 +22,15 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
     if (onLoginSuccess) {
       onLoginSuccess(userData);
     }
+
+    const redirectTo = location.state?.redirectTo;
+    const redirectState = location.state?.redirectState;
+
+    if (redirectTo) {
+      navigate(redirectTo, { state: redirectState, replace: true });
+      return;
+    }
+
     navigate('/home');
   }
   const handleSignupClick = () => {
