@@ -5,8 +5,11 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import MenuHeaderLogo from "../Logo/Logo";
-import SettingTabBar from "../SettingForm/SettingTabBar/SettingTabBar"
+import SettingTabBar from "../SettingForm/SettingTabBar/SettingTabBar";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher'
 const HomeScreenHeader = ({ user, onLogout }) => {
+  const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -35,11 +38,11 @@ const HomeScreenHeader = ({ user, onLogout }) => {
 
       {/* Các tab điều hướng - nằm ở giữa */}
       <nav className="header__nav">
-        <Link to="/menu">Thực đơn</Link>
-        <Link to="/home">Đặt bàn</Link>
-        <Link to="/home">Đánh giá</Link>
-        <Link to="/home">Về chúng tôi</Link>
-        <Link to="/home">Liên hệ</Link>
+        <Link to="/menu">{t('header.menu')}</Link>
+        <Link to="/home">{t('header.reservation')}</Link>
+        <Link to="/home">{t('header.reviews')}</Link>
+        <Link to="/home">{t('header.aboutUs')}</Link>
+        <Link to="/home">{t('header.contact')}</Link>
       </nav>
 
       {/* Nhóm liên hệ, ngôn ngữ và profile - nằm bên phải */}
@@ -47,17 +50,11 @@ const HomeScreenHeader = ({ user, onLogout }) => {
         {/* Số liên hệ */}
         <div className="header__contact">
           <LuPhone className="icon icon-phone" />
-          <span className="header__phone-number">(+84)90 123 4567</span>
+          <span className="header__phone-number">{t('header.phone')}</span>
         </div>
 
         {/* Chọn ngôn ngữ */}
-        <div className="header__language">
-          <AiOutlineGlobal className="icon icon-global" />
-          <select className="language-select">
-            <option value="en">VI</option>
-            <option value="vi">EN</option>   
-          </select>
-        </div>
+        <LanguageSwitcher />
 
         {/* Hồ sơ người dùng / Đăng nhập */}
         <div className="header__profile">
@@ -82,13 +79,13 @@ const HomeScreenHeader = ({ user, onLogout }) => {
                     className="dropdown__logout-btn"
                     onClick={handleLogout}
                   >
-                    Đăng xuất
+                    {t('header.logout')}
                   </button>
                   <button
                     className="dropdown__logout-btn"
                     onClick={handleSetting}
                   >
-                   Thông tin cá nhân
+                   {t('header.profile')}
                   </button>
                   
                   

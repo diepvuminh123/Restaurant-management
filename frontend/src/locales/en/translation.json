@@ -1,0 +1,96 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "menu": "Menu",
+    "reservation": "Reservation",
+    "contact": "Contact",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "aboutUs": "About Us",
+    "reviews": "Reviews"
+  },
+  "header": {
+    "menu": "Menu",
+    "reservation": "Reservation",
+    "reviews": "Reviews",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "phone": "(+84)90 123 4567",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "home": {
+    "restaurantName": "Huan Minh Quoah Restaurant",
+    "restaurantSlogan": "Traditional Flavors",
+    "rating": "4.8 • Over 500 reviews",
+    "description": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service",
+    "bookTable": "Book Table",
+    "takeaway": "Order Takeaway",
+    "footerDescription": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service. We are committed to bringing you the highest quality dishes."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember me",
+    "loginTitle": "Login",
+    "signupTitle": "Sign Up",
+    "verifyOTP": "Verify OTP",
+    "otpSent": "OTP code has been sent to your email"
+  },
+  "menu": {
+    "title": "Our Menu",
+    "categories": "Categories",
+    "addToCart": "Add to Cart",
+    "price": "Price",
+    "description": "Description"
+  },
+  "reservation": {
+    "title": "Reservation",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "date": "Date",
+    "time": "Time",
+    "guests": "Number of Guests",
+    "notes": "Notes",
+    "confirmReservation": "Confirm Reservation"
+  },
+  "footer": {
+    "services": "Services",
+    "information": "Information",
+    "support": "Support",
+    "bookTable": "Book Table",
+    "menu": "Menu",
+    "takeaway": "Order Takeaway",
+    "events": "Events & Parties",
+    "aboutUs": "About Us",
+    "reviews": "Reviews",
+    "news": "News",
+    "careers": "Careers",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "refund": "Refund Policy",
+    "contact": "Contact",
+    "copyright": "© 2025 Huan Minh Quoanh Restaurant. All rights reserved."
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "menuManagement": "Menu Management",
+    "reservations": "Reservations",
+    "settings": "Settings",
+    "addItem": "Add Item",
+    "editItem": "Edit Item"
+  }
+}
