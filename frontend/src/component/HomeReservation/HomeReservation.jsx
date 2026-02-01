@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReservationForm from '../ReservationForm/ReservationForm'; 
 
 import './HomeReservation.css';
 import { CiStar, CiCalendar} from 'react-icons/ci'; 
 
 
-const HomeReservation = () => {
+const HomeReservation = ({ user }) => {
     return (
         <div className="home-quick-booking-section">
             
@@ -39,7 +40,7 @@ const HomeReservation = () => {
                     </div>
                 </div>
                 <div className="quick-booking-form-wrapper">
-                    <ReservationForm /> 
+                    <ReservationForm user={user} /> 
                 </div>
 
             </div>
@@ -51,3 +52,7 @@ const HomeReservation = () => {
 };
 
 export default HomeReservation;
+
+HomeReservation.propTypes = {
+    user: PropTypes.object,
+};

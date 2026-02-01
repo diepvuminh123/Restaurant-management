@@ -7,6 +7,8 @@ import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
+import TableMapScreen from './screen/TableMapScreen/TableMapScreen';
+import ReservationSuccessScreen from './screen/ReservationSuccessScreen/ReservationSuccessScreen';
 import ApiService from './services/apiService';
 import Loading from './component/Loading/Loading';
 import SettingScreen from './screen/SettingScreen/SettingScreen';
@@ -24,6 +26,18 @@ function AuthEntry({ user, initialView, onLoginSuccess, getDefaultRoute }) {
 
     if (redirectTo) {
       return <Navigate to={redirectTo} state={redirectState} replace />;
+    }
+
+    // Check if user was booking a table - redirect to table-map instead of home
+    const reservationInfo = sessionStorage.getItem(STORAGE_KEYS.RESERVATION_INFO);
+    if (reservationInfo) {
+      try {
+        const parsedInfo = JSON.parse(reservationInfo);
+        sessionStorage.removeItem(STORAGE_KEYS.RESERVATION_INFO);
+        return <Navigate to="/table-map" state={parsedInfo} replace />;
+      } catch (err) {
+        console.error('Failed to parse reservation info:', err);
+      }
     }
 
     return <Navigate to={getDefaultRoute(user.role)} replace />;
@@ -123,7 +137,6 @@ function AppContent() {
   }
 
   return (
-    <BrowserRouter>
       <Routes>
       {/* Public routes - Không cần đăng nhập */}
       <Route 
@@ -160,6 +173,16 @@ function AppContent() {
         <Route 
           path="/checkout" 
           element={<CheckoutScreen />} 
+        />
+
+        <Route
+          path="/table-map"
+          element={<TableMapScreen />}
+        />
+
+        <Route
+          path="/reservation-success"
+          element={<ReservationSuccessScreen />}
         />
 
         {/* Admin/Employee routes */}
@@ -201,14 +224,15 @@ function AppContent() {
           element={<Error404 />} 
         />
       </Routes>
-    </BrowserRouter>
   );
 }
 
 function App() {
   return (
     <ToastProvider>
-      <AppContent />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </ToastProvider>
   );
 }

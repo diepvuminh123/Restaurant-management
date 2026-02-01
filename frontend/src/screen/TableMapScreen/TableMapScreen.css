@@ -1,0 +1,242 @@
+.table-map-container {
+  background-color: #f8f9fa;
+  padding: 24px 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+
+.reservation-card, .map-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px 18px;
+  margin-bottom: 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.reservation-card {
+  margin-bottom: 14px;
+}
+.reservation-instructions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.reservation-card h3,
+.map-card h3 {
+  margin: 0 0 12px;
+}
+
+.reservation-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.back-to-reservation {
+  appearance: none;
+  border: none;
+  background: #D06835;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.back-to-reservation:hover {
+  filter: brightness(0.98);
+}
+
+.back-to-reservation:focus-visible {
+  outline: 3px solid #D06835;
+  outline-offset: 2px;
+}
+
+.info-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.info-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+.info-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3ebe7;
+  color: #D06835;
+  flex: 0 0 auto;
+}
+
+.icon { font-size: 20px; }
+.label { font-size: 12px; color: #888; margin: 0; }
+.value { font-weight: bold; margin: 0; }
+
+.instruction {
+  margin: 6px 0 0;
+  color: #D06835;
+  font-weight: 500;
+}
+
+/* CSS cho Grid Bàn */
+.table-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 22px 26px;
+  justify-items: center;
+  padding: 8px 0 12px;
+}
+
+@media (max-width: 520px) {
+  .table-grid {
+    grid-template-columns: repeat(3, minmax(88px, 1fr));
+    gap: 18px 18px;
+  }
+}
+
+.table-box {
+  appearance: none;
+  background: #ffffff;
+  border: 2px solid #D06835;
+  border-radius: 14px;
+  width: 92px;
+  height: 70px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease, color 0.12s ease;
+}
+
+.table-box .id { font-weight: 700; }
+.table-box .seats { font-size: 12px; color: #495057; }
+
+.table-box.available:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.table-box:focus-visible {
+  outline: 3px solid #D06835;
+  outline-offset: 2px;
+}
+
+.table-box.booked {
+  background: #e9ecef;
+  border-color: #e9ecef;
+  cursor: not-allowed;
+  color: #495057;
+}
+
+.table-box.booked .seats {
+  color: #495057;
+}
+
+.table-box.selected {
+  background: #D06835;
+  border-color: #D06835;
+  color: #ffffff;
+}
+
+.table-box.selected .seats {
+  color: rgba(255,255,255,0.92);
+}
+
+.table-box:disabled {
+  opacity: 1;
+}
+
+.selection-notice {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f7efe9;
+  color: #2b1a12;
+  font-weight: 600;
+}
+
+.selection-hint {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  justify-content: flex-start;
+  color: #495057;
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.dot.available { background: #ffffff; border: 2px solid #D06835; }
+.dot.selected { background: #D06835; border: 2px solid #D06835; }
+.dot.booked { background: #e9ecef; border: 2px solid #e9ecef; }
+
+.confirm-btn {
+  width: 100%;
+  margin-top: 18px;
+  background: #D06835;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-1px);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.footer-note {
+  margin: 10px 0 0;
+  text-align: center;
+  color: #6c757d;
+  font-size: 13px;
+}

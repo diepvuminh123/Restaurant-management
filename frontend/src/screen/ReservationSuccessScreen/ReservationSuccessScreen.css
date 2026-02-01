@@ -1,0 +1,111 @@
+.reservation-success-container {
+  background: linear-gradient(135deg, #f5f1ed 0%, #fafaf8 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.success-card {
+  background: white;
+  border-radius: 16px;
+  padding: 48px 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ede5df;
+  color: #D06835;
+  font-size: 48px;
+}
+
+.success-title {
+  margin: 0 0 16px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.success-message {
+  margin: 0 0 32px;
+  color: #495057;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.success-message p {
+  margin: 0;
+}
+
+.success-message strong {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.back-home-btn {
+  appearance: none;
+  background: #D06835;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  width: 100%;
+}
+
+.back-home-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+.back-home-btn:focus-visible {
+  outline: 3px solid rgba(154, 79, 44, 0.3);
+  outline-offset: 2px;
+}
+
+.footer-message {
+  margin-top: 32px;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .success-card {
+    padding: 32px 20px;
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 38px;
+  }
+
+  .success-title {
+    font-size: 24px;
+  }
+
+  .success-message {
+    font-size: 13px;
+  }
+
+  .back-home-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}

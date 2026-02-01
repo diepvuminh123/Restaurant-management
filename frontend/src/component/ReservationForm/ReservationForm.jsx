@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
 import './ReservationForm.css';
 import { CiCalendar, CiClock2, CiUser, CiCircleCheck } from 'react-icons/ci';
 import { IoChevronDownOutline } from 'react-icons/io5'; 
 import { useToastContext } from '../../context/ToastContext';
+import { useNavigate } from 'react-router-dom';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import RoleSelectionModal from '../RoleSelectionModal/RoleSelectionModal';
 
-const ReservationForm = () => {
+const ReservationForm = ({ user }) => {
+    const navigate = useNavigate();
     const toast = useToastContext();
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -14,6 +19,12 @@ const ReservationForm = () => {
     const [isGuestOpen, setIsGuestOpen] = useState(false);
     const timeRef = useRef(null);
     const guestRef = useRef(null);
+
+    // Auth states
+    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [customerName, setCustomerName] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
+    const [showCustomerForm, setShowCustomerForm] = useState(false);
 
     const todayStr = new Date().toISOString().split('T')[0];
 
@@ -47,14 +58,102 @@ const ReservationForm = () => {
         return generate(11, 0, 21, 0);
     }, [date, todayStr]);
 
+    const handleRoleSelect = (role) => {
+        setShowRoleModal(false);
+        if (role === 'user') {
+            // Lưu info đặt bàn vào sessionStorage trước khi login
+            sessionStorage.setItem(
+                STORAGE_KEYS.RESERVATION_INFO,
+                JSON.stringify({
+                    dayReservation: date,
+                    timeReservation: time,
+                    numOfGuess: guests,
+                })
+            );
+            navigate('/login', { replace: true });
+        } else if (role === 'guest') {
+            setShowCustomerForm(true);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!date || !time || !guests) {
             toast.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
-        toast.success(`Đặt bàn thành công cho ${guests} người vào ${time} ngày ${date}`);
+
+        // Kiểm tra auth
+        if (!user) {
+            setShowRoleModal(true);
+            return;
+        }
+
+        navigate('/table-map', { 
+            state: { 
+                dayReservation: date, 
+                timeReservation: time, 
+                numOfGuess: guests 
+            } 
+        });
     };
+
+    const handleCustomerFormSubmit = (e) => {
+        e.preventDefault();
+        if (!customerName || !customerPhone) {
+            toast.warning('Vui lòng điền đầy đủ thông tin!');
+            return;
+        }
+
+        // Navigate tới table-map với state
+        navigate('/table-map', { 
+            state: { 
+                dayReservation: date, 
+                timeReservation: time, 
+                numOfGuess: guests,
+                customerName,
+                customerPhone,
+            } 
+        });
+    };
+
+    // Nếu guest chưa nhập thông tin, show form
+    if (showCustomerForm) {
+        return (
+            <div className="quick-booking-container">
+                <div className="booking-header">
+                    <h3>Thông tin khách hàng</h3>
+                    <p>Vui lòng nhập thông tin để tiếp tục đặt bàn</p>
+                </div>
+
+                <form className="booking-form" onSubmit={handleCustomerFormSubmit}>
+                    <div className="form-group">
+                        <label>Họ và tên <span className="required">*</span></label>
+                        <input
+                            type="text"
+                            value={customerName}
+                            onChange={(e) => setCustomerName(e.target.value)}
+                            placeholder="Nhập họ và tên"
+                            className="form-input"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Số điện thoại <span className="required">*</span></label>
+                        <input
+                            type="tel"
+                            value={customerPhone}
+                            onChange={(e) => setCustomerPhone(e.target.value)}
+                            placeholder="Nhập số điện thoại"
+                            className="form-input"
+                        />
+                    </div>
+
+                    <button type="submit" className="submit-button">Tiếp tục</button>
+                </form>
+            </div>
+        );
+    }
 
     return (
         <div className="quick-booking-container">
@@ -123,8 +222,20 @@ const ReservationForm = () => {
                 <CiCircleCheck className="footer-icon" />
                 <span>Đặt bàn nhanh một cách nhanh chóng</span>
             </div>
+
+            {/* Role Selection Modal */}
+            {showRoleModal && (
+                <RoleSelectionModal 
+                    onSelectRole={handleRoleSelect}
+                    onClose={() => setShowRoleModal(false)}
+                />
+            )}
         </div>
     );
 };
 
 export default ReservationForm;
+
+ReservationForm.propTypes = {
+    user: PropTypes.object,
+};

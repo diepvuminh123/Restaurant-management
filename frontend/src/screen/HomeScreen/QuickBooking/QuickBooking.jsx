@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
 import './QuickBooking.css';
 import { CiCalendar, CiStar } from 'react-icons/ci';
 import { useTranslation } from 'react-i18next';
 
-const QuickBooking = () => {
+const QuickBooking = ({ user }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     return (
@@ -42,7 +43,7 @@ const QuickBooking = () => {
 
                 
                 <div className="quick-booking-form-wrapper">
-                    <ReservationForm /> 
+                    <ReservationForm user={user} /> 
                 </div>
 
             </div>
@@ -56,3 +57,7 @@ const QuickBooking = () => {
 };
 
 export default QuickBooking;
+
+QuickBooking.propTypes = {
+    user: PropTypes.object,
+};

@@ -7,7 +7,7 @@ const HomeScreen = ({ user, onLogout }) => {
   return (
     <div className="HomeScreen">
       <HomeScreenHeader user={user} onLogout={onLogout} />
-      <QuickBooking />
+      <QuickBooking user={user} />
       <HomeScreenFooter />
     </div>
   )
