@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, use } from 'react';
 import PropTypes from 'prop-types';
 import './ReservationForm.css';
 import { CiCalendar, CiClock2, CiUser, CiCircleCheck } from 'react-icons/ci';
@@ -7,6 +7,7 @@ import { useToastContext } from '../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import RoleSelectionModal from '../RoleSelectionModal/RoleSelectionModal';
+import { useTranslation } from 'react-i18next'; 
 
 const ReservationForm = ({ user }) => {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ const ReservationForm = ({ user }) => {
     const [isGuestOpen, setIsGuestOpen] = useState(false);
     const timeRef = useRef(null);
     const guestRef = useRef(null);
+    const {t} = useTranslation();
 
     // Auth states
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -158,8 +160,8 @@ const ReservationForm = ({ user }) => {
     return (
         <div className="quick-booking-container">
             <div className="booking-header">
-                <h3>Đặt bàn nhanh</h3>
-                <p>Chọn thời gian và số lượng người</p>
+                <h3>{t('reservationQuick.quickReservation')}</h3>
+                <p>{t('reservationQuick.subtitle')}</p>
             </div>
 
             <form className="booking-form" onSubmit={handleSubmit}>

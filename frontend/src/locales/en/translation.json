@@ -92,5 +92,20 @@
     "settings": "Settings",
     "addItem": "Add Item",
     "editItem": "Edit Item"
-  }
+  },
+  "reservationQuick": {
+  "quickReservation": "Quick Reservation",
+  "subtitle": "Select time and number of guests",
+  "date": "Date",
+  "datePlaceholder": "mm / dd / yyyy",
+  "time": "Time",
+  "timePlaceholder": "Select date first",
+  "people": "Number of People",
+  "peoplePlaceholder": "Select number of people",
+  "submit": "Reserve Now",
+  "note": "Make a quick reservation easily"
+}
+
+
+
 }

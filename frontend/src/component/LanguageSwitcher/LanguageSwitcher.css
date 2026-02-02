@@ -16,14 +16,14 @@
 }
 
 .lang-btn:hover {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: rgb(211, 108, 47);
+  color: rgb(211, 108, 47);
 }
 
 .lang-btn.active {
-  background-color: #007bff;
+  background-color: rgb(211, 108, 47);
   color: white;
-  border-color: #007bff;
+  border-color: rgb(211, 108, 47);
 }
 
 .lang-btn:focus {

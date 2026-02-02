@@ -92,5 +92,20 @@
     "settings": "Cài đặt",
     "addItem": "Thêm món",
     "editItem": "Sửa món"
-  }
+  },
+ "reservationQuick": {
+  "quickReservation": "Đặt bàn nhanh",
+  "subtitle": "Chọn thời gian và số lượng người",
+  "date": "Ngày",
+  "datePlaceholder": "mm / dd / yyyy",
+  "time": "Giờ",
+  "timePlaceholder": "Chọn ngày trước",
+  "people": "Số người",
+  "peoplePlaceholder": "Chọn số người",
+  "submit": "Đặt bàn ngay",
+  "note": "Đặt bàn nhanh một cách nhanh chóng"
+}
+
+
+
 }
