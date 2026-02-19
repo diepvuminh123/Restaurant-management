@@ -71,7 +71,7 @@ const CheckoutScreen = () => {
       
       // Giả lập xử lý thanh toán
       setTimeout(() => {
-        setIsProcessing(false);
+        // setIsProcessing(false);
         setCurrentStep(3); // Chuyển sang bước gửi bill
         success('Thanh toán cọc thành công!');
       }, 1500);
@@ -141,7 +141,7 @@ const CheckoutScreen = () => {
                       name="name"
                       value={customerInfo.name}
                       onChange={handleCustomerInfoChange}
-                      placeholder="Điệp Vũ Minh"
+                      placeholder="Diệp Vũ Minh"
                     />
                   </div>
 
@@ -330,7 +330,7 @@ const CheckoutScreen = () => {
               <div className="success-icon">
                 <IoCheckmarkCircle />
               </div>
-              <h2><IoHappyOutline style={{verticalAlign: 'middle', marginRight: '8px'}} /> Cảm ơn bạn!</h2>
+              <h2> Cảm ơn bạn!</h2>
               <p className="success-message">
                 Cảm ơn bạn đã hoàn tất thanh toán cọc!
                 <br />
