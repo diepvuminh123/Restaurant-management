@@ -9,10 +9,12 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  
+    "dev": "concurrently -n BE,FE -c auto \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:be": "npm --prefix backend run dev",
+    "dev:fe": "npm --prefix frontend run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
+
 }
