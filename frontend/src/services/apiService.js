@@ -1,9 +1,11 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5002/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 
 class ApiService {
   static async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
+   
+    
     const config = {
       ...options,
       headers: {
@@ -22,9 +24,11 @@ class ApiService {
       const data = await response.json();
 
       if (!response.ok) {
+        
         throw new Error(data.message || "Có lỗi xảy ra");
       }
 
+      
       return data;
     } catch (error) {
       throw error;
