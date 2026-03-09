@@ -86,30 +86,10 @@ CREATE TABLE order_items (
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_order_items_menu_item_id ON order_items(menu_item_id);
 
--- ========================================
--- TRIGGERS FOR updated_at
--- ========================================
-
--- Note: update_updated_at_column() function should already exist from menu_schema.sql
--- If not, uncomment below:
-
--- CREATE OR REPLACE FUNCTION update_updated_at_column()
--- RETURNS TRIGGER AS $$
--- BEGIN
---     NEW.updated_at = NOW();
---     RETURN NEW;
--- END;
--- $$ language 'plpgsql';
-
--- Apply trigger only to orders table
-CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- ========================================
--- HELPER FUNCTIONS & VIEWS
--- ========================================
-
--- View: Order summary with customer and status
+CREATE TRIGGER update_orders_updated_at
+BEFORE UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
 CREATE OR REPLACE VIEW v_order_summary AS
 SELECT 
     o.id,
@@ -128,19 +108,6 @@ SELECT
 FROM orders o
 LEFT JOIN order_items oi ON o.id = oi.order_id
 GROUP BY o.id;
-
--- Function: Calculate line total for order items
-CREATE OR REPLACE FUNCTION calculate_line_total()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.line_total = NEW.quantity * NEW.unit_price;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER calculate_order_item_line_total 
-BEFORE INSERT OR UPDATE ON order_items
-    FOR EACH ROW EXECUTE FUNCTION calculate_line_total();
 
 -- ========================================
 -- COMMENTS FOR DOCUMENTATION
