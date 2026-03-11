@@ -20,7 +20,7 @@ const addItemSchema = Joi.object({
     'number.max': 'Số lượng phải từ 1 đến 99'
   }),
   
-  note: Joi.string().trim().max(500).allow('').optional().messages({
+  note: Joi.string().trim().max(500).allow('', null).optional().messages({
     'string.max': 'Ghi chú không được quá 500 ký tự'
   })
 });
@@ -38,7 +38,7 @@ const updateItemSchema = Joi.object({
     'number.max': 'Số lượng phải từ 1 đến 99'
   }),
   
-  note: Joi.string().trim().max(500).allow('').optional().messages({
+  note: Joi.string().trim().max(500).allow('', null).optional().messages({
     'string.max': 'Ghi chú không được quá 500 ký tự'
   })
 });

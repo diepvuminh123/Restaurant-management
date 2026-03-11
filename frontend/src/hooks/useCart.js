@@ -50,7 +50,7 @@ export const useCart = () => {
   }, [fetchCart]);
 
   // Thêm món vào giỏ hàng
-  const addToCart = useCallback(async (menuItem, quantity = 1, note = null) => {
+  const addToCart = useCallback(async (menuItem, quantity = 1, note = '') => {
     try {
       setLoading(true);
       setError(null);

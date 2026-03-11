@@ -220,13 +220,13 @@ class ApiService {
    * @param {number} quantity - Số lượng
    * @param {string} note - Ghi chú (optional)
    */
-  static async addItemToCart(menuItemId, quantity = 1, note = null) {
+  static async addItemToCart(menuItemId, quantity = 1, note = '') {
     return this.request("/cart/items", {
       method: "POST",
       body: {
         menu_item_id: menuItemId,
         quantity,
-        note,
+        note: note || '',
       },
     });
   }
