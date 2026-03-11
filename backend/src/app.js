@@ -8,6 +8,7 @@ require('dotenv').config();
 const sessionConfig = require('./config/session');
 const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api', menuRoutes);
+app.use('/api', cartRoutes);
 
 
 // Error Handler

@@ -201,11 +201,93 @@ class ApiService {
     return this.request(`/menus/${id}`, {
       method: "DELETE",
     });
-
    }
+
+  // ============= CART API =============
   
+  /**
+   * Lấy giỏ hàng hiện tại
+   */
+  static async getCart() {
+    return this.request("/cart", {
+      method: "GET",
+    });
+  }
 
+  /**
+   * Thêm món vào giỏ hàng
+   * @param {number} menuItemId - ID của món ăn
+   * @param {number} quantity - Số lượng
+   * @param {string} note - Ghi chú (optional)
+   */
+  static async addItemToCart(menuItemId, quantity = 1, note = null) {
+    return this.request("/cart/items", {
+      method: "POST",
+      body: {
+        menu_item_id: menuItemId,
+        quantity,
+        note,
+      },
+    });
+  }
 
+  /**
+   * Cập nhật item trong giỏ hàng
+   * @param {number} cartItemId - ID của cart item
+   * @param {number} quantity - Số lượng mới (optional)
+   * @param {string} note - Ghi chú mới (optional)
+   */
+  static async updateCartItem(cartItemId, { quantity, note }) {
+    const body = {};
+    if (quantity !== undefined) body.quantity = quantity;
+    if (note !== undefined) body.note = note;
+
+    return this.request(`/cart/items/${cartItemId}`, {
+      method: "PUT",
+      body,
+    });
+  }
+
+  /**
+   * Xóa item khỏi giỏ hàng
+   * @param {number} cartItemId - ID của cart item
+   */
+  static async removeItemFromCart(cartItemId) {
+    return this.request(`/cart/items/${cartItemId}`, {
+      method: "DELETE",
+    });
+  }
+
+  /**
+   * Xóa toàn bộ giỏ hàng
+   */
+  static async clearCart() {
+    return this.request("/cart", {
+      method: "DELETE",
+    });
+  }
+
+  /**
+   * Migrate guest cart sang user cart
+   * @param {string} guestSessionId - Session ID của guest
+   */
+  static async migrateCart(guestSessionId) {
+    return this.request("/cart/migrate", {
+      method: "POST",
+      body: {
+        guest_session_id: guestSessionId,
+      },
+    });
+  }
+
+  /**
+   * Validate giỏ hàng trước khi checkout
+   */
+  static async validateCart() {
+    return this.request("/cart/validate", {
+      method: "GET",
+    });
+  }
   
 }
 

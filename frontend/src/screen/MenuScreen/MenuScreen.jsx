@@ -10,7 +10,7 @@ import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
 import Loading from "../../component/Loading/Loading";
 import CartPopUp from "../../component/Menu/CartPopUp/CartPopUp";
-import { STORAGE_KEYS } from "../../constants/storageKeys";
+import { useCart } from "../../hooks/useCart";
 const PAGE_SIZE = 12;
 
 export default function MenuScreen({ user }) {
@@ -18,63 +18,23 @@ export default function MenuScreen({ user }) {
   const [activeTab, setActiveTab] = useState(1); 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState(""); 
-  const [statusFilter, setStatusFilter] = useState(""); // Trạng thái: popular, new, soldout, hoặc ""
+  const [statusFilter, setStatusFilter] = useState(""); 
   const [selectedCats, setSelectedCats] = useState([]);
   const [price, setPrice] = useState(500000);
   const [page, setPage] = useState(1);
 
-  //Cart Pop Up
-  const [cartItems, setcartItems] = useState([]);
+  // Use Cart Hook instead of sessionStorage
+  const {
+    cartItems,
+    cartTotalCount,
+    cartTotalAmount,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    loading: cartLoading
+  } = useCart();
+
   const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // Restore cart from sessionStorage when coming back from /checkout
-  useEffect(() => {
-    const getUserIdentifier = (u) => {
-      if (!u) return null;
-      return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
-    };
-
-    const currentOwner = getUserIdentifier(user);
-    const currentOwnerKey = currentOwner ? String(currentOwner) : 'guest';
-    const storedOwnerKey = sessionStorage.getItem(STORAGE_KEYS.CART_OWNER);
-
-    // If cart belongs to a different user, do not restore it
-    if (storedOwnerKey && storedOwnerKey !== currentOwnerKey) return;
-
-    const stored = sessionStorage.getItem(STORAGE_KEYS.CART_ITEMS);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        setcartItems(parsed);
-      }
-    } catch (err) {
-      console.error('Failed to parse cartItems from sessionStorage:', err);
-      sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
-    }
-  }, [user]);
-
-  // Persist cart whenever it changes
-  useEffect(() => {
-    try {
-      if (!cartItems || cartItems.length === 0) {
-        sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
-        sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
-        return;
-      }
-
-      const getUserIdentifier = (u) => {
-        if (!u) return null;
-        return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
-      };
-      const currentOwner = getUserIdentifier(user);
-      sessionStorage.setItem(STORAGE_KEYS.CART_OWNER, currentOwner ? String(currentOwner) : 'guest');
-      sessionStorage.setItem(STORAGE_KEYS.CART_ITEMS, JSON.stringify(cartItems));
-    } catch (err) {
-      console.error('Failed to save cartItems to sessionStorage:', err);
-    }
-  }, [cartItems, user]);
 
   // State cho API data
   const [menuItems, setMenuItems] = useState([]);
@@ -237,89 +197,37 @@ export default function MenuScreen({ user }) {
   };
   
 
-  //Khi thêm một món hàng vô Card mua hàng
-  const handleAddToCart = (dish) => {
-    setcartItems(prevItems => {
-            const existingItem = prevItems.find(item => item.id === dish.id);
-            const itemPrice = Number(dish.sale_price || dish.price);
-            
-            if (existingItem) {
-                return prevItems.map(item =>
-                    item.id === dish.id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                );
-            } else {
-                return [
-                    ...prevItems,
-                    {
-                        id: dish.id,
-                        name: dish.name,
-                        price: itemPrice, 
-                        imageUrl: dish.images && dish.images.length > 0 ? dish.images[0] : null,
-                        quantity: 1,
-                    }
-                ]
-            }
-        });
-    };
-  // Khi người dùng nhấn vô "Thêm" thì giỏ hàng sẽ tự cập nhật ngầm, nhưng không pop up liền
+  // Thêm món vào giỏ hàng sử dụng API
+  const handleAddToCart = async (dish) => {
+    await addToCart(dish, 1, null);
+  };
+
+  // Khi người dùng nhấn vô "Thêm" thì giỏ hàng sẽ tự cập nhật ngầm
   const handleAddOnly = (dish) => {
-        handleAddToCart(dish);
+    handleAddToCart(dish);
   };
   
   // Khi click "Đặt mang về" - Chuyển thẳng đến trang thanh toán với món đó
-  const handleOpenCartModal = (dish) => {
+  const handleOpenCartModal = async (dish) => {
     if (dish) {
-      // Tạo cartItem chuẩn cho giỏ hàng với quantity = 1
-      const itemPrice = Number(dish.sale_price || dish.price);
-      const cartItem = {
-        id: dish.id,
-        name: dish.name,
-        price: itemPrice,
-        imageUrl: dish.images && dish.images.length > 0 ? dish.images[0] : null,
-        quantity: 1,
-      };
+      // Thêm món vào giỏ hàng trước
+      await addToCart(dish, 1, null);
       
-      // Tính tổng tiền (nếu có sale_price thì dùng sale_price, không thì dùng price)
-      const totalAmount = itemPrice * 1;
-
-      // Lưu cart để khi quay lại menu vẫn còn món vừa chọn
-      setcartItems([cartItem]);
-      
-      // Chuyển thẳng đến CheckoutScreen
-      navigate('/checkout', {
-        state: {
-          cartItems: [cartItem],
-          totalAmount: totalAmount,
-          customerInfo: {}
-        }
-      });
+      // Chuyển đến checkout (cart sẽ được load từ API ở checkout page)
+      navigate('/checkout');
     }
   };
 
-  //Quản lý update đơn hàng (Thêm, điều chỉnh số lượng)
-  const handleUpdateQuantity = (id, change) => {
-    setcartItems(prevItems => 
-    prevItems
-      .map(item => 
-        item.id === id 
-          ? { ...item, quantity: item.quantity + change } 
-          : item
-      )
-      .filter(item => item.quantity > 0)
-  );
-}
+  // Cập nhật số lượng món trong giỏ hàng
+  const handleUpdateQuantity = async (id, change) => {
+    await updateQuantity(id, change);
+  };
 
-MenuScreen.propTypes = {
-  user: PropTypes.object,
-};
+  // Xóa món khỏi giỏ hàng
+  const handleRemoveItem = async (id) => {
+    await removeFromCart(id);
+  };
 
-  const handleRemoveItem = (id) => {
-    setcartItems(prevItems => prevItems.filter(item => item.id !== id));
-  }
-
-const cartTotalCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
   return (
     <div className="menu-page">
       <Header
@@ -440,3 +348,7 @@ const cartTotalCount = cartItems.reduce((total, item) => total + (item.quantity 
     </div>
   );
 }
+
+MenuScreen.propTypes = {
+  user: PropTypes.object,
+};

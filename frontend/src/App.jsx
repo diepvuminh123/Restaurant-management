@@ -73,32 +73,9 @@ function AppContent() {
   }, []);
 
   const handleLoginSuccess = (userData) => {
-    const getUserIdentifier = (u) => {
-      if (!u) return null;
-      return u.id ?? u.user_id ?? u.userId ?? u.email ?? null;
-    };
-
-    // Prevent cart leaking across accounts:
-    // - If switching from user A -> user B: clear cart
-    // - If logging in from guest with an existing guest cart: migrate cart to the new user
-    try {
-      const prevOwner = getUserIdentifier(user);
-      const nextOwner = getUserIdentifier(userData);
-      const storedCart = sessionStorage.getItem(STORAGE_KEYS.CART_ITEMS);
-      const storedOwner = sessionStorage.getItem(STORAGE_KEYS.CART_OWNER);
-
-      if (storedCart) {
-        if (prevOwner && nextOwner && String(prevOwner) !== String(nextOwner)) {
-          sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
-          sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
-        } else if (!prevOwner && nextOwner && (!storedOwner || storedOwner === 'guest')) {
-          sessionStorage.setItem(STORAGE_KEYS.CART_OWNER, String(nextOwner));
-        }
-      }
-    } catch (err) {
-      console.error('Cart ownership check failed:', err);
-    }
-
+    // Cart được quản lý bởi server qua API, không cần xử lý cart ownership ở client
+    // Backend tự động migrate guest cart sang user cart khi đăng nhập
+    
     // Save to sessionStorage
     sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
     setUser(userData);
@@ -116,19 +93,17 @@ function AppContent() {
 
   const handleLogout = async () => {
     try {
-      // Call backend logout API
+      // Call backend logout API (sẽ clear session và cart ở server)
       await ApiService.logout();
       toast.success("Đăng xuất thành công!");
     } catch (err) {
       console.error('Logout API error:', err);
       toast.error("Đăng xuất thất bại!");
     } finally {
-      // Clear sessionStorage
+      // Clear user sessionStorage (cart được quản lý bởi server)
       sessionStorage.removeItem(STORAGE_KEYS.USER);
-      sessionStorage.removeItem(STORAGE_KEYS.CART_ITEMS);
-      sessionStorage.removeItem(STORAGE_KEYS.CART_OWNER);
       setUser(null);
-      console.log('User logged out and sessionStorage cleared');
+      console.log('User logged out');
     }
   };
 
