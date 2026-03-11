@@ -9,15 +9,22 @@
 
 ### Schema Files Overview
 
-| File | Purpose | Dependencies |
-|------|---------|--------------|
-| `auth_schema.sql` | Users & Authentication | None |
-| `menu_schema.sql` | Menu system (sections, categories, items) | None |
-| `Cart.sql` | Shopping cart tables (with session support) | `auth_schema.sql`, `menu_schema.sql` |
-| `order_flow_schema.sql` | Orders & order items | All above |
-| `add_status_fields.sql` | Additional status fields (if needed) | Check file content |
+| File | Purpose | Dependencies | Clean Version |
+|------|---------|--------------|---------------|
+| `auth_schema.sql` | Users & Authentication | None | `auth_schema_clean.sql` |
+| `menu_schema.sql` | Menu system (sections, categories, items) | None | `menu_schema_clean.sql` |
+| `Cart.sql` | Shopping cart tables (with session support) | `auth_schema.sql`, `menu_schema.sql` | `Cart_clean.sql` |
+| `order_flow_schema.sql` | Orders & order items | All above | `order_flow_schema_clean.sql` |
+| `add_status_fields.sql` | Additional status fields (if needed) | Check file content | N/A |
+
+**Note on Clean Versions:**
+- Clean versions (`*_clean.sql`) have all inline comments removed for compatibility with DB clients that have issues parsing SQL comments
+- Use clean versions if you encounter "syntax error at end of input" or similar parsing errors
+- Clean versions contain identical schema structure, just without documentation comments
 
 ### Setup Commands (In Order)
+
+#### Option 1: Using Original Files (with comments)
 
 ```bash
 # Navigate to database folder
@@ -35,8 +42,36 @@ psql -U your_username -d restaurant_db -f Cart.sql
 # 4. Create order tables
 psql -U your_username -d restaurant_db -f order_flow_schema.sql
 
-# 6. (Optional) Add additional status fields if needed
+# 5. (Optional) Add additional status fields if needed
 # psql -U your_username -d restaurant_db -f add_status_fields.sql
+```
+
+#### Using Original Files:
+```powershell
+cd backend\database
+
+psql -U postgres -d restaurant_db -f auth_schema.sql
+psql -U postgres -d restaurant_db -f menu_schema.sql
+psql -U postgres -d restaurant_db -f Cart.sql
+psql -U postgres -d restaurant_db -f order_flow_schema.sql
+```
+
+#### Using Clean Files (recommended for DB clients):
+```powershell
+cd backend\database
+
+psql -U postgres -d restaurant_db -f auth_schema_clean.sql
+psql -U postgres -d restaurant_db -f menu_schema_clean.sql
+psql -U postgres -d restaurant_db -f Cart_clean.sql
+psql -U postgres -d restaurant_db -f order_flow_schema_clean
+# 2. Create menu tables with sample data
+psql -U your_username -d restaurant_db -f menu_schema_clean.sql
+
+# 3. Create cart tables (includes session_id for guest users)
+psql -U your_username -d restaurant_db -f Cart_clean.sql
+
+# 4. Create order tables
+psql -U your_username -d restaurant_db -f order_flow_schema_clean.sql
 ```
 
 ### PowerShell Commands (Windows)
@@ -45,14 +80,26 @@ psql -U your_username -d restaurant_db -f order_flow_schema.sql
 # Navigate to database folder
 cd backend\database
 
-# Run all schemas in order
-psql -U postgres -d restaurant_db -f auth_schema.sql
-psql -U postgres -d restaurant_db -f menu_schema.sql
-psql -U postgres -d restaurant_db -f Cart.sql
-psql -U postgres -d restaurant_db -f order_flow_schema.sql
+#### Using Original Files:
+```bash
+# Bash/Linux
+for file in auth_schema.sql menu_schema.sql Cart.sql order_flow_schema.sql; do
+  psql -U your_username -d restaurant_db -f $file
+done
+
+# PowerShell
+Get-ChildItem auth_schema.sql,menu_schema.sql,Cart.sql,order_flow_schema.sql | ForEach-Object { psql -U postgres -d restaurant_db -f $_.Name }
 ```
 
-### One-Line Setup (All Files)
+#### Using Clean Files:
+```bash
+# Bash/Linux
+for file in auth_schema_clean.sql menu_schema_clean.sql Cart_clean.sql order_flow_schema_clean.sql; do
+  psql -U your_username -d restaurant_db -f $file
+done
+
+# PowerShell
+Get-ChildItem auth_schema_clean.sql,menu_schema_clean.sql,Cart_clean.sql,order_flow_schema_clean
 
 ```bash
 # Bash/Linux
@@ -69,13 +116,24 @@ Get-ChildItem auth_schema.sql,menu_schema.sql,Cart.sql,order_flow_schema.sql | F
 After running all schemas, verify your tables:
 
 ```sql
--- List all tables
-\dt
+-- List all "syntax error at end of input"
+- **Cause**: Some DB client tools have issues parsing inline SQL comments (`--`)
+- **Solution**: Use the clean versions of schema files (`*_clean.sql`)
+- **Note**: This is a client-side parsing issue, not a PostgreSQL issue
 
--- Expected tables:
--- users, email_verifications
--- menu_sections, menu_categories, menu_items, menu_item_categories
--- carts, cart_items
+#### Error: relation "users" already exists
+- Some tables may already exist. Check with `\dt` command.
+- Either drop existing tables or skip that specific schema file.
+
+#### Error: function "update_updated_at_column" already exists
+- Function is created in `menu_schema.sql` and reused in other files.
+- This is normal and can be ignored if using `CREATE OR REPLACE FUNCTION`.
+
+#### DB Client Recommendations
+- **psql command line**: Works perfectly with all files (original or clean)
+- **pgAdmin**: Works with both versions
+- **DBeaver**: Works with both versions
+- **DBClient/Azure Data Studio**: May require clean versions for some setups
 -- orders, order_items
 
 -- Check table structures
