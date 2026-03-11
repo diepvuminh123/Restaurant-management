@@ -6,8 +6,33 @@ const menuValidation = require("../validations/menuValidation");
 const upload = require("../middlewares/upload");
 
 /**
- * GET /api/menu/sections
- * Lấy tất cả các phần menu (Món chính, Đồ uống, Món tráng miệng)
+ * @swagger
+ * /api/menu/sections:
+ *   get:
+ *     summary: Get all menu sections
+ *     description: Retrieve all menu sections (Món chính, Đồ uống, Món tráng miệng, etc.)
+ *     tags: [Menu]
+ *     responses:
+ *       200:
+ *         description: List of menu sections
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       section_name:
+ *                         type: string
+ *                       display_order:
+ *                         type: integer
  */
 router.get("/menu/sections", MenuController.getSections);
 /**
@@ -85,8 +110,79 @@ router.put(
 router.delete("/menu/categories/:id", MenuController.deleteCategory);
 
 /**
- * GET /api/menus
- * Lấy danh sách món ăn với filter, sort và phân trang
+ * @swagger
+ * /api/menus:
+ *   get:
+ *     summary: Get menu items
+ *     description: Retrieve list of menu items with filters, sorting, and pagination
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: query
+ *         name: section_id
+ *         schema:
+ *           type: integer
+ *         description: Filter by section ID
+ *       - in: query
+ *         name: category_id
+ *         schema:
+ *           type: integer
+ *         description: Filter by category ID
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by name or description
+ *       - in: query
+ *         name: min_price
+ *         schema:
+ *           type: number
+ *         description: Minimum price filter
+ *       - in: query
+ *         name: max_price
+ *         schema:
+ *           type: number
+ *         description: Maximum price filter
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [name_asc, name_desc, price_asc, price_desc, created_desc]
+ *         description: Sort order
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Items per page
+ *     responses:
+ *       200:
+ *         description: List of menu items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     totalItems:
+ *                       type: integer
  */
 router.get("/menus", MenuController.getMenuItems);
 

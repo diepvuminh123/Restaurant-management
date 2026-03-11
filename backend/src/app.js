@@ -1,11 +1,12 @@
 ﻿const express = require("express");
 const session = require('express-session');
-
+const swaggerUi = require('swagger-ui-express');
 
 const cors = require("cors");
 require('dotenv').config();
 
 const sessionConfig = require('./config/session');
+const swaggerSpec = require('./config/swagger');
 const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const cartRoutes = require('./routes/cartRoutes');
@@ -34,6 +35,12 @@ app.use(session(sessionConfig));
 app.get("/", (req, res) => {
   res.send("Backend is running ");
 });
+
+// API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Restaurant API Documentation'
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api', menuRoutes);
