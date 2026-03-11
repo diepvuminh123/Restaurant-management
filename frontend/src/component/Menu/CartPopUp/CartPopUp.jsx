@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import OrderItem from './OrderItem/OrderItem.jsx'; 
 import RoleSelectionModal from '../../RoleSelectionModal/RoleSelectionModal.jsx';
 import { STORAGE_KEYS } from '../../../constants/storageKeys';
@@ -8,6 +9,7 @@ import './CartPopUp.css';
 
 const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRemoveItem }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   
   //Tổng tiền của đơn hàng
@@ -97,7 +99,7 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
         
         {/* === HEADER === */}
         <div className="cart-header">
-          <h2>Giỏ hàng</h2>
+          <h2>{t('cart.title')}</h2>
           {/* Nút đóng Pop-up (Dấu X) */}
           <button className="close-button" onClick={onClose}>&times;</button>
         </div>
@@ -108,7 +110,7 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
         {/* === DANH SÁCH MÓN ĂN (Có thể cuộn nếu nhiều) === */}
         <div className="cart-items-list-container">
           {cartItems.length === 0 ? (
-            <p className="empty-cart-message">Giỏ hàng trống.</p>
+            <p className="empty-cart-message">{t('cart.empty')}</p>
           ) : (
             cartItems.map((item) => (
               <OrderItem
@@ -129,7 +131,7 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
         <div className="cart-footer">
           {/* Hàng Tạm tính */}
           <div className="subtotal-row">
-            <span className="label">Tạm tính</span>
+            <span className="label">{t('cart.subtotal')}</span>
             <strong className="amount">{subTotal.toLocaleString('vi-VN')}₫</strong>
           </div>
 
@@ -139,12 +141,12 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
             disabled={cartItems.length === 0} // Vô hiệu hóa nút nếu giỏ hàng trống
             onClick={handleCheckout}
           >
-            Đặt ngay
+            {t('cart.checkout')}
           </button>
           
           {/* Chú thích nhỏ dưới nút */}
           <p className="delivery-note">
-            Kiểm tra lại trước khi đặt hàng
+            {t('cart.confirmBeforeOrder')}
           </p>
         </div>
 

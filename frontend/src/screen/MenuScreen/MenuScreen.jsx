@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./MenuScreen.css";
 
 import Header from "../../component/Menu/Header/Header";
@@ -15,6 +16,7 @@ const PAGE_SIZE = 12;
 
 export default function MenuScreen({ user }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(1); 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState(""); 
@@ -150,10 +152,10 @@ export default function MenuScreen({ user }) {
           setMenuItems(response.items || []);
           setTotalPages(response.pagination?.total_pages || 0);
         } else {
-          setError(response.message || 'Không thể tải menu');
+          setError(response.message || t('menuScreen.loadError'));
         }
       } catch (err) {
-        setError(err.message || 'Có lỗi xảy ra khi tải menu');
+        setError(err.message || t('menuScreen.generalError'));
         console.error('Error fetching menu items:', err);
         setMenuItems([]);
       } finally {
@@ -164,7 +166,7 @@ export default function MenuScreen({ user }) {
     if (sectionId) {
       fetchMenuItems();
     }
-  }, [sectionId, selectedCats, price, search, sort, statusFilter, page]);
+  }, [sectionId, selectedCats, price, search, sort, statusFilter, page, t]);
 
   const toggleCat = (c) => {
     setPage(1);
@@ -266,25 +268,25 @@ export default function MenuScreen({ user }) {
               className={`status-filter-btn ${statusFilter === "" ? "active" : ""}`}
               onClick={() => handleStatusFilterChange("")}
             >
-              Tất cả
+              {t('menuScreen.all')}
             </button>
             <button
               className={`status-filter-btn ${statusFilter === "popular" ? "active" : ""}`}
               onClick={() => handleStatusFilterChange("popular")}
             >
-              Phổ biến
+              {t('menuScreen.popular')}
             </button>
             <button
               className={`status-filter-btn ${statusFilter === "new" ? "active" : ""}`}
               onClick={() => handleStatusFilterChange("new")}
             >
-              Món mới
+              {t('menuScreen.new')}
             </button>
             <button
               className={`status-filter-btn ${statusFilter === "soldout" ? "active" : ""}`}
               onClick={() => handleStatusFilterChange("soldout")}
             >
-              Đang hết hàng
+              {t('menuScreen.outOfStock')}
             </button>
           </div>
 
@@ -298,14 +300,14 @@ export default function MenuScreen({ user }) {
 
           {error && (
             <div className="menu-error">
-              <p>Lỗi:  {error}</p>
-              <button onClick={() => window.location.reload()}>Thử lại</button>
+              <p>{t('common.error')}: {error}</p>
+              <button onClick={() => window.location.reload()}>{t('menuScreen.retry')}</button>
             </div>
           )}
 
           {!loading && !error && menuItems.length === 0 && (
             <div className="menu-empty">
-              <p>Không tìm thấy món ăn phù hợp</p>
+              <p>{t('menuScreen.noResults')}</p>
             </div>
           )}
 
