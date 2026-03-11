@@ -6,6 +6,121 @@
 
 ## 📅 March 12, 2026
 
+### ❌ Issue: Guest Cart Session Not Persisting
+**Priority:** Critical  
+**Component:** Backend - Session Management & Cart  
+**Status:** ✅ Resolved
+
+#### Problem
+```
+1. Khi xóa món trong cart → không xóa được
+2. Database tạo nhiều dòng cart với session_id khác nhau
+3. Khi thêm món mới → món cũ bị thay thế (không cộng dồn)
+```
+
+**Behavior:**
+- Mỗi API request có session_id khác nhau
+- Backend tạo cart mới mỗi lần (vì không nhận diện được session cũ)
+- Guest cart không persist giữa các requests
+
+#### Root Cause
+1. **`saveUninitialized: false`** trong `session.js` → Session của guest không được lưu vào database
+2. **`optionalAuth`** middleware không làm gì → Session không được khởi tạo
+3. Session ID thay đổi mỗi request → Backend coi như user mới
+
+#### How Sessions Work
+```javascript
+// ❌ saveUninitialized: false
+// → Session chỉ được lưu KHI CÓ DATA (req.session.userId)
+// → Guest users không có userId → Session không lưu → SessionID mới mỗi request
+
+// ✅ saveUninitialized: true
+// → Session được lưu NGAY LẬP TỨC khi được tạo
+// → Guest users có sessionID persistent → Cart hoạt động đúng
+```
+
+#### Solution
+
+**1. Fix session.js:**
+```javascript
+// backend/src/config/session.js
+const sessionConfig = {
+  // ... other config
+  resave: false,
+  saveUninitialized: true,  // ✅ Changed from false to true
+  // ...
+};
+```
+
+**2. Fix optionalAuth middleware:**
+```javascript
+// backend/src/middlewares/auth.js
+const optionalAuth = (req, res, next) => {
+  // Đảm bảo session được khởi tạo cho guest users
+  if (!req.session.initialized) {
+    req.session.initialized = true;
+  }
+  next();
+};
+```
+
+#### Why This Works
+- `saveUninitialized: true` → Session được lưu vào `user_sessions` table ngay khi tạo
+- `req.session.initialized = true` → Force session có data → Đảm bảo được lưu
+- SessionID giữ nguyên giữa các requests → Cart.findOrCreateActiveCart() tìm đúng cart
+- Guest cart persist → Add/Update/Delete hoạt động bình thường
+
+#### Verification Steps
+```sql
+-- Check sessions table
+SELECT sid, sess, expire FROM user_sessions 
+ORDER BY expire DESC LIMIT 5;
+
+-- Check carts with session_id
+SELECT id, user_id, session_id, status, created_at 
+FROM carts 
+WHERE session_id IS NOT NULL;
+
+-- Should see: 1 ACTIVE cart per session_id
+```
+
+#### Testing
+1. ✅ Clear cookies trong browser
+2. ✅ Add item to cart (as guest)
+3. ✅ Check Network tab → Cookie `restaurant_session` xuất hiện
+4. ✅ Add another item → Same session_id, items cộng dồn
+5. ✅ Remove item → Xóa thành công
+6. ✅ Refresh page → Cart vẫn còn
+
+#### Lessons Learned
+- ⚠️ **`saveUninitialized: false`** chỉ phù hợp khi KHÔNG cần persist guest sessions
+- ⚠️ Guest cart/basket features **BẮT BUỘC** phải dùng `saveUninitialized: true`
+- ⚠️ Always test session persistence trước khi implement cart/basket
+- ⚠️ Middleware `optionalAuth` phải đảm bảo session được khởi tạo
+
+#### Related Config
+```javascript
+// Frontend - Ensure credentials sent
+fetch(url, {
+  credentials: 'include',  // ✅ Must have
+  // ...
+});
+
+// Backend - CORS must allow credentials
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true,  // ✅ Must be true
+  // ...
+}));
+```
+
+#### Prevention
+- [ ] Document session requirements cho cart/guest features
+- [ ] Add session persistence test to test suite
+- [ ] Code review: Check session config when implementing guest features
+
+---
+
 ### ❌ Issue: Validation Library Mismatch
 **Priority:** High  
 **Component:** Backend - Cart API Validation  

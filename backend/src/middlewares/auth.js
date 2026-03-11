@@ -33,6 +33,10 @@ const requireRole = (...roles) => {
 };
 
 const optionalAuth = (req, res, next) => {
+  // Đảm bảo session được khởi tạo cho guest users
+  if (!req.session.initialized) {
+    req.session.initialized = true;
+  }
   next();
 };
 
