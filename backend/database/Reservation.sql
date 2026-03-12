@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS reservation (
   reservation_id SERIAL PRIMARY KEY NOT NULL,
   user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
   session_id VARCHAR(255) NOT NULL, -- TRƯỜNG HỢP ĐẶT BÀN MÀ KHÔNG ĐĂNG NHẬP VÔ HỆ THỐNG
-  table_id SERIAL NOT NULL REFERENCES restaurant_table(table_id) ON DELETE CASCADE,
-  number_of_guests INT NOT NULL CHECK (number_of_guests <= 0)
-  reservation_state RESTAURANT_TABLE_STATUS NOT NULL DEFAULT 'CONFIRM'
+  table_id INT NOT NULL REFERENCES restaurant_table(table_id) ON DELETE CASCADE,
+  number_of_guests INT NOT NULL CHECK (number_of_guests > 0)
+  reservation_state RESERVATION_STATUS_TYPE NOT NULL DEFAULT 'CONFIRM'
   
   reservation_time TIMPESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
