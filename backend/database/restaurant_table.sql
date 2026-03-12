@@ -5,15 +5,15 @@ CREATE TYPE RESTAURANT_TABLE_STATUS AS ENUM ('RESERVED', 'AVAILABLE', 'OCCUPIED'
        --occupied: Bàn đang có khách || tạm thời ngưng phục vụ
 
 -- TẠO TABLE
-CREATE TABLE IF NOT EXISTS restaurant_table {
+CREATE TABLE IF NOT EXISTS restaurant_table (
        table_id SERIAL PRIMARY KEY,
        capacity INT NOT NULL CHECK (capacity > 0),
        table_status RESTAURANT_TABLE_STATUS NOT NULL DEFAULT 'AVAILABLE', --Trạng thái của bàn
 
-       position_x INT NOT NULL CHECK (position_x >= 0) --Vị trí của bàn trên map theo trục Ox
-       position_y INT NOT NULL CHECK (position_y >= 0) --Vị trí của bàn trên map theo trục Oy
+       position_x INT NOT NULL CHECK (position_x >= 0), --Vị trí của bàn trên map theo trục Ox
+       position_y INT NOT NULL CHECK (position_y >= 0), --Vị trí của bàn trên map theo trục Oy
        restaurant_note VARCHAR(255) --Ghi chú từ phía nhà hàng
-}
+)
 
 
 
