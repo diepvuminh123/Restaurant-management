@@ -33,9 +33,9 @@ const requireRole = (...roles) => {
 };
 
 const optionalAuth = (req, res, next) => {
-  // Đảm bảo session được khởi tạo cho guest users
-  if (!req.session.initialized) {
-    req.session.initialized = true;
+  // Chỉ tạo session cho luồng guest cart, không ép tạo cho user đã đăng nhập
+  if (req.session && !req.session.userId && !req.session.guestCartSession) {
+    req.session.guestCartSession = true;
   }
   next();
 };

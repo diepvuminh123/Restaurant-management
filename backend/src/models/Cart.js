@@ -11,6 +11,10 @@ class Cart {
     try {
       await client.query('BEGIN');
 
+      if (userId) {
+        sessionId = null;
+      }
+
       let cart;
       if (userId) {
         const result = await client.query(

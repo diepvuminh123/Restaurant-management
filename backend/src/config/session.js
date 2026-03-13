@@ -11,7 +11,7 @@ const sessionConfig = {
   }),
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
-  saveUninitialized: true,  // ✅ Changed to true - Lưu session ngay cả khi chưa có userId (cho guest cart)
+  saveUninitialized: false, // Chỉ lưu session khi thực sự có dữ liệu (login/guest cart)
   name: process.env.SESSION_NAME || 'restaurant_session',
   cookie: {
     maxAge: parseInt(process.env.SESSION_MAX_AGE) || 24 * 60 * 60 * 1000, // 24 hours

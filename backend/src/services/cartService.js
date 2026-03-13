@@ -1,15 +1,25 @@
 const Cart = require('../models/Cart');
 
 class CartService {
+  static resolveCartOwner(userId, sessionId) {
+    if (userId) {
+      return { userId, sessionId: null };
+    }
+
+    if (!sessionId) {
+      throw new Error('Cần có user_id hoặc session_id');
+    }
+
+    return { userId: null, sessionId };
+  }
+
   /**
    * Lấy giỏ hàng hiện tại của user hoặc guest
    */
   static async getCurrentCart(userId, sessionId) {
-    if (!userId && !sessionId) {
-      throw new Error('Cần có user_id hoặc session_id');
-    }
+    const owner = this.resolveCartOwner(userId, sessionId);
 
-    const cart = await Cart.findOrCreateActiveCart(userId, sessionId);
+    const cart = await Cart.findOrCreateActiveCart(owner.userId, owner.sessionId);
     const cartWithItems = await Cart.getCartWithItems(cart.id);
     const totals = await Cart.calculateCartTotal(cart.id);
 
@@ -27,11 +37,13 @@ class CartService {
       throw new Error('Số lượng phải lớn hơn 0');
     }
 
-    const cart = await Cart.findOrCreateActiveCart(userId, sessionId);
+    const owner = this.resolveCartOwner(userId, sessionId);
+
+    const cart = await Cart.findOrCreateActiveCart(owner.userId, owner.sessionId);
     
     await Cart.addItem(cart.id, menuItemId, quantity, note);
 
-    return await this.getCurrentCart(userId, sessionId);
+    return await this.getCurrentCart(owner.userId, owner.sessionId);
   }
 
   /**
@@ -42,7 +54,9 @@ class CartService {
       throw new Error('Số lượng phải lớn hơn 0');
     }
 
-    const cart = await Cart.findOrCreateActiveCart(userId, sessionId);
+    const owner = this.resolveCartOwner(userId, sessionId);
+
+    const cart = await Cart.findOrCreateActiveCart(owner.userId, owner.sessionId);
 
     if (quantity !== undefined) {
       const updated = await Cart.updateItemQuantity(cartItemId, cart.id, quantity);
@@ -58,31 +72,33 @@ class CartService {
       }
     }
 
-    return await this.getCurrentCart(userId, sessionId);
+    return await this.getCurrentCart(owner.userId, owner.sessionId);
   }
 
   /**
    * Xóa item khỏi giỏ hàng
    */
   static async removeItemFromCart(userId, sessionId, cartItemId) {
-    const cart = await Cart.findOrCreateActiveCart(userId, sessionId);
+    const owner = this.resolveCartOwner(userId, sessionId);
+    const cart = await Cart.findOrCreateActiveCart(owner.userId, owner.sessionId);
     
     const removed = await Cart.removeItem(cartItemId, cart.id);
     if (!removed) {
       throw new Error('Không tìm thấy item trong giỏ hàng');
     }
 
-    return await this.getCurrentCart(userId, sessionId);
+    return await this.getCurrentCart(owner.userId, owner.sessionId);
   }
 
   /**
    * Xóa toàn bộ giỏ hàng
    */
   static async clearCart(userId, sessionId) {
-    const cart = await Cart.findOrCreateActiveCart(userId, sessionId);
+    const owner = this.resolveCartOwner(userId, sessionId);
+    const cart = await Cart.findOrCreateActiveCart(owner.userId, owner.sessionId);
     await Cart.clearCart(cart.id);
     
-    return await this.getCurrentCart(userId, sessionId);
+    return await this.getCurrentCart(owner.userId, owner.sessionId);
   }
 
   /**

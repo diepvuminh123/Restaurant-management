@@ -1,14 +1,19 @@
 const CartService = require('../services/cartService');
 
 class CartController {
+  static getCartOwner(req) {
+    const userId = req.session?.userId || null;
+    const sessionId = userId ? null : req.sessionID;
+    return { userId, sessionId };
+  }
+
   /**
    * GET /api/cart
    * Lấy giỏ hàng hiện tại
    */
   static async getCart(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
 
       const cart = await CartService.getCurrentCart(userId, sessionId);
 
@@ -33,8 +38,7 @@ class CartController {
    */
   static async addItem(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
       const { menu_item_id, quantity, note } = req.body;
 
       if (!menu_item_id) {
@@ -74,8 +78,7 @@ class CartController {
    */
   static async updateItem(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
       const cartItemId = parseInt(req.params.id);
       const { quantity, note } = req.body;
 
@@ -115,8 +118,7 @@ class CartController {
    */
   static async removeItem(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
       const cartItemId = parseInt(req.params.id);
 
       if (!cartItemId) {
@@ -153,8 +155,7 @@ class CartController {
    */
   static async clearCart(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
 
       const cart = await CartService.clearCart(userId, sessionId);
 
@@ -220,8 +221,7 @@ class CartController {
    */
   static async validateCart(req, res) {
     try {
-      const userId = req.session?.userId || null;
-      const sessionId = req.sessionID;
+      const { userId, sessionId } = CartController.getCartOwner(req);
 
       const result = await CartService.validateCart(userId, sessionId);
 
