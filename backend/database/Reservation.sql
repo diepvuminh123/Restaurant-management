@@ -74,10 +74,6 @@ CREATE OR REPLACE VIEW reservation_in_day AS
   AND r.reservation_time >= CURRENT_DATE
   AND r.reservation_time < CURRENT_DATE + INTERVAL '1 day';
 
--- NOTE: Không tự động cập nhật restaurant_table.table_status theo reservation_state.
--- Availability của bàn là theo thời gian (reservation_time) nên phải được tính từ bảng reservation.
--- Nếu cần, table_status chỉ nên dùng cho trạng thái "cứng" (ví dụ: tạm ngưng phục vụ) do nhà hàng set thủ công.
 
--- Cleanup các trigger/function cũ (nếu đã từng tạo)
 DROP TRIGGER IF EXISTS trg_update_table_status ON reservation;
 DROP FUNCTION IF EXISTS update_table_status();
