@@ -10,6 +10,7 @@ const swaggerSpec = require('./config/swagger');
 const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const reservationRoutes = require('./routes/reservationRoutes')
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -45,6 +46,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 app.use('/api/auth', authRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', cartRoutes);
+app.use('/api', reservationRoutes);
 
 
 // Error Handler

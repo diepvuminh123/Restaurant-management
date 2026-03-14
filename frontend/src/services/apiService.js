@@ -288,6 +288,38 @@ class ApiService {
       method: "GET",
     });
   }
+
+  // ============= RESERVATION API =============
+
+  /**
+   * Lấy danh sách bàn + khả dụng theo thời gian/số khách
+   */
+  static async getTablesAvailability({ date, time, guests }) {
+    const query = new URLSearchParams({
+      date: String(date),
+      time: String(time),
+      guests: String(guests),
+    });
+
+    return this.request(`/tables/availability?${query.toString()}`, {
+      method: "GET",
+    });
+  }
+
+  /**
+   * Tạo reservation (guest hoặc user; backend tự lấy user/session từ cookie)
+   */
+  static async createReservation({ reservation_time, number_of_guests, table_id, note }) {
+    return this.request("/reservations", {
+      method: "POST",
+      body: {
+        reservation_time,
+        number_of_guests,
+        table_id,
+        note,
+      },
+    });
+  }
   
 }
 
