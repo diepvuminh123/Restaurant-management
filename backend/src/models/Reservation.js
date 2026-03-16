@@ -1,7 +1,8 @@
 const pool = require('../config/database');
+require('dotenv').config();
 
 class Reservation {
-  static DEFAULT_SLOT_MINUTES = 120;
+  static DEFAULT_SLOT_MINUTES = process.env.DEFAULT_SLOT_MINUTES || 120;
 
   static async getTablesWithAvailability(reservationTime, numOfGuests, slotMinutes = Reservation.DEFAULT_SLOT_MINUTES) {
     const result = await pool.query(
@@ -39,6 +40,17 @@ class Reservation {
   static async getReservationById(reservationId) {
     const result = await pool.query(`SELECT * FROM reservation WHERE reservation_id = $1`, [reservationId]);
     return result.rows[0] || null;
+  }
+
+  static async getReservationsByUserId(userId) {
+    const result = await pool.query(
+      `SELECT reservation_id, table_id, number_of_guests, reservation_state, reservation_time, note, created_at
+       FROM reservation
+       WHERE user_id = $1
+       ORDER BY reservation_time DESC`,
+      [userId]
+    );
+    return result.rows;
   }
 
   static async create({ owner, tableId, reservationTime, numberOfGuests, note = null }) {

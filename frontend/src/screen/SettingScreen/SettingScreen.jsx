@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import SettingTabBar from '../../component/SettingForm/SettingTabBar/SettingTabBar';
 import UserInfoForm from '../../component/SettingForm/SettingTabBar/UserInfoForm/UserInfoForm';
+import ReservationHistory from '../../component/SettingForm/SettingTabBar/ReservationHistory/ReservationHistory';
 import BackButton from '../../component/BackButton/BackButton'
 
 import './SettingScreen.css'
@@ -20,7 +21,7 @@ export default function SettingScreen({user}) {
       case 'delivery':
         return <div>Theo dõi đơn mang về</div>;
       case 'history':
-        return <div>Lịch sử đặt hàng</div>;
+        return <ReservationHistory />;
       default:
         return <UserInfoForm user={user} />;
     }

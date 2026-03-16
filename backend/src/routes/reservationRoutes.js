@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const ReservationController = require('../controllers/reservationController');
-const { optionalAuth } = require('../middlewares/auth');
+const { optionalAuth, requireAuth } = require('../middlewares/auth');
 const validateBody = require('../middlewares/validate');
 const validateQuery = require('../middlewares/validateQuery');
 
@@ -13,7 +13,7 @@ const {
 
 // Phần booking 
 
-// GET /api/tables/availability?date=YYYY-MM-DD&time=HH:mm&guests=
+// GET /api/tables/availability?date=YYYY-MM-DD&time=HH:mm&guests=numOfGuests
 router.get(
 	'/tables/availability',
 	optionalAuth,
@@ -28,5 +28,8 @@ router.post(
 	validateBody(createReservationBodySchema),
 	ReservationController.createReservation
 );
+
+// GET /api/reservations/history
+router.get('/reservations/history', requireAuth, ReservationController.getReservationHistory);
 
 module.exports = router;

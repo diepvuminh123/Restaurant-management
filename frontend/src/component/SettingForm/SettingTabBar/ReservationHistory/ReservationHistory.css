@@ -1,0 +1,50 @@
+.reservation-history__hint {
+  font-size: 14px;
+  color: #777;
+}
+
+.reservation-history__error {
+  font-size: 14px;
+  color: #c66b33;
+  background: #fdf2ee;
+  border: 1px solid #e36a2d;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.reservation-history__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.reservation-history__item {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.reservation-history__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.reservation-history__label {
+  color: #666;
+  font-size: 14px;
+}
+
+.reservation-history__value {
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.reservation-history__note {
+  font-weight: 500;
+  white-space: pre-wrap;
+}

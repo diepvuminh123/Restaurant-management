@@ -1,4 +1,6 @@
 const ReservationService = require('../services/reservationService');
+const reservationMailer = require('../reservationMailer');
+const User = require('../models/User');
 
 class ReservationController {
 	static getReservationOwner(req) {
@@ -46,6 +48,26 @@ class ReservationController {
 			const { userId, sessionId } = ReservationController.getReservationOwner(req);
 			const reservation = await ReservationService.createReservation(userId, sessionId, req.body);
 
+			// Send confirmation email for logged-in users (guest flow has no email in payload)
+			if (userId) {
+				try {
+					const userEmailRow = await User.getEmailById(userId);
+					const to = userEmailRow?.email;
+					if (to) {
+						await reservationMailer({
+							to,
+							reservation_id: reservation.reservation_id,
+							reservation_time: reservation.reservation_time,
+							table_id: reservation.table_id,
+							number_of_guests: reservation.number_of_guests,
+							note: reservation.note,
+						});
+					}
+				} catch (mailError) {
+					console.error('Reservation email error:', mailError);
+				}
+			}
+
 			res.status(201).json({
 				success: true,
 				message: 'Đặt bàn thành công',
@@ -56,6 +78,25 @@ class ReservationController {
 			res.status(400).json({
 				success: false,
 				message: error.message || 'Lỗi khi đặt bàn',
+				error: error.message,
+			});
+		}
+	}
+
+	static async getReservationHistory(req, res) {
+		try {
+			const userId = req.session?.userId;
+			const reservations = await ReservationService.getReservationHistory(userId);
+
+			res.json({
+				success: true,
+				data: reservations,
+			});
+		} catch (error) {
+			console.error('Get reservation history error:', error);
+			res.status(400).json({
+				success: false,
+				message: error.message || 'Lỗi khi lấy lịch sử đặt bàn',
 				error: error.message,
 			});
 		}

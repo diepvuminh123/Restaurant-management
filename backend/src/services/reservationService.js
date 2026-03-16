@@ -51,6 +51,13 @@ class ReservationService {
       note: note || null,
     });
   }
+
+  static async getReservationHistory(userId) {
+    if (!userId) {
+      throw new Error('Bạn cần đăng nhập để xem lịch sử đặt bàn');
+    }
+    return await Reservation.getReservationsByUserId(userId);
+  }
 }
 
 module.exports = ReservationService;

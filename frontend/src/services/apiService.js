@@ -320,6 +320,12 @@ class ApiService {
       },
     });
   }
+
+  static async getReservationHistory() {
+    return this.request('/reservations/history', {
+      method: 'GET',
+    });
+  }
   
 }
 
