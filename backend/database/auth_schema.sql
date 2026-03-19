@@ -1,6 +1,6 @@
 
 BEGIN;
-
+ROLLBACK;
 CREATE DATABASE restaurant_db;
 
 CREATE TABLE users (

@@ -6,7 +6,7 @@
     "connect-pg-simple": "^10.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "^0.0.0"
   },
   "scripts": {
     "dev": "concurrently -n BE,FE -c auto \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
@@ -16,5 +16,4 @@
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
-
 }
