@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { IoArrowBack, IoCheckmarkCircle, IoCardOutline, IoBusiness, IoLogoUsd, IoChatbubbleEllipsesOutline, IoHappyOutline } from 'react-icons/io5';
 import { useToast } from '../../hooks/useToast';
 import { useConfirm } from '../../hooks/useConfirm';
+import { useCart } from '../../hooks/useCart';
+import ApiService from '../../services/apiService';
 import ToastContainer from '../../component/Toast/ToastContainer';
 import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import './CheckoutScreen.css';
@@ -11,12 +13,21 @@ const CheckoutScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toasts, removeToast, error, success } = useToast();
-  const { confirmState, showConfirm, hideConfirm } = useConfirm();
-  const { cartItems = [], totalAmount = 0, customerInfo: initialCustomerInfo = {} } = location.state || {};
+  const { confirmState, showConfirm } = useConfirm();
+  const { customerInfo: initialCustomerInfo = {} } = location.state || {};
+
+  const {
+    cartItems,
+    cartTotalAmount,
+    validateCart,
+    refreshCart,
+    loading: cartLoading
+  } = useCart();
   
   const [currentStep, setCurrentStep] = useState(1); // 1: Chọn món, 2: Cọc, 3: Gửi bill
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('zalopay');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderResult, setOrderResult] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     name: initialCustomerInfo.name || '',
     email: initialCustomerInfo.email || '',
@@ -25,6 +36,8 @@ const CheckoutScreen = () => {
     pickupDate: '',
     notes: ''
   });
+
+  const totalAmount = cartTotalAmount;
 
   // Tính số tiền cọc (50% tổng đơn)
   const depositAmount = totalAmount * 0.5;
@@ -46,15 +59,30 @@ const CheckoutScreen = () => {
   };
 
   const handleConfirmOrder = () => {
-    // Validate customer info
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
-      error('Vui lòng điền đầy đủ thông tin!');
+    if (cartLoading) {
       return;
     }
-    
-    // Chuyển sang bước thanh toán
-    success('Thông tin đã được xác nhận!');
-    setCurrentStep(2);
+
+    if (cartItems.length === 0) {
+      error('Giỏ hàng đang trống, vui lòng chọn món trước khi đặt.');
+      return;
+    }
+
+    // Validate customer info
+    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.pickupDate || !customerInfo.pickupTime) {
+      error('Vui lòng điền đầy đủ thông tin bắt buộc và thời gian nhận món.');
+      return;
+    }
+
+    validateCart().then((result) => {
+      if (!result.valid) {
+        error((result.errors || ['Giỏ hàng không hợp lệ']).join('\n'));
+        return;
+      }
+
+      success('Thông tin đã được xác nhận!');
+      setCurrentStep(2);
+    });
   };
 
   const handleConfirmDeposit = async () => {
@@ -68,13 +96,36 @@ const CheckoutScreen = () => {
 
     if (confirmed) {
       setIsProcessing(true);
-      
-      // Giả lập xử lý thanh toán
-      setTimeout(() => {
-        // setIsProcessing(false);
-        setCurrentStep(3); // Chuyển sang bước gửi bill
-        success('Thanh toán cọc thành công!');
-      }, 1500);
+
+      try {
+        const pickupTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}:00`);
+
+        if (Number.isNaN(pickupTime.getTime())) {
+          error('Thời gian nhận món không hợp lệ.');
+          return;
+        }
+
+        const response = await ApiService.createOrder({
+          customer_name: customerInfo.name,
+          customer_phone: customerInfo.phone,
+          customer_email: customerInfo.email,
+          pickup_time: pickupTime.toISOString(),
+          note: customerInfo.notes || '',
+          payment_method: selectedPaymentMethod,
+          deposit_paid: true,
+        });
+
+        if (response.success) {
+          setOrderResult(response.data);
+          setCurrentStep(3);
+          await refreshCart();
+          success('Thanh toán cọc thành công và đơn đã được tạo!');
+        }
+      } catch (err) {
+        error(err.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -86,7 +137,7 @@ const CheckoutScreen = () => {
 
   const handleComplete = () => {
     // Chuyển về trang menu
-    navigate('/menu');
+    navigate('/menu', { replace: true });
   };
 
   return (
@@ -203,9 +254,12 @@ const CheckoutScreen = () => {
                 <div className="order-summary-sidebar">
                   <h3>Đơn hàng của bạn</h3>
                   <div className="order-items-list">
+                    {cartItems.length === 0 && (
+                      <p className="order-note">Giỏ hàng đang trống.</p>
+                    )}
                     {cartItems.map((item) => (
-                      <div key={item.id} className="order-item-row">
-                        <img src={item.images?.[0] || '/placeholder.png'} alt={item.name} />
+                      <div key={`${item.id}-${item.cartItemId}`} className="order-item-row">
+                        <img src={item.imageUrl || '/placeholder.png'} alt={item.name} />
                         <div className="item-info">
                           <p className="item-name">{item.name}</p>
                           <p className="item-quantity">Số lượng: x{item.quantity}</p>
@@ -239,6 +293,10 @@ const CheckoutScreen = () => {
                 <div className="summary-row">
                   <span>Họ tên khách:</span>
                   <span className="summary-value">{customerInfo.name}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Số điện thoại:</span>
+                  <span className="summary-value">{customerInfo.phone}</span>
                 </div>
                 <div className="summary-row">
                   <span>Email:</span>
@@ -336,6 +394,14 @@ const CheckoutScreen = () => {
                 <br />
                 Nhà hàng sẽ xác nhận đơn hàng của bạn trong thời gian sớm nhất.
               </p>
+
+              {orderResult && (
+                <div className="bill-confirmation">
+                  <h3>Mã đơn hàng của bạn: #{orderResult.id}</h3>
+                  <p>Thời gian nhận món: {new Date(orderResult.pickup_time).toLocaleString('vi-VN')}</p>
+                  <p>Số tiền đã cọc: {Number(orderResult.deposit_amount || 0).toLocaleString('vi-VN')}đ</p>
+                </div>
+              )}
 
               <div className="bill-confirmation">
                 <h3>Gửi bill xác nhận</h3>

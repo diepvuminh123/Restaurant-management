@@ -289,6 +289,18 @@ class ApiService {
     });
   }
 
+  // ============= ORDER API =============
+
+  /**
+   * Tạo đơn hàng từ giỏ hiện tại
+   */
+  static async createOrder(payload) {
+    return this.request('/orders', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**
