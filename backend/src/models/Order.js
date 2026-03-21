@@ -1,6 +1,15 @@
 const pool = require('../config/database');
 
 class Order {
+  static formatOrderCode(order) {
+    const createdDate = new Date(order.created_at || Date.now());
+    const y = createdDate.getUTCFullYear();
+    const m = String(createdDate.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(createdDate.getUTCDate()).padStart(2, '0');
+    const seq = String(order.id).padStart(6, '0');
+    return `ORD-${y}${m}${d}-${seq}`;
+  }
+
   static async createFromCart({
     userId = null,
     sessionId = null,
@@ -9,7 +18,7 @@ class Order {
     customerEmail,
     pickupTime,
     note = null,
-    paymentStatus = 'DEPOSIT_PAID'
+    paymentStatus = 'UNPAID'
   }) {
     const client = await pool.connect();
 
@@ -130,6 +139,14 @@ class Order {
       );
 
       const order = orderInsert.rows[0];
+      const orderCode = this.formatOrderCode(order);
+
+      await client.query(
+        `UPDATE orders
+         SET order_code = $1, updated_at = NOW()
+         WHERE id = $2`,
+        [orderCode, order.id]
+      );
 
       for (const item of items) {
         const lineTotal = Number(item.unit_price) * Number(item.quantity);
@@ -186,6 +203,7 @@ class Order {
     const orderResult = await pool.query(
       `SELECT
          o.id,
+        o.order_code,
          o.user_id,
          o.session_id,
          o.cart_id,

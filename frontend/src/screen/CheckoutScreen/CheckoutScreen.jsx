@@ -399,7 +399,7 @@ const CheckoutScreen = () => {
 
               {orderResult && (
                 <div className="bill-confirmation">
-                  <h3>Mã đơn hàng của bạn: #{orderResult.id}</h3>
+                  <h3>Mã đơn hàng của bạn: {orderResult.order_code || `#${orderResult.id}`}</h3>
                   <p>Thời gian nhận món: {new Date(orderResult.pickup_time).toLocaleString('vi-VN')}</p>
                   <p>Số tiền đã cọc: {Number(orderResult.deposit_amount || 0).toLocaleString('vi-VN')}đ</p>
                 </div>
