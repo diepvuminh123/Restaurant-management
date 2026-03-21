@@ -1,6 +1,19 @@
 const Order = require('../models/Order');
 
 class OrderService {
+  static paymentMethodToLabel(paymentMethod) {
+    switch (paymentMethod) {
+      case 'zalopay':
+        return 'ZaloPay';
+      case 'acb':
+        return 'ACB';
+      case 'vietcombank':
+        return 'Vietcombank';
+      default:
+        return 'Unknown';
+    }
+  }
+
   static resolveOrderOwner(userId, sessionId) {
     if (userId) {
       return { userId, sessionId: null };
@@ -31,7 +44,12 @@ class OrderService {
       throw error;
     }
 
-    const paymentStatus = payload.deposit_paid ? 'DEPOSIT_PAID' : 'UNPAID';
+    const paymentStatus = 'UNPAID';
+    const paymentLabel = this.paymentMethodToLabel(payload.payment_method);
+    const customerNote = payload.note?.trim() || '';
+    const combinedNote = customerNote
+      ? `[PAYMENT_METHOD:${paymentLabel}] ${customerNote}`
+      : `[PAYMENT_METHOD:${paymentLabel}]`;
 
     return Order.createFromCart({
       userId: owner.userId,
@@ -40,9 +58,38 @@ class OrderService {
       customerPhone: payload.customer_phone,
       customerEmail: payload.customer_email,
       pickupTime: pickupDate.toISOString(),
-      note: payload.note || null,
+      note: combinedNote,
       paymentStatus
     });
+  }
+
+  static async confirmDeposit(orderId) {
+    const order = await Order.getOrderByIdForStaff(orderId);
+
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (order.status === 'CANCELED') {
+      const error = new Error('Đơn hàng đã hủy, không thể xác nhận cọc');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    if (order.payment_status === 'DEPOSIT_PAID' || order.payment_status === 'PAID') {
+      return order;
+    }
+
+    if (order.payment_status !== 'UNPAID') {
+      const error = new Error('Trạng thái thanh toán hiện tại không thể xác nhận cọc');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    const updatedOrder = await Order.confirmDepositPaid(orderId);
+    return updatedOrder;
   }
 }
 

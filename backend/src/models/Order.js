@@ -226,6 +226,30 @@ class Order {
 
     return orderResult.rows[0] || null;
   }
+
+  static async getOrderByIdForStaff(orderId) {
+    const result = await pool.query(
+      `SELECT id, status, payment_status
+       FROM orders
+       WHERE id = $1
+       LIMIT 1`,
+      [orderId]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async confirmDepositPaid(orderId) {
+    const result = await pool.query(
+      `UPDATE orders
+       SET payment_status = 'DEPOSIT_PAID', updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [orderId]
+    );
+
+    return result.rows[0] || null;
+  }
 }
 
 module.exports = Order;

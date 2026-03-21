@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const OrderController = require('../controllers/orderController');
-const { optionalAuth } = require('../middlewares/auth');
+const { optionalAuth, requireRole } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 const { createOrderSchema } = require('../validations/orderValidation');
 
@@ -47,9 +47,6 @@ const { createOrderSchema } = require('../validations/orderValidation');
  *                 type: string
  *                 enum: [zalopay, acb, vietcombank]
  *                 example: zalopay
- *               deposit_paid:
- *                 type: boolean
- *                 example: true
  *     responses:
  *       201:
  *         description: Order created successfully
@@ -61,5 +58,37 @@ const { createOrderSchema } = require('../validations/orderValidation');
  *         description: Server error
  */
 router.post('/orders', optionalAuth, validate(createOrderSchema), OrderController.createOrder);
+
+/**
+ * @swagger
+ * /api/orders/{id}/deposit-confirm:
+ *   patch:
+ *     summary: Confirm order deposit
+ *     description: Employee/Admin confirms that customer has paid the deposit
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Deposit confirmed successfully
+ *       400:
+ *         description: Invalid order ID
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not enough permission
+ *       404:
+ *         description: Order not found
+ *       409:
+ *         description: Invalid payment/order state for confirming deposit
+ */
+router.patch('/orders/:id/deposit-confirm', requireRole('admin', 'employee'), OrderController.confirmDeposit);
 
 module.exports = router;

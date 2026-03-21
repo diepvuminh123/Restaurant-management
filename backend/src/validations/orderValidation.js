@@ -36,9 +36,7 @@ const createOrderSchema = Joi.object({
     .messages({
       'any.only': 'Phương thức thanh toán không hợp lệ',
       'any.required': 'payment_method là bắt buộc'
-    }),
-
-  deposit_paid: Joi.boolean().default(true)
+    })
 });
 
 module.exports = {

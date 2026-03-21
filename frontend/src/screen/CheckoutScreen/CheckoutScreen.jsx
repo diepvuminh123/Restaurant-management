@@ -58,7 +58,7 @@ const CheckoutScreen = () => {
     }));
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     if (cartLoading) {
       return;
     }
@@ -74,7 +74,8 @@ const CheckoutScreen = () => {
       return;
     }
 
-    validateCart().then((result) => {
+    try {
+      const result = await validateCart();
       if (!result.valid) {
         error((result.errors || ['Giỏ hàng không hợp lệ']).join('\n'));
         return;
@@ -82,7 +83,9 @@ const CheckoutScreen = () => {
 
       success('Thông tin đã được xác nhận!');
       setCurrentStep(2);
-    });
+    } catch (err) {
+      error(err.message || 'Không thể kiểm tra giỏ hàng. Vui lòng thử lại.');
+    }
   };
 
   const handleConfirmDeposit = async () => {
@@ -112,14 +115,13 @@ const CheckoutScreen = () => {
           pickup_time: pickupTime.toISOString(),
           note: customerInfo.notes || '',
           payment_method: selectedPaymentMethod,
-          deposit_paid: true,
         });
 
         if (response.success) {
           setOrderResult(response.data);
           setCurrentStep(3);
           await refreshCart();
-          success('Thanh toán cọc thành công và đơn đã được tạo!');
+          success('Đơn hàng đã được tạo. Vui lòng gửi bill để nhà hàng xác nhận cọc.');
         }
       } catch (err) {
         error(err.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
