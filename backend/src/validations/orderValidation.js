@@ -39,6 +39,58 @@ const createOrderSchema = Joi.object({
     })
 });
 
+const orderIdParamSchema = Joi.object({
+  id: Joi.number().integer().min(1).required().messages({
+    'number.base': 'ID đơn hàng phải là số',
+    'number.integer': 'ID đơn hàng phải là số nguyên',
+    'number.min': 'ID đơn hàng không hợp lệ',
+    'any.required': 'ID đơn hàng là bắt buộc'
+  })
+});
+
+const getOrdersForStaffQuerySchema = Joi.object({
+  date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).optional().messages({
+    'string.pattern.base': 'date phải có định dạng YYYY-MM-DD'
+  }),
+  status: Joi.string()
+    .valid('ALL', 'PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')
+    .default('ALL')
+    .messages({
+      'any.only': 'status không hợp lệ'
+    }),
+  search: Joi.string().trim().max(100).allow('').optional(),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(10)
+});
+
+const updateOrderStatusSchema = Joi.object({
+  status: Joi.string()
+    .valid('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')
+    .required()
+    .messages({
+      'any.only': 'status không hợp lệ',
+      'any.required': 'status là bắt buộc'
+    })
+});
+
+const cancelOrderSchema = Joi.object({
+  reason: Joi.string().trim().max(500).allow('', null).optional().messages({
+    'string.max': 'Lý do hủy không được quá 500 ký tự'
+  })
+});
+
+const updateOrderNoteSchema = Joi.object({
+  note: Joi.string().trim().max(1000).allow('', null).required().messages({
+    'any.required': 'note là bắt buộc',
+    'string.max': 'Ghi chú không được quá 1000 ký tự'
+  })
+});
+
 module.exports = {
-  createOrderSchema
+  createOrderSchema,
+  orderIdParamSchema,
+  getOrdersForStaffQuerySchema,
+  updateOrderStatusSchema,
+  cancelOrderSchema,
+  updateOrderNoteSchema
 };

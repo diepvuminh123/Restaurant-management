@@ -101,8 +101,20 @@ class Order {
       const finalAmount = totalAmount - discountAmount;
       const depositAmount = Number((finalAmount * 0.5).toFixed(2));
 
+      const now = new Date();
+      const idSeqResult = await client.query(
+        `SELECT nextval(pg_get_serial_sequence('orders', 'id'))::int AS id`
+      );
+      const nextOrderId = idSeqResult.rows[0].id;
+      const orderCode = this.formatOrderCode({
+        id: nextOrderId,
+        created_at: now,
+      });
+
       const orderInsert = await client.query(
         `INSERT INTO orders (
+           id,
+           order_code,
            user_id,
            session_id,
            cart_id,
@@ -116,12 +128,16 @@ class Order {
            customer_phone,
            customer_email,
            pickup_time,
-           note
+           note,
+           created_at,
+           updated_at
          ) VALUES (
-           $1, $2, $3, 'PENDING', $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+           $1, $2, $3, $4, $5, 'PENDING', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
          )
          RETURNING *`,
         [
+          nextOrderId,
+          orderCode,
           cart.user_id,
           cart.session_id,
           cart.id,
@@ -134,19 +150,13 @@ class Order {
           customerPhone,
           customerEmail,
           pickupTime,
-          note
+          note,
+          now,
+          now
         ]
       );
 
       const order = orderInsert.rows[0];
-      const orderCode = this.formatOrderCode(order);
-
-      await client.query(
-        `UPDATE orders
-         SET order_code = $1, updated_at = NOW()
-         WHERE id = $2`,
-        [orderCode, order.id]
-      );
 
       for (const item of items) {
         const lineTotal = Number(item.unit_price) * Number(item.quantity);
@@ -247,7 +257,9 @@ class Order {
 
   static async getOrderByIdForStaff(orderId) {
     const result = await pool.query(
-      `SELECT id, status, payment_status
+      `SELECT id, order_code, status, payment_status, pickup_time, customer_name, customer_phone, customer_email,
+              total_amount, discount_amount, final_amount, deposit_amount, note,
+              canceled_reason, canceled_at, canceled_by, confirmed_at, confirmed_by, created_at, updated_at
        FROM orders
        WHERE id = $1
        LIMIT 1`,
@@ -264,6 +276,155 @@ class Order {
        WHERE id = $1
        RETURNING *`,
       [orderId]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async getOrdersForStaff({ date, status, search, page = 1, limit = 10 }) {
+    const where = [];
+    const values = [];
+    let idx = 1;
+
+    if (date) {
+      where.push(`DATE(o.created_at) = $${idx++}`);
+      values.push(date);
+    }
+
+    if (status && status !== 'ALL') {
+      where.push(`o.status = $${idx++}`);
+      values.push(status);
+    }
+
+    if (search) {
+      where.push(`(o.order_code ILIKE $${idx} OR o.customer_name ILIKE $${idx} OR o.customer_phone ILIKE $${idx})`);
+      values.push(`%${search}%`);
+      idx += 1;
+    }
+
+    const whereClause = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::int AS total
+       FROM orders o
+       ${whereClause}`,
+      values
+    );
+
+    const total = countResult.rows[0]?.total || 0;
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeLimit = Math.max(1, Math.min(100, Number(limit) || 10));
+    const offset = (safePage - 1) * safeLimit;
+
+    const listValues = [...values, safeLimit, offset];
+    const listResult = await pool.query(
+      `SELECT
+         o.id,
+         o.order_code,
+         o.status,
+         o.payment_status,
+         o.customer_name,
+         o.customer_phone,
+         o.pickup_time,
+         o.final_amount,
+         o.created_at
+       FROM orders o
+       ${whereClause}
+       ORDER BY o.created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      listValues
+    );
+
+    return {
+      items: listResult.rows,
+      pagination: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        total_pages: Math.max(1, Math.ceil(total / safeLimit))
+      }
+    };
+  }
+
+  static async getOrderDetailForStaff(orderId) {
+    const result = await pool.query(
+      `SELECT
+         o.id,
+         o.order_code,
+         o.status,
+         o.payment_status,
+         o.customer_name,
+         o.customer_phone,
+         o.customer_email,
+         o.pickup_time,
+         o.total_amount,
+         o.discount_amount,
+         o.final_amount,
+         o.deposit_amount,
+         o.note,
+         o.created_at,
+         o.updated_at,
+         COALESCE(
+           json_agg(
+             json_build_object(
+               'id', oi.id,
+               'menu_item_id', oi.menu_item_id,
+               'item_name', oi.item_name,
+               'item_image', oi.item_image,
+               'note', oi.note,
+               'quantity', oi.quantity,
+               'unit_price', oi.unit_price,
+               'line_total', oi.line_total
+             ) ORDER BY oi.id
+           ) FILTER (WHERE oi.id IS NOT NULL),
+           '[]'
+         ) AS items
+       FROM orders o
+       LEFT JOIN order_items oi ON oi.order_id = o.id
+       WHERE o.id = $1
+       GROUP BY o.id`,
+      [orderId]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async updateOrderStatus(orderId, status) {
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = $1, updated_at = NOW(),
+           confirmed_at = CASE WHEN $1 = 'CONFIRMED' THEN NOW() ELSE confirmed_at END
+       WHERE id = $2
+       RETURNING *`,
+      [status, orderId]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async cancelOrder(orderId, canceledBy, canceledReason = null) {
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = 'CANCELED',
+           canceled_by = $2,
+           canceled_reason = $3,
+           canceled_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [orderId, canceledBy, canceledReason]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  static async updateOrderNote(orderId, note) {
+    const result = await pool.query(
+      `UPDATE orders
+       SET note = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [note, orderId]
     );
 
     return result.rows[0] || null;

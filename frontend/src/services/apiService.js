@@ -301,6 +301,58 @@ class ApiService {
     });
   }
 
+  static async getTakeawayOrders(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/orders${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async getTakeawayOrderDetail(orderId) {
+    return this.request(`/orders/${orderId}`, {
+      method: 'GET',
+    });
+  }
+
+  static async updateTakeawayOrderStatus(orderId, status) {
+    return this.request(`/orders/${orderId}/status`, {
+      method: 'PATCH',
+      body: { status },
+    });
+  }
+
+  static async confirmTakeawayOrderDeposit(orderId) {
+    return this.request(`/orders/${orderId}/deposit-confirm`, {
+      method: 'PATCH',
+    });
+  }
+
+  static async cancelTakeawayOrder(orderId, reason = '') {
+    return this.request(`/orders/${orderId}/cancel`, {
+      method: 'PATCH',
+      body: {
+        reason,
+      },
+    });
+  }
+
+  static async updateTakeawayOrderNote(orderId, note) {
+    return this.request(`/orders/${orderId}/note`, {
+      method: 'PATCH',
+      body: {
+        note,
+      },
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**

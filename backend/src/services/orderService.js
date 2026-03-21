@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 
 class OrderService {
+  static PAYMENT_TAG_REGEX = /^\[PAYMENT_METHOD:[^\]]+\]\s*/;
+
   static paymentMethodToLabel(paymentMethod) {
     switch (paymentMethod) {
       case 'zalopay':
@@ -90,6 +92,90 @@ class OrderService {
 
     const updatedOrder = await Order.confirmDepositPaid(orderId);
     return updatedOrder;
+  }
+
+  static async getOrdersForStaff(query) {
+    return Order.getOrdersForStaff(query);
+  }
+
+  static async getOrderDetailForStaff(orderId) {
+    const order = await Order.getOrderDetailForStaff(orderId);
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return order;
+  }
+
+  static async updateOrderStatus(orderId, status) {
+    const order = await Order.getOrderByIdForStaff(orderId);
+
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (order.status === 'CANCELED' || order.status === 'COMPLETED') {
+      const error = new Error('Đơn hàng đã kết thúc, không thể cập nhật trạng thái');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    if (order.status === status) {
+      return order;
+    }
+
+    return Order.updateOrderStatus(orderId, status);
+  }
+
+  static async cancelOrder(orderId, canceledBy, canceledReason) {
+    const order = await Order.getOrderByIdForStaff(orderId);
+
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (order.status === 'CANCELED') {
+      return order;
+    }
+
+    if (order.status === 'COMPLETED') {
+      const error = new Error('Đơn đã hoàn tất, không thể hủy');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    return Order.cancelOrder(orderId, canceledBy, canceledReason || null);
+  }
+
+  static async updateOrderNote(orderId, note) {
+    const order = await Order.getOrderByIdForStaff(orderId);
+
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (order.status === 'CANCELED' || order.status === 'COMPLETED') {
+      const error = new Error('Đơn hàng đã kết thúc, không thể cập nhật ghi chú');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    const paymentTagMatch = (order.note || '').match(this.PAYMENT_TAG_REGEX);
+    const paymentTag = paymentTagMatch ? paymentTagMatch[0].trim() : '';
+    const normalizedNote = (note || '').trim();
+    const finalNote = paymentTag
+      ? `${paymentTag}${normalizedNote ? ` ${normalizedNote}` : ''}`
+      : normalizedNote;
+
+    return Order.updateOrderNote(orderId, finalNote);
   }
 }
 

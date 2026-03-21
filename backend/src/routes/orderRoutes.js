@@ -3,7 +3,16 @@ const router = express.Router();
 const OrderController = require('../controllers/orderController');
 const { optionalAuth, requireRole } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
-const { createOrderSchema } = require('../validations/orderValidation');
+const validateQuery = require('../middlewares/validateQuery');
+const validateParams = require('../middlewares/validateParams');
+const {
+	createOrderSchema,
+	orderIdParamSchema,
+	getOrdersForStaffQuerySchema,
+	updateOrderStatusSchema,
+	cancelOrderSchema,
+	updateOrderNoteSchema
+} = require('../validations/orderValidation');
 
 /**
  * @swagger
@@ -59,6 +68,28 @@ const { createOrderSchema } = require('../validations/orderValidation');
  */
 router.post('/orders', optionalAuth, validate(createOrderSchema), OrderController.createOrder);
 
+router.get(
+	'/orders',
+	requireRole('admin', 'employee'),
+	validateQuery(getOrdersForStaffQuerySchema),
+	OrderController.getOrdersForStaff
+);
+
+router.get(
+	'/orders/:id',
+	requireRole('admin', 'employee'),
+	validateParams(orderIdParamSchema),
+	OrderController.getOrderDetailForStaff
+);
+
+router.patch(
+	'/orders/:id/status',
+	requireRole('admin', 'employee'),
+	validateParams(orderIdParamSchema),
+	validate(updateOrderStatusSchema),
+	OrderController.updateOrderStatus
+);
+
 /**
  * @swagger
  * /api/orders/{id}/deposit-confirm:
@@ -89,6 +120,27 @@ router.post('/orders', optionalAuth, validate(createOrderSchema), OrderControlle
  *       409:
  *         description: Invalid payment/order state for confirming deposit
  */
-router.patch('/orders/:id/deposit-confirm', requireRole('admin', 'employee'), OrderController.confirmDeposit);
+router.patch(
+	'/orders/:id/deposit-confirm',
+	requireRole('admin', 'employee'),
+	validateParams(orderIdParamSchema),
+	OrderController.confirmDeposit
+);
+
+router.patch(
+	'/orders/:id/cancel',
+	requireRole('admin', 'employee'),
+	validateParams(orderIdParamSchema),
+	validate(cancelOrderSchema),
+	OrderController.cancelOrder
+);
+
+router.patch(
+	'/orders/:id/note',
+	requireRole('admin', 'employee'),
+	validateParams(orderIdParamSchema),
+	validate(updateOrderNoteSchema),
+	OrderController.updateOrderNote
+);
 
 module.exports = router;
