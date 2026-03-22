@@ -62,6 +62,21 @@ class Reservation {
     );
     return result.rows[0];
   }
+
+  static async cancelReservation(userId, reservationId){
+    const result = await pool.query(
+      `UPDATE reservation
+      SET reservation_state = 'CANCELED'
+      WHERE user_id = $1
+        AND reservation_id = $2
+        AND reservation_time > NOW()
+        AND reservation_state IN ('CONFIRM')
+      RETURNING *`,
+      [userId, reservationId]
+    );
+
+    return result.rows[0] || null;
+  }
 }
 
 module.exports = Reservation;

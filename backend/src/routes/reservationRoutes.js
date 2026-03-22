@@ -32,4 +32,7 @@ router.post(
 // GET /api/reservations/history
 router.get('/reservations/history', requireAuth, ReservationController.getReservationHistory);
 
+
+// DELETE /api/reservations/history/:id/cancel: Hủy đặt bàn (Khi thời gian đặt bàn > thời điểm hiện tại)
+router.delete('/reservations/history/:id/cancel', requireAuth, ReservationController.cancelReservation);
 module.exports = router;

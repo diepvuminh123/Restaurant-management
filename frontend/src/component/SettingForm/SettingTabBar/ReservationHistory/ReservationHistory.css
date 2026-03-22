@@ -3,11 +3,125 @@
   color: #777;
 }
 
+.reservation-history__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 14px 16px;
+  margin: 0 0 14px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #FBF8F4;
+  align-items: end;
+}
+
+.reservation-history__filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.reservation-history__filter-label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.reservation-history__dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.reservation-history__dropdown-trigger {
+  width: 100%;
+  border: 1px solid #e9e9e9;
+  background: #fff;
+  padding: 10px 38px 10px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23777%22%20d%3D%22M287%2C114.7L154.5%2C247.3c-2.4%2C2.4-5.4%2C3.6-8.7%2C3.6c-3.3%2C0-6.3-1.2-8.7-3.6L5.4%2C114.7C0%2C109.3%2C0%2C99.7%2C5.4%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0l120.3%2C120.3L267.6%2C94.3c5.4-5.4%2C14-5.4%2C19.4%2C0C292.4%2C99.7%2C292.4%2C109.3%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+}
+
+.reservation-history__dropdown-trigger:hover {
+  border-color: #e36a2d;
+}
+
+.reservation-history__dropdown-trigger:focus {
+  outline: none;
+  border-color: #e36a2d;
+}
+
+.reservation-history__dropdown-trigger--open {
+  border-color: #e36a2d;
+}
+
+.reservation-history__dropdown-value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reservation-history__dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.reservation-history__dropdown-option {
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+}
+
+.reservation-history__dropdown-option:hover {
+  background: #fdf2ee;
+  color: #333;
+}
+
+.reservation-history__dropdown-option--active {
+  background: #fdf2ee;
+  color: #333;
+  font-weight: 600;
+  border-left: 3px solid #e36a2d;
+}
+
+/* kept intentionally empty: native <select> was replaced by a custom dropdown */
+
+@media (max-width: 640px) {
+  .reservation-history__filters {
+    grid-template-columns: 1fr;
+  }
+}
+
 .reservation-history__error {
   font-size: 14px;
-  color: #c66b33;
+  color: #333;
   background: #fdf2ee;
   border: 1px solid #e36a2d;
+  border-left: 3px solid #e36a2d;
   padding: 10px 12px;
   border-radius: 8px;
 }
@@ -23,6 +137,10 @@
   border-radius: 10px;
   padding: 14px 16px;
   background: #fff;
+}
+
+.reservation-history__item--locked {
+  background: #f7f7f7;
 }
 
 .reservation-history__row {
@@ -47,4 +165,30 @@
 .reservation-history__note {
   font-weight: 500;
   white-space: pre-wrap;
+}
+
+.reservation-history__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.reservation-history__cancel-btn {
+  border: 1px solid #e36a2d;
+  background: transparent;
+  color: #e36a2d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reservation-history__cancel-btn:hover {
+  background: #fdf2ee;
+  color: #333;
+}
+
+.reservation-history__cancel-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }

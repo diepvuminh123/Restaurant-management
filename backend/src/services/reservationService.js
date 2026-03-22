@@ -58,6 +58,24 @@ class ReservationService {
     }
     return await Reservation.getReservationsByUserId(userId);
   }
+
+  static async cancelReservation(userId, reservationId){
+    if(!userId){
+      throw new Error('Bạn cần đăng nhập vào hệ thống để thực hiện tính năng này');
+
+    }
+    if (!reservationId){
+      throw new Error('Không tìm thấy lịch đặt bàn trong hệ thống');
+
+    }
+
+    const cancelled = await Reservation.cancelReservation(userId, reservationId);
+    if (!cancelled) {
+      throw new Error('Không thể hủy đặt bàn (có thể đã quá giờ, đã bị hủy, hoặc không thuộc tài khoản của bạn)');
+    }
+
+    return cancelled;
+  }
 }
 
 module.exports = ReservationService;

@@ -101,6 +101,34 @@ class ReservationController {
 			});
 		}
 	}
+
+	static async cancelReservation(req, res) {
+		try {
+			const userId = req.session?.userId;
+			const reservationIdRaw = req.params?.id;
+			const reservationId = Number(reservationIdRaw);
+
+			if (!Number.isFinite(reservationId)) {
+				return res.status(400).json({
+					success: false,
+					message: 'reservation_id không hợp lệ',
+				});
+			}
+
+			await ReservationService.cancelReservation(userId, reservationId);
+			res.json({
+				success: true,
+				message: 'Hủy đặt bàn thành công, xin hẹn quý khách vào những dịp khác',
+			});
+		} catch (error) {
+			console.log('Cancel reservation error:', error);
+			res.status(400).json({
+				success: false,
+				message: error.message || 'Hủy đặt bàn thất bại',
+				error: error.message,
+			});
+		}
+	}
 }
 
 module.exports = ReservationController;

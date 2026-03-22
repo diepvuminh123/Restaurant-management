@@ -390,6 +390,12 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  static async cancelReservation(reservationId) {
+    return this.request(`/reservations/history/${reservationId}/cancel`, {
+      method: 'DELETE',
+    });
+  }
   
 }
 
