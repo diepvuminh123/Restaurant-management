@@ -76,6 +76,19 @@ class ReservationService {
 
     return cancelled;
   }
+  static async getReservationsForStaff({ limit = 50, offset = 0, state = null, from = null, to = null } = {}) {
+    const data = await Reservation.listForStaff({ limit, offset, state, from, to });
+    return {
+      data,
+      meta: {
+        limit,
+        offset,
+        state,
+        from,
+        to,
+      },
+    };
+  }
 }
 
 module.exports = ReservationService;

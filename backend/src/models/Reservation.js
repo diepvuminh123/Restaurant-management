@@ -77,6 +77,44 @@ class Reservation {
 
     return result.rows[0] || null;
   }
+  static async listForStaff({ limit = 50, offset = 0, state = null, from = null, to = null } = {}) {
+    const where = [];
+    const values = [];
+    let i = 1;
+
+    if (state) {
+      where.push(`reservation_state = $${i++}`);
+      values.push(state);
+    }
+
+    if (from) {
+      where.push(`reservation_time >= $${i++}::timestamptz`);
+      values.push(from);
+    }
+
+    if (to) {
+      where.push(`reservation_time <= $${i++}::timestamptz`);
+      values.push(to);
+    }
+
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    values.push(limit);
+    const limitParam = `$${i++}`;
+    values.push(offset);
+    const offsetParam = `$${i++}`;
+
+    const result = await pool.query(
+      `SELECT reservation_id, user_id, table_id, number_of_guests, reservation_state, reservation_time, note, restaurant_note, created_at
+       FROM reservation
+       ${whereSql}
+       ORDER BY reservation_time DESC
+       LIMIT ${limitParam} OFFSET ${offsetParam}`,
+      values
+    );
+
+    return result.rows;
+  }
+
 }
 
 module.exports = Reservation;

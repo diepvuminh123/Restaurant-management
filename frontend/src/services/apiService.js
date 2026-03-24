@@ -396,6 +396,26 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  /**
+   * (Admin/Employee) Xem danh sách đặt bàn
+   * Query params: limit, offset, state, from, to
+   */
+  static async getReservationsForStaff(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    });
+
+    const query = params.toString();
+    const endpoint = query ? `/reservations/staff?${query}` : '/reservations/staff';
+    return this.request(endpoint, {
+      method: 'GET',
+    });
+  }
   
 }
 
