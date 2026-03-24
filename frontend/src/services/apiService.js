@@ -289,6 +289,70 @@ class ApiService {
     });
   }
 
+  // ============= ORDER API =============
+
+  /**
+   * Tạo đơn hàng từ giỏ hiện tại
+   */
+  static async createOrder(payload) {
+    return this.request('/orders', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async getTakeawayOrders(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/orders${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async getTakeawayOrderDetail(orderId) {
+    return this.request(`/orders/${orderId}`, {
+      method: 'GET',
+    });
+  }
+
+  static async updateTakeawayOrderStatus(orderId, status) {
+    return this.request(`/orders/${orderId}/status`, {
+      method: 'PATCH',
+      body: { status },
+    });
+  }
+
+  static async confirmTakeawayOrderDeposit(orderId) {
+    return this.request(`/orders/${orderId}/deposit-confirm`, {
+      method: 'PATCH',
+    });
+  }
+
+  static async cancelTakeawayOrder(orderId, reason = '') {
+    return this.request(`/orders/${orderId}/cancel`, {
+      method: 'PATCH',
+      body: {
+        reason,
+      },
+    });
+  }
+
+  static async updateTakeawayOrderNote(orderId, note) {
+    return this.request(`/orders/${orderId}/note`, {
+      method: 'PATCH',
+      body: {
+        note,
+      },
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**
@@ -323,6 +387,32 @@ class ApiService {
 
   static async getReservationHistory() {
     return this.request('/reservations/history', {
+      method: 'GET',
+    });
+  }
+
+  static async cancelReservation(reservationId) {
+    return this.request(`/reservations/history/${reservationId}/cancel`, {
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * (Admin/Employee) Xem danh sách đặt bàn
+   * Query params: limit, offset, state, from, to
+   */
+  static async getReservationsForStaff(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    });
+
+    const query = params.toString();
+    const endpoint = query ? `/reservations/staff?${query}` : '/reservations/staff';
+    return this.request(endpoint, {
       method: 'GET',
     });
   }

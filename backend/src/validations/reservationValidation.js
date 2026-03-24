@@ -42,7 +42,27 @@ const createReservationBodySchema = Joi.object({
 	customer_phone: Joi.string().trim().max(20).allow('', null).optional(),
 });
 
+const getReservationsForStaffQuerySchema = Joi.object({
+	limit: Joi.number().integer().min(1).max(200).default(50).messages({
+		'number.base': 'limit phải là số',
+		'number.integer': 'limit phải là số nguyên',
+		'number.min': 'limit phải >= 1',
+		'number.max': 'limit phải <= 200',
+	}),
+	offset: Joi.number().integer().min(0).default(0).messages({
+		'number.base': 'offset phải là số',
+		'number.integer': 'offset phải là số nguyên',
+		'number.min': 'offset phải >= 0',
+	}),
+	state: Joi.string()
+		.valid('CONFIRM', 'CANCELED', 'ON_SERVING', 'COMPLETED')
+		.optional(),
+	from: Joi.date().iso().optional(),
+	to: Joi.date().iso().optional(),
+});
+
 module.exports = {
 	getTablesAvailabilityQuerySchema,
 	createReservationBodySchema,
+	getReservationsForStaffQuerySchema,
 };

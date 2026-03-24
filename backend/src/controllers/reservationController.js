@@ -101,6 +101,61 @@ class ReservationController {
 			});
 		}
 	}
+
+	static async cancelReservation(req, res) {
+		try {
+			const userId = req.session?.userId;
+			const reservationIdRaw = req.params?.id;
+			const reservationId = Number(reservationIdRaw);
+
+			if (!Number.isFinite(reservationId)) {
+				return res.status(400).json({
+					success: false,
+					message: 'reservation_id không hợp lệ',
+				});
+			}
+
+			await ReservationService.cancelReservation(userId, reservationId);
+			res.json({
+				success: true,
+				message: 'Hủy đặt bàn thành công, xin hẹn quý khách vào những dịp khác',
+			});
+		} catch (error) {
+			console.log('Cancel reservation error:', error);
+			res.status(400).json({
+				success: false,
+				message: error.message || 'Hủy đặt bàn thất bại',
+				error: error.message,
+			});
+		}
+	}
+
+	static async viewReservationForStaff(req, res){
+		try{
+			const { limit, offset, state, from, to } = req.query;
+			const result = await ReservationService.getReservationsForStaff({
+				limit,
+				offset,
+				state,
+				from,
+				to,
+			});
+
+			res.json({
+				success: true,
+				message: 'Đây là danh sách đặt bàn của nhà hàng',
+				data: result.data,
+				meta: result.meta,
+			});
+		} catch (error){
+			console.log('Không thể tải danh sách đặt bàn của hệ thống', error);
+			res.status(500).json({
+				success: false,
+				message: error.message || 'Không thể tải danh sách đặt bàn của hệ thống',
+				error: error.message,
+			});
+		}
+	}
 }
 
 module.exports = ReservationController;

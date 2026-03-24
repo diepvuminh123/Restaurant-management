@@ -18,5 +18,9 @@ BEGIN
       (8, 'AVAILABLE', 2, 4, NULL),
       (10, 'AVAILABLE', 4, 4, NULL),
       (10, 'AVAILABLE', 6, 4, NULL);
+      (10, 'AVAILABLE', 4, 4, NULL),
+      (10, 'AVAILABLE', 6, 4, NULL);
+      (10, 'AVAILABLE', 4, 4, NULL),
+      (10, 'AVAILABLE', 6, 4, NULL);
   END IF;
 END $$;

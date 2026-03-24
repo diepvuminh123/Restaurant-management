@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminHeader from '../../component/AdminHeader/AdminHeader';
 import AdminSidebar from '../../component/AdminSidebar/AdminSidebar';
 import MenuManagement from '../MenuManagement/MenuManagement';
+import TakeawayOrdersScreen from '../TakeawayOrdersScreen/TakeawayOrdersScreen';
+import BookingsManagement from '../BookingsManagement/BookingsManagement';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -21,17 +23,9 @@ const AdminDashboard = ({ user, onLogout }) => {
                 <p>Nội dung trang quản trị sẽ được thêm vào đây...</p>
               </div>
             } />
-            <Route path="bookings" element={
-              <div>
-                <h1>Đặt bàn</h1>
-                <p>Quản lý đặt bàn tại nhà hàng...</p>
-              </div>
-            } />
+            <Route path="bookings" element={<BookingsManagement />} />
             <Route path="takeaway" element={
-              <div>
-                <h1>Đặt món mang đi</h1>
-                <p>Quản lý đơn mang đi...</p>
-              </div>
+              <TakeawayOrdersScreen />
             } />
             <Route path="menu" element={<MenuManagement user={user} />} />
             <Route path="users" element={

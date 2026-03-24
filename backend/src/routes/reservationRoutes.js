@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const ReservationController = require('../controllers/reservationController');
-const { optionalAuth, requireAuth } = require('../middlewares/auth');
+const { optionalAuth, requireAuth, requireRole } = require('../middlewares/auth');
 const validateBody = require('../middlewares/validate');
 const validateQuery = require('../middlewares/validateQuery');
 
 const {
 	getTablesAvailabilityQuerySchema,
 	createReservationBodySchema,
+	getReservationsForStaffQuerySchema,
 } = require('../validations/reservationValidation');
 
 // Phần booking 
@@ -32,4 +33,16 @@ router.post(
 // GET /api/reservations/history
 router.get('/reservations/history', requireAuth, ReservationController.getReservationHistory);
 
+
+// DELETE /api/reservations/history/:id/cancel: Hủy đặt bàn (Khi thời gian đặt bàn > thời điểm hiện tại)
+router.delete('/reservations/history/:id/cancel', requireAuth, ReservationController.cancelReservation);
+
+// FOR ADMIN
+// Xem danh sách đặt bàn (employee/admin)
+router.get(
+	'/reservations/staff',
+	requireRole('admin', 'employee'),
+	validateQuery(getReservationsForStaffQuerySchema),
+	ReservationController.viewReservationForStaff
+);
 module.exports = router;
