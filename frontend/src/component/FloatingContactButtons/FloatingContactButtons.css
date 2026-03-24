@@ -1,0 +1,159 @@
+.floating-contact-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.contact-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: white;
+  font-size: 24px;
+}
+
+.contact-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.contact-btn:active {
+  transform: scale(0.95);
+}
+
+/* Messenger Button - Facebook Blue */
+.messenger-btn {
+  background-color: #0084ff;
+}
+
+.messenger-btn:hover {
+  background-color: #0073e6;
+}
+
+/* Zalo Button - Zalo Blue */
+.zalo-btn {
+  background-color: #0084ff;
+}
+
+.zalo-btn:hover {
+  background-color: #0073e6;
+}
+
+/* Phone Button - Green */
+.phone-btn {
+  background-color: #25c329;
+}
+
+.phone-btn:hover {
+  background-color: #1fa520;
+}
+
+/* Phone Popup Styles - Small popup next to icon */
+.phone-popup-container {
+  position: fixed;
+  right: 80px;
+  bottom: 20px;
+  z-index: 1500;
+  animation: popupSlideIn 0.3s ease;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.phone-popup {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  width: auto;
+  overflow: visible;
+  position: relative;
+  padding: 0;
+}
+
+.phone-popup-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 4px 8px;
+  font-size: 18px;
+  line-height: 1;
+  transition: color 0.3s ease;
+  width: auto;
+  height: auto;
+}
+
+.phone-popup-close:hover {
+  color: #333;
+}
+
+.phone-popup-content {
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.phone-display {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.phone-number {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive - smaller on mobile */
+@media (max-width: 768px) {
+  .phone-popup-container {
+    right: 65px;
+    bottom: 10px;
+  }
+
+  .phone-popup {
+    width: 180px;
+  }
+}
+
+/* Hide on very small screens if needed */
+@media (max-width: 480px) {
+  .phone-popup-container {
+    right: 60px;
+    bottom: 8px;
+  }
+
+  .phone-popup {
+    width: 160px;
+  }
+
+  .phone-number {
+    font-size: 14px;
+  }
+}
