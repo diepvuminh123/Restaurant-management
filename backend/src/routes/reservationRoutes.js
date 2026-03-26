@@ -10,6 +10,7 @@ const {
 	getTablesAvailabilityQuerySchema,
 	createReservationBodySchema,
 	getReservationsForStaffQuerySchema,
+	createReservationForStaffSchema,
 } = require('../validations/reservationValidation');
 
 // Phần booking 
@@ -37,7 +38,7 @@ router.get('/reservations/history', requireAuth, ReservationController.getReserv
 // DELETE /api/reservations/history/:id/cancel: Hủy đặt bàn (Khi thời gian đặt bàn > thời điểm hiện tại)
 router.delete('/reservations/history/:id/cancel', requireAuth, ReservationController.cancelReservation);
 
-// FOR ADMIN
+// ----------FOR ADMIN----------
 // Xem danh sách đặt bàn (employee/admin)
 router.get(
 	'/reservations/staff',
@@ -45,4 +46,14 @@ router.get(
 	validateQuery(getReservationsForStaffQuerySchema),
 	ReservationController.viewReservationForStaff
 );
+
+// Tính năng đặt bàn cho admin
+router.post(
+	'/reservations/staff/createReservation',
+	requireRole('admin', 'employee'),
+	validateBody(createReservationForStaffSchema),
+	ReservationController.createReservationForStaff
+)
+
+
 module.exports = router;

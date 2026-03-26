@@ -89,6 +89,56 @@ class ReservationService {
       },
     };
   }
+
+  static async createReservationForStaff(staffUserId, payload) {
+    if (!staffUserId) {
+      throw new Error('Bạn cần đăng nhập để thực hiện chức năng này');
+    }
+
+    const {
+      reservation_time,
+      number_of_guests,
+      table_id,
+      note,
+      restaurant_note,
+      customer_name,
+      customer_phone,
+    } = payload;
+
+    const reservationTime = reservation_time instanceof Date ? reservation_time : new Date(reservation_time);
+    if (!table_id) {
+      throw new Error('Thiếu table_id');
+    }
+    if (Number.isNaN(reservationTime.getTime())) {
+      throw new TypeError('reservation_time không hợp lệ');
+    }
+
+    const tables = await Reservation.getTablesWithAvailability(reservationTime, number_of_guests);
+    const chosen = tables.find((t) => t.table_id === table_id);
+    if (!chosen) {
+      throw new Error('Không tìm thấy bàn');
+    }
+    if (!chosen.selectable) {
+      throw new Error(`Bàn không khả dụng: ${chosen.disabled_reason}`);
+    }
+
+    const owner = {
+      userId: null,
+      sessionId: `staff:${staffUserId}:${Date.now()}`,
+    };
+
+    const autoRestaurantNote = `KH: ${customer_name} | SDT: ${customer_phone}`;
+    const finalRestaurantNote = [autoRestaurantNote, restaurant_note].filter(Boolean).join(' | ').slice(0, 255);
+
+    return await Reservation.create({
+      owner,
+      tableId: table_id,
+      reservationTime,
+      numberOfGuests: number_of_guests,
+      note: note || null,
+      restaurantNote: finalRestaurantNote || null,
+    });
+  }
 }
 
 module.exports = ReservationService;

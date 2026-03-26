@@ -61,8 +61,42 @@ const getReservationsForStaffQuerySchema = Joi.object({
 	to: Joi.date().iso().optional(),
 });
 
+const createReservationForStaffSchema = Joi.object({
+	customer_name: Joi.string().trim().max(100).required().messages({
+		'any.required': 'Phải có tên khách hàng',
+		'string.max': 'Tên khách hàng không được quá 100 ký tự',
+	}),
+	customer_phone: Joi.string().trim().max(20).required().messages({
+		'any.required': 'Phải có số điện thoại của khách hàng',
+		'string.max': 'Số điện thoại của khách hàng có độ dài không quá 20 ký tự'
+	}),
+	table_id: Joi.number().integer().min(1).required().messages({
+		'any.required': 'Cần có table_id',
+		'number.base': 'table_id phải là số'
+	}),
+	reservation_time: Joi.date().iso().required().messages({
+		'any.required': 'Cần có reservation_time',
+		'date.format': 'reservation_time phải là ISO datetime',
+		'date.base': 'reservation_time không hợp lệ'
+	}),
+	number_of_guests: Joi.number().integer().min(1).max(50).required().messages({
+		'any.required': 'Cần có number_of_guests',
+		'number.base': 'number_of_guests phải là số',
+		'number.integer': 'number_of_guests phải là số nguyên',
+		'number.min': 'number_of_guests phải >= 1',
+		'number.max': 'number_of_guests phải <= 50',
+	}),
+	note: Joi.string().trim().max(255).allow('', null).optional().messages({
+		'string.max': 'note không được quá 255 ký tự',
+	}),
+	restaurant_note: Joi.string().trim().max(255).allow('', null).optional().messages({
+		'string.max': 'restaurant_note không được quá 255 ký tự',
+	}),
+});
+
 module.exports = {
 	getTablesAvailabilityQuerySchema,
 	createReservationBodySchema,
 	getReservationsForStaffQuerySchema,
+	createReservationForStaffSchema,
 };

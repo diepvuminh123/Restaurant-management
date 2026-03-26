@@ -31,7 +31,7 @@ const RestaurantInformation = () => {
                         <div className="contact-bar__time">
                             <Clock className="w-4 h-4 contact-bar__icon-color mr-1" />
                             <span className="contact-bar__time-text">{currentDay}:</span>
-                            <span className="contact-bar__time-detail">11:00 - 22:00</span>
+                            <span className="contact-bar__time-detail">09:00 - 22:00</span>
                         </div>
                     </div>
                     

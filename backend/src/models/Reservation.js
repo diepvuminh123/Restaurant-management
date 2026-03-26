@@ -21,8 +21,10 @@ class Reservation {
             FROM reservation r
             WHERE r.table_id = t.table_id
               AND r.reservation_state IN ('CONFIRM', 'ON_SERVING')
-              AND r.reservation_time BETWEEN ($1::timestamptz - ($3::int * INTERVAL '1 minute'))
-                                      AND ($1::timestamptz + ($3::int * INTERVAL '1 minute'))
+              -- Two reservations overlap if their start times are within slotMinutes.
+              -- Use strict bounds so back-to-back slots (end == next start) are allowed.
+              AND r.reservation_time >  ($1::timestamptz - ($3::int * INTERVAL '1 minute'))
+              AND r.reservation_time <  ($1::timestamptz + ($3::int * INTERVAL '1 minute'))
           ) THEN 'TIME_CONFLICT'
           ELSE NULL
         END AS disabled_reason
@@ -53,12 +55,12 @@ class Reservation {
     return result.rows;
   }
 
-  static async create({ owner, tableId, reservationTime, numberOfGuests, note = null }) {
+  static async create({ owner, tableId, reservationTime, numberOfGuests, note = null, restaurantNote = null }) {
     const result = await pool.query(
-      `INSERT INTO reservation (user_id, session_id, table_id, number_of_guests, reservation_state, reservation_time, note)
-       VALUES ($1, $2, $3, $4, 'CONFIRM', $5, $6)
+      `INSERT INTO reservation (user_id, session_id, table_id, number_of_guests, reservation_state, reservation_time, note, restaurant_note)
+       VALUES ($1, $2, $3, $4, 'CONFIRM', $5, $6, $7)
        RETURNING *`,
-      [owner.userId, owner.sessionId, tableId, numberOfGuests, reservationTime, note]
+      [owner?.userId ?? null, owner?.sessionId ?? null, tableId, numberOfGuests, reservationTime, note, restaurantNote]
     );
     return result.rows[0];
   }

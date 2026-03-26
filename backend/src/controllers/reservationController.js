@@ -156,6 +156,25 @@ class ReservationController {
 			});
 		}
 	}
+
+	static async createReservationForStaff(req, res) {
+		try {
+			const staffUserId = req.session?.userId;
+			const reservation = await ReservationService.createReservationForStaff(staffUserId, req.body);
+			res.status(201).json({
+				success: true,
+				message: 'Đặt bàn thành công',
+				data: reservation,
+			});
+		} catch (error) {
+			console.error('Create reservation for staff error:', error);
+			res.status(400).json({
+				success: false,
+				message: error.message || 'Lỗi khi đặt bàn',
+				error: error.message,
+			});
+		}
+	}
 }
 
 module.exports = ReservationController;

@@ -7,17 +7,11 @@ import {
   IoPeopleOutline,
 } from 'react-icons/io5';
 import ApiService from '../../services/apiService';
+import ReservationCreateModal from '../../component/ReservationCreateModal/ReservationCreateModal';
+import { generateTimeSlots } from '../../utils/timeSlots';
 import './BookingsManagement.css';
 
-const TIME_SLOTS = [
-  { id: '09:00', label: '9:00 - 9:30 AM' },
-  { id: '09:30', label: '9:30 - 10:00 AM' },
-  { id: '10:00', label: '10:00 - 10:30 AM' },
-  { id: '10:30', label: '10:30 - 11:00 AM' },
-  { id: '11:00', label: '11:00 - 11:30 AM' },
-  { id: '11:30', label: '11:30 - 12:00 AM' },
-  { id: '12:00', label: '12:00 - 12:30 AM' },
-];
+const TIME_SLOTS = generateTimeSlots({ startTime: '09:00', endTime: '22:00', intervalMinutes: 30 });
 
 const GRID_ROWS = 8;
 const SLOTS_PER_VIEW = 7;
@@ -59,37 +53,38 @@ const buildVNDayRange = (yyyyMmDd) => {
 
 const BookingsManagement = () => {
   const [selectedDate, setSelectedDate] = useState(() => formatInputDate(new Date()));
-  const [activeSlotId, setActiveSlotId] = useState('10:00');
+  const [activeSlotId, setActiveSlotId] = useState(TIME_SLOTS[0]?.id || '09:00');
   const [slotOffset, setSlotOffset] = useState(0);
+
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const [reservations, setReservations] = useState([]);
   const [availableTables, setAvailableTables] = useState(null);
 
+  const fetchReservations = async (yyyyMmDd, { signal } = {}) => {
+    const { from, to } = buildVNDayRange(yyyyMmDd);
+    const response = await ApiService.getReservationsForStaff({
+      limit: 200,
+      offset: 0,
+      from,
+      to,
+    });
+
+    if (signal?.aborted) return;
+    setReservations(Array.isArray(response?.data) ? response.data : []);
+  };
+
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
-    const fetchReservations = async () => {
-      try {
-        const { from, to } = buildVNDayRange(selectedDate);
-        const response = await ApiService.getReservationsForStaff({
-          limit: 200,
-          offset: 0,
-          from,
-          to,
-        });
+    fetchReservations(selectedDate, { signal: controller.signal }).catch((error) => {
+      if (controller.signal.aborted) return;
+      console.error('Fetch reservations for staff error:', error);
+      setReservations([]);
+    });
 
-        if (cancelled) return;
-        setReservations(Array.isArray(response?.data) ? response.data : []);
-      } catch (error) {
-        if (cancelled) return;
-        console.error('Fetch reservations for staff error:', error);
-        setReservations([]);
-      }
-    };
-
-    fetchReservations();
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [selectedDate]);
 
@@ -175,6 +170,26 @@ const BookingsManagement = () => {
   const canGoPrev = slotOffset > 0;
   const canGoNext = slotOffset + SLOTS_PER_VIEW < TIME_SLOTS.length;
 
+  const handleCreateReservation = async ({ customer_name, customer_phone, email, date, timeSlotId, table_id, people, note }) => {
+    const reservation_time = `${date}T${timeSlotId}:00.000+07:00`;
+    const restaurant_note_parts = [];
+    if (email) restaurant_note_parts.push(`Email: ${email}`);
+    if (note) restaurant_note_parts.push(`Ghi chú: ${note}`);
+
+    await ApiService.createReservationForStaff({
+      customer_name,
+      customer_phone,
+      table_id: Number(table_id),
+      reservation_time,
+      number_of_guests: people,
+      // Bookings grid currently renders reservation.note as title.
+      note: customer_name,
+      restaurant_note: restaurant_note_parts.join(' | ') || null,
+    });
+
+    await fetchReservations(date);
+  };
+
   return (
     <div className="bookings-page">
       <div className="bookings-page__header">
@@ -183,11 +198,21 @@ const BookingsManagement = () => {
           <p>Khách đặt bàn trước</p>
         </div>
 
-        <button type="button" className="bookings-page__create">
+        <button type="button" className="bookings-page__create" onClick={() => setIsCreateOpen(true)}>
           <IoAdd className="bookings-page__createIcon" />
           <span>Tạo bàn</span>
         </button>
       </div>
+
+      <ReservationCreateModal
+        isOpen={isCreateOpen}
+        branchName="Nhà Hàng Huân Minh Quanh"
+        defaultDate={selectedDate}
+        defaultTimeSlotId={activeSlotId}
+        timeSlots={TIME_SLOTS}
+        onClose={() => setIsCreateOpen(false)}
+        onSubmit={handleCreateReservation}
+      />
 
       <div className="bookings-page__top">
         <section className="bookings-card bookings-card--date">
@@ -286,7 +311,9 @@ const BookingsManagement = () => {
                 <div key={`${rowIndex}:${slot.id}`} className="bookings-grid__cell">
                   {booking ? (
                     <div className={getBookingClassName(booking.status)}>
-                      <div className="booking-item__name">{booking.name}</div>
+                      <div className="booking-item__name" title={booking.name}>
+                        {booking.name}
+                      </div>
                       <div className="booking-item__meta">People: {booking.people}</div>
                     </div>
                   ) : null}

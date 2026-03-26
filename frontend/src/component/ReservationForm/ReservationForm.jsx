@@ -8,6 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import RoleSelectionModal from '../RoleSelectionModal/RoleSelectionModal';
 import { useTranslation } from 'react-i18next'; 
+import {
+    generateTimeSlots,
+    getLocalMinutes,
+    isSameLocalDate,
+    roundUpMinutesToInterval,
+} from '../../utils/timeSlots';
 
 const ReservationForm = ({ user }) => {
     const navigate = useNavigate();
@@ -41,24 +47,19 @@ const ReservationForm = ({ user }) => {
 
     const availableTimeSlots = useMemo(() => {
         if (!date) return [];
-        const generate = (sH, sM, eH, eM) => {
-            let slots = [];
-            let curr = new Date(); curr.setHours(sH, sM, 0, 0);
-            let end = new Date(); end.setHours(eH, eM, 0, 0);
-            while (curr <= end) {
-                slots.push(curr.toTimeString().substring(0, 5));
-                curr.setMinutes(curr.getMinutes() + 30);
-            }
-            return slots;
-        };
 
-        if (date === todayStr) {
-            let now = new Date();
-            now.setMinutes(now.getMinutes() + 30);
-            return generate(now.getHours(), now.getMinutes() >= 30 ? 30 : 0, 20, 30);
+        // Keep a single source of truth for time slots across the app.
+        const slots = generateTimeSlots({ startTime: '09:00', endTime: '22:00', intervalMinutes: 30 });
+
+        // For today, hide slots in the past (round up to next interval).
+        if (isSameLocalDate(date)) {
+            const nowMinutes = getLocalMinutes(new Date());
+            const minStart = roundUpMinutesToInterval(nowMinutes + 1, 30);
+            return slots.filter((s) => s.startMinutes >= minStart).map((s) => s.id);
         }
-        return generate(11, 0, 21, 0);
-    }, [date, todayStr]);
+
+        return slots.map((s) => s.id);
+    }, [date]);
 
     const handleRoleSelect = (role) => {
         setShowRoleModal(false);

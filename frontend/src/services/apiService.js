@@ -416,6 +416,32 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  /**
+   * (Admin/Employee) Tạo đặt bàn
+   */
+  static async createReservationForStaff({
+    customer_name,
+    customer_phone,
+    table_id,
+    reservation_time,
+    number_of_guests,
+    note,
+    restaurant_note,
+  }) {
+    return this.request('/reservations/staff/createReservation', {
+      method: 'POST',
+      body: {
+        customer_name,
+        customer_phone,
+        table_id,
+        reservation_time,
+        number_of_guests,
+        note,
+        restaurant_note,
+      },
+    });
+  }
   
 }
 
