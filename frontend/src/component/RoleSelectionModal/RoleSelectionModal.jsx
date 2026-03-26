@@ -12,7 +12,7 @@ const RoleSelectionModal = ({ onSelectRole, onClose }) => {
                             <IoRestaurantOutline className="header-icon" />
                         </div>
                         <div className="header-text">
-                            <h4>Nhà hàng Huân Minh Quoanh</h4>
+                            <h4>Nhà hàng Huân Minh Quanh</h4>
                             <p>Hương vị truyền thống</p>
                         </div>
                     </div>

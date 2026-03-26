@@ -109,7 +109,7 @@ const reservationMailer = async ({
   <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333;">
     <div style="text-align:center; margin-bottom:16px;">
       <h2 style="margin:0 0 4px 0; font-size:24px; color:#b66333;">
-        Nhà Hàng Minh Quoanh Huân
+        Nhà Hàng Huân Minh Quanh
       </h2>
       <p style="margin:0; font-size:14px; color:#777;">
         Ẩm thực đậm vị, phục vụ tận tâm
@@ -119,7 +119,7 @@ const reservationMailer = async ({
     <h3 style="margin-top:24px; margin-bottom:8px;">Xác nhận đặt bàn của bạn</h3>
     <p>Xin chào,</p>
     <p style="margin:0;">
-      Cảm ơn bạn đã đặt bàn tại <b>Nhà Hàng Minh Quoanh Huân</b>. Dưới đây là thông tin xác nhận đặt bàn của bạn:
+      Cảm ơn bạn đã đặt bàn tại <b>Nhà Hàng Huân Minh Quanh</b>. Dưới đây là thông tin xác nhận đặt bàn của bạn:
     </p>
 
     <p style="margin:16px 0 8px 0;">Mã đặt bàn:</p>
@@ -152,7 +152,7 @@ const reservationMailer = async ({
     <hr style="margin:24px 0; border:none; border-top:1px solid #eee;" />
 
     <p style="font-size:12px; color:#999; text-align:center;">
-      Email được gửi tự động từ hệ thống Nhà Hàng Minh Quoanh Huân. Vui lòng không trả lời email này.
+      Email được gửi tự động từ hệ thống Nhà Hàng Huân Minh Quanh. Vui lòng không trả lời email này.
     </p>
   </div>
 `;
@@ -160,7 +160,7 @@ const reservationMailer = async ({
   return transporter.sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
     to,
-    subject: 'Xác nhận đặt bàn tại nhà hàng Minh Quoanh Huân',
+    subject: 'Xác nhận đặt bàn tại nhà hàng Huân Minh Quanh',
     html,
   });
 };

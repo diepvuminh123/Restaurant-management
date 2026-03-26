@@ -17,7 +17,7 @@ async function sendVerificationEmail({ to, code, minutes }) {
   <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333;">
     <div style="text-align:center; margin-bottom:16px;">
       <h2 style="margin:0 0 4px 0; font-size:24px; color:#b66333;">
-        Nhà Hàng Minh Quoanh Huân
+        Nhà Hàng Huân Minh Quanh
       </h2>
       <p style="margin:0; font-size:14px; color:#777;">
         Ẩm thực đậm vị, phục vụ tận tâm
@@ -28,7 +28,7 @@ async function sendVerificationEmail({ to, code, minutes }) {
     <p>Xin chào,</p>
     <p>
       Đây là mã xác thực để hoàn tất thao tác của bạn tại
-      <b>Nhà Hàng Minh Quoanh Huân</b>.
+      <b>Nhà Hàng Huân Minh Quanh</b>.
     </p>
 
     <p style="margin:16px 0 8px 0;">Mã xác thực của bạn là:</p>
@@ -57,7 +57,7 @@ async function sendVerificationEmail({ to, code, minutes }) {
     <hr style="margin:24px 0; border:none; border-top:1px solid #eee;" />
 
     <p style="font-size:12px; color:#999; text-align:center;">
-      Email được gửi tự động từ hệ thống Nhà Hàng Minh Quoanh Huân. Vui lòng không trả lời email này.
+      Email được gửi tự động từ hệ thống Nhà Hàng Huân Minh Quanh. Vui lòng không trả lời email này.
     </p>
   </div>
 `;

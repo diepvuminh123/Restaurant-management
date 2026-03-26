@@ -28,7 +28,7 @@ const AdminHeader = ({ user, onLogout }) => {
         </div>
         <div className="admin-header__brand">
           <h1 className="admin-header__brand-name">Nhà Hàng</h1>
-          <p className="admin-header__brand-subtitle">Minh Quoah Huân</p>
+          <p className="admin-header__brand-subtitle">Huân Minh Quanh</p>
         </div>
       </div>
 
