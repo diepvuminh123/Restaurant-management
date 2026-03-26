@@ -8,13 +8,30 @@ import {
 } from 'react-icons/io5';
 import ApiService from '../../services/apiService';
 import ReservationCreateModal from '../../component/ReservationCreateModal/ReservationCreateModal';
-import { generateTimeSlots } from '../../utils/timeSlots';
+import { generateTimeSlots, getLocalMinutes, isSameLocalDate } from '../../utils/timeSlots';
 import './BookingsManagement.css';
 
 const TIME_SLOTS = generateTimeSlots({ startTime: '09:00', endTime: '22:00', intervalMinutes: 30 });
 
 const GRID_ROWS = 8;
 const SLOTS_PER_VIEW = 7;
+
+const clampNumber = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const getSlotIndexByMinutes = (minutes) => {
+  if (!TIME_SLOTS.length) return 0;
+  const idx = TIME_SLOTS.findIndex((slot) => minutes >= slot.startMinutes && minutes < slot.endMinutes);
+  if (idx !== -1) return idx;
+
+  if (minutes < TIME_SLOTS[0].startMinutes) return 0;
+  return TIME_SLOTS.length - 1;
+};
+
+const getOffsetForSlotIndex = (slotIndex) => {
+  const maxOffset = Math.max(0, TIME_SLOTS.length - SLOTS_PER_VIEW);
+  const centered = slotIndex - Math.floor(SLOTS_PER_VIEW / 2);
+  return clampNumber(centered, 0, maxOffset);
+};
 
 const formatInputDate = (date) => {
   const y = date.getFullYear();
@@ -53,8 +70,14 @@ const buildVNDayRange = (yyyyMmDd) => {
 
 const BookingsManagement = () => {
   const [selectedDate, setSelectedDate] = useState(() => formatInputDate(new Date()));
-  const [activeSlotId, setActiveSlotId] = useState(TIME_SLOTS[0]?.id || '09:00');
-  const [slotOffset, setSlotOffset] = useState(0);
+  const [activeSlotId, setActiveSlotId] = useState(() => {
+    const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
+    return TIME_SLOTS[nowIndex]?.id || TIME_SLOTS[0]?.id || '09:00';
+  });
+  const [slotOffset, setSlotOffset] = useState(() => {
+    const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
+    return getOffsetForSlotIndex(nowIndex);
+  });
 
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -86,6 +109,24 @@ const BookingsManagement = () => {
     return () => {
       controller.abort();
     };
+  }, [selectedDate]);
+
+  useEffect(() => {
+    // Today: auto-focus the current time range.
+    // Other days: reset to the start of the day (09:00) so the grid doesn't stay at "now".
+    if (isSameLocalDate(selectedDate)) {
+      const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
+      const nextActive = TIME_SLOTS[nowIndex]?.id;
+      if (nextActive) setActiveSlotId((prev) => (prev === nextActive ? prev : nextActive));
+
+      const nextOffset = getOffsetForSlotIndex(nowIndex);
+      setSlotOffset((prev) => (prev === nextOffset ? prev : nextOffset));
+      return;
+    }
+
+    const firstSlotId = TIME_SLOTS[0]?.id || '09:00';
+    setActiveSlotId((prev) => (prev === firstSlotId ? prev : firstSlotId));
+    setSlotOffset((prev) => (prev === 0 ? prev : 0));
   }, [selectedDate]);
 
   useEffect(() => {
