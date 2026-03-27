@@ -393,10 +393,10 @@ class Order {
     const result = await pool.query(
       `UPDATE orders
        SET status = $1, updated_at = NOW(),
-           confirmed_at = CASE WHEN $1 = 'CONFIRMED' THEN NOW() ELSE confirmed_at END
+           confirmed_at = CASE WHEN $3 = 'CONFIRMED' THEN NOW() ELSE confirmed_at END
        WHERE id = $2
        RETURNING *`,
-      [status, orderId]
+      [status, orderId, status]
     );
 
     return result.rows[0] || null;
