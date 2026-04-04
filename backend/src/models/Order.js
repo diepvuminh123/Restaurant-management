@@ -3,6 +3,7 @@ const pool = require('../config/database');
 class Order {
   static formatOrderCode(order) {
     const createdDate = new Date(order.created_at || Date.now());
+    console.log('Creating order code for date:', createdDate);
     const y = createdDate.getUTCFullYear();
     const m = String(createdDate.getUTCMonth() + 1).padStart(2, '0');
     const d = String(createdDate.getUTCDate()).padStart(2, '0');
@@ -24,7 +25,7 @@ class Order {
 
     try {
       await client.query('BEGIN');
-
+      // Xác định cart này của ai
       const ownerField = userId ? 'user_id' : 'session_id';
       const ownerValue = userId || sessionId;
 
@@ -43,7 +44,7 @@ class Order {
          FOR UPDATE`,
         [ownerValue]
       );
-
+      // Lấy cart và kiểm tra cart hợp lệ
       const cart = cartResult.rows[0];
       if (!cart) {
         const error = new Error('Không tìm thấy giỏ hàng để tạo đơn');
@@ -61,7 +62,7 @@ class Order {
         error.statusCode = 409;
         throw error;
       }
-
+        // Lấy items và validate món
       const itemResult = await client.query(
         `SELECT
            ci.menu_item_id,
@@ -91,7 +92,7 @@ class Order {
         error.statusCode = 400;
         throw error;
       }
-
+      // Tính tiền và tạo order chính
       const totalAmount = items.reduce(
         (sum, item) => sum + Number(item.unit_price) * Number(item.quantity),
         0
@@ -103,14 +104,14 @@ class Order {
 
       const now = new Date();
       const idSeqResult = await client.query(
-        `SELECT nextval(pg_get_serial_sequence('orders', 'id'))::int AS id`
+        `SELECT nextval(pg_get_serial_sequence('orders', 'id'))::int AS id` // ????
       );
       const nextOrderId = idSeqResult.rows[0].id;
       const orderCode = this.formatOrderCode({
         id: nextOrderId,
         created_at: now,
       });
-
+      // Tạo order chính
       const orderInsert = await client.query(
         `INSERT INTO orders (
            id,

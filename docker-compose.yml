@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: restaurant_app
+    command: npm run dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+      - "${BACKEND_PORT:-5001}:5001"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${BACKEND_PORT:-5001}
+      DB_HOST: postgres
+      DB_PORT: ${POSTGRES_PORT:-5432}
+      DB_NAME: ${POSTGRES_DB:-restaurant_db}
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SESSION_SECRET: ${SESSION_SECRET:-dev_session_secret_change_me}
+      SESSION_NAME: ${SESSION_NAME:-restaurant_session}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE:-86400000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5001/api}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/backend/node_modules
+      - /app/frontend/node_modules
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: restaurant_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-restaurant_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
