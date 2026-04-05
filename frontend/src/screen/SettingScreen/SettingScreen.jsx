@@ -1,16 +1,25 @@
 // SettingScreen.js (Dự kiến)
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import SettingTabBar from '../../component/SettingForm/SettingTabBar/SettingTabBar';
 import UserInfoForm from '../../component/SettingForm/SettingTabBar/UserInfoForm/UserInfoForm';
 import ReservationHistory from '../../component/SettingForm/SettingTabBar/ReservationHistory/ReservationHistory';
+import TakeawayOrderTracking from '../../component/SettingForm/SettingTabBar/TakeawayOrderTracking/TakeawayOrderTracking';
 import BackButton from '../../component/BackButton/BackButton'
 
 import './SettingScreen.css'
 
 
 export default function SettingScreen({user}) {
-  const [currentView, setCurrentView] = useState('info');
+  const [searchParams] = useSearchParams();
+  const initialTab = useMemo(() => {
+    const fromQuery = searchParams.get('tab');
+    const allowedTabs = ['info', 'password', 'delivery', 'history'];
+    return allowedTabs.includes(fromQuery) ? fromQuery : 'info';
+  }, [searchParams]);
+
+  const [currentView, setCurrentView] = useState(initialTab);
 
   const renderContent = () => {
     switch (currentView) {
@@ -19,7 +28,7 @@ export default function SettingScreen({user}) {
       case 'password':
         return <div>Form Đổi mật khẩu</div>;
       case 'delivery':
-        return <div>Theo dõi đơn mang về</div>;
+        return <TakeawayOrderTracking />;
       case 'history':
         return <ReservationHistory />;
       default:
@@ -34,7 +43,7 @@ export default function SettingScreen({user}) {
       </div>
       <div className="setting-screen-container">
       
-      <SettingTabBar user={user} handleTabChange={setCurrentView} />
+      <SettingTabBar user={user} handleTabChange={setCurrentView} initialTab={initialTab} />
       <div className="setting-content-area">
         {renderContent()}
       </div>

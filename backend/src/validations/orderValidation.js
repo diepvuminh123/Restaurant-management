@@ -82,6 +82,17 @@ const guestOrderLookupQuerySchema = Joi.object({
     'object.missing': 'Cần cung cấp ít nhất một trong các trường: order_code, customer_phone hoặc customer_email'
   });
 
+const myOrderHistoryQuerySchema = Joi.object({
+  status: Joi.string()
+    .valid('ALL', 'PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')
+    .default('ALL')
+    .messages({
+      'any.only': 'status không hợp lệ'
+    }),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(30).default(20)
+});
+
 const updateOrderStatusSchema = Joi.object({
   status: Joi.string()
     .valid('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')
@@ -110,6 +121,7 @@ module.exports = {
   orderIdParamSchema,
   getOrdersForStaffQuerySchema,
   guestOrderLookupQuerySchema,
+  myOrderHistoryQuerySchema,
   updateOrderStatusSchema,
   cancelOrderSchema,
   updateOrderNoteSchema

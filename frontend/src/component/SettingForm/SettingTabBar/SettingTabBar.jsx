@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SettingTabBar.css'
-const SettingTabBar = ({ user, handleTabChange }) => {
-  const [activeTab, setActiveTab] = useState('info'); 
+const SettingTabBar = ({ user, handleTabChange, initialTab = 'info' }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   // Hàm xử lý khi nhấn vào tab
   const onTabClick = (tabKey) => {

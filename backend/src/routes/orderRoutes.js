@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const OrderController = require('../controllers/orderController');
-const { optionalAuth, requireRole } = require('../middlewares/auth');
+const { optionalAuth, requireAuth, requireRole } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 const validateQuery = require('../middlewares/validateQuery');
 const validateParams = require('../middlewares/validateParams');
@@ -10,6 +10,7 @@ const {
 	orderIdParamSchema,
 	getOrdersForStaffQuerySchema,
 	guestOrderLookupQuerySchema,
+	myOrderHistoryQuerySchema,
 	updateOrderStatusSchema,
 	cancelOrderSchema,
 	updateOrderNoteSchema
@@ -73,6 +74,13 @@ router.get(
 	'/orders/lookup',
 	validateQuery(guestOrderLookupQuerySchema),
 	OrderController.lookupOrdersForGuest
+);
+
+router.get(
+	'/orders/my',
+	requireAuth,
+	validateQuery(myOrderHistoryQuerySchema),
+	OrderController.getOrdersForUser
 );
 
 router.get(

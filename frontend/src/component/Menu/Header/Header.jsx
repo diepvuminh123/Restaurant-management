@@ -16,6 +16,7 @@ export default function Header({
   sections = [], // Nhận sections từ API
   loadingSections = false,
   onOpenCart, //Khi nhấn vô thì sẽ hiển thị giỏ hàng của khách hàng
+  trackingPath = '/order-lookup',
 }) {
   return (
     <header className="menu-header">
@@ -43,7 +44,7 @@ export default function Header({
       </nav>
 
       <div className="menu-header__right">
-        <Link className="tracking-link" to="/order-lookup">
+        <Link className="tracking-link" to={trackingPath}>
           Theo doi don mang ve
         </Link>
 

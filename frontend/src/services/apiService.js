@@ -368,6 +368,21 @@ class ApiService {
     });
   }
 
+  static async getMyTakeawayOrders(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/orders/my${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**

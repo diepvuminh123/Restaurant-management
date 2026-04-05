@@ -241,6 +241,7 @@ export default function MenuScreen({ user }) {
         onOpenCart={() => setIsCartOpen(true)}
         sections={sections}
         loadingSections={loadingSections}
+        trackingPath="/order-lookup"
       />
 
       <div className="menu-content">

@@ -114,6 +114,20 @@ class OrderService {
     return Order.lookupOrdersForGuest(lookupInput);
   }
 
+  static async getOrdersForUser(userId, query) {
+    if (!userId) {
+      const error = new Error('Bạn cần đăng nhập để xem đơn mang về');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    return Order.getOrdersForUser(userId, {
+      status: query.status,
+      page: query.page,
+      limit: query.limit
+    });
+  }
+
   static async getOrderDetailForStaff(orderId) {
     const order = await Order.getOrderDetailForStaff(orderId);
     if (!order) {

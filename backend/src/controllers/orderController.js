@@ -97,6 +97,35 @@ class OrderController {
     }
   }
 
+  static async getOrdersForUser(req, res) {
+    try {
+      const userId = req.session?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Bạn cần đăng nhập để xem đơn mang về'
+        });
+      }
+
+      const result = await OrderService.getOrdersForUser(userId, req.query);
+
+      res.json({
+        success: true,
+        data: result.items,
+        pagination: result.pagination
+      });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      console.error('Get orders for user error:', error);
+      res.status(statusCode).json({
+        success: false,
+        message: error.message || 'Lỗi khi lấy danh sách đơn hàng',
+        error: error.message
+      });
+    }
+  }
+
   static async getOrderDetailForStaff(req, res) {
     try {
       const orderId = parseInt(req.params.id, 10);

@@ -485,6 +485,84 @@ class Order {
     return result.rows;
   }
 
+  static async getOrdersForUser(userId, { status = 'ALL', page = 1, limit = 20 } = {}) {
+    const where = ['o.user_id = $1'];
+    const values = [userId];
+    let idx = 2;
+
+    if (status && status !== 'ALL') {
+      where.push(`o.status = $${idx++}`);
+      values.push(status);
+    }
+
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeLimit = Math.max(1, Math.min(30, Number(limit) || 20));
+    const offset = (safePage - 1) * safeLimit;
+
+    const whereClause = where.join(' AND ');
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::int AS total
+       FROM orders o
+       WHERE ${whereClause}`,
+      values
+    );
+
+    const total = countResult.rows[0]?.total || 0;
+
+    values.push(safeLimit);
+    values.push(offset);
+
+    const result = await pool.query(
+      `SELECT
+         o.id,
+         o.order_code,
+         o.status,
+         o.payment_status,
+         o.customer_name,
+         o.customer_phone,
+         o.customer_email,
+         o.pickup_time,
+         o.final_amount,
+         o.deposit_amount,
+         o.note,
+         o.created_at,
+         o.updated_at,
+         COALESCE(
+           json_agg(
+             json_build_object(
+               'id', oi.id,
+               'menu_item_id', oi.menu_item_id,
+               'item_name', oi.item_name,
+               'item_image', oi.item_image,
+               'note', oi.note,
+               'quantity', oi.quantity,
+               'unit_price', oi.unit_price,
+               'line_total', oi.line_total
+             ) ORDER BY oi.id
+           ) FILTER (WHERE oi.id IS NOT NULL),
+           '[]'
+         ) AS items
+       FROM orders o
+       LEFT JOIN order_items oi ON oi.order_id = o.id
+       WHERE ${whereClause}
+       GROUP BY o.id
+       ORDER BY o.created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      values
+    );
+
+    return {
+      items: result.rows,
+      pagination: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        total_pages: Math.max(1, Math.ceil(total / safeLimit))
+      }
+    };
+  }
+
   static async updateOrderNote(orderId, note) {
     const result = await pool.query(
       `UPDATE orders
