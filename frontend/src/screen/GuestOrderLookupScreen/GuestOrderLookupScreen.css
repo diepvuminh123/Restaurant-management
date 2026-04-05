@@ -1,0 +1,246 @@
+.guest-order-lookup {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #fff7ed 0%, #fffbf5 45%, #f8fafc 100%);
+  padding: 28px 16px 40px;
+}
+
+.guest-order-lookup__hero {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+}
+
+.guest-order-lookup__hero h1 {
+  margin: 0;
+  color: #7c2d12;
+  font-size: 30px;
+}
+
+.guest-order-lookup__hero p {
+  margin: 10px 0 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.lookup-form {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(124, 45, 18, 0.08);
+}
+
+.lookup-form__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.lookup-form__row--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.lookup-form label {
+  color: #7c2d12;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.lookup-form input {
+  border: 1px solid #fcd5b5;
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.lookup-form input:focus {
+  outline: none;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14);
+}
+
+.lookup-form__submit {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #ea580c;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lookup-form__submit:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.lookup-error,
+.lookup-empty {
+  max-width: 1100px;
+  margin: 14px auto 0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  color: #b91c1c;
+}
+
+.lookup-empty {
+  color: #475569;
+}
+
+.lookup-result-layout {
+  max-width: 1100px;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 14px;
+}
+
+.lookup-order-list,
+.lookup-order-detail {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.lookup-order-list h2,
+.lookup-order-detail h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.lookup-order-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.lookup-order-card--active {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.16);
+}
+
+.lookup-order-card__line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.lookup-order-card p {
+  margin: 6px 0 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.lookup-status {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-pending {
+  background: #d97706;
+}
+
+.status-confirmed {
+  background: #2563eb;
+}
+
+.status-preparing {
+  background: #7c3aed;
+}
+
+.status-ready {
+  background: #0f766e;
+}
+
+.status-completed {
+  background: #16a34a;
+}
+
+.status-canceled {
+  background: #dc2626;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  row-gap: 8px;
+  column-gap: 10px;
+  margin-bottom: 16px;
+}
+
+.detail-grid span {
+  color: #6b7280;
+}
+
+.detail-grid strong {
+  color: #111827;
+}
+
+.detail-items h3,
+.detail-note h3 {
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+.detail-items table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.detail-items th,
+.detail-items td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.detail-note {
+  margin-top: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.detail-note p {
+  margin: 0;
+  color: #7c2d12;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .lookup-form__row--split {
+    grid-template-columns: 1fr;
+  }
+
+  .lookup-result-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

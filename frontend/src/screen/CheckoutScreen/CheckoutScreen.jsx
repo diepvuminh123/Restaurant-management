@@ -142,6 +142,24 @@ const CheckoutScreen = () => {
     navigate('/menu', { replace: true });
   };
 
+  const handleTrackOrder = () => {
+    const params = new URLSearchParams();
+
+    // Tự điền sẵn thông tin tra cứu để khách không cần nhập lại
+    if (orderResult?.order_code) {
+      params.set('order_code', orderResult.order_code);
+    }
+    if (customerInfo.phone) {
+      params.set('customer_phone', customerInfo.phone);
+    }
+    if (customerInfo.email) {
+      params.set('customer_email', customerInfo.email);
+    }
+
+    const query = params.toString();
+    navigate(`/order-lookup${query ? `?${query}` : ''}`);
+  };
+
   return (
     <div className="checkout-screen">
       <ToastContainer toasts={toasts} removeToast={removeToast} />
@@ -413,6 +431,12 @@ const CheckoutScreen = () => {
                   onClick={handleSendBillViaMessenger}
                 >
                   <IoChatbubbleEllipsesOutline style={{verticalAlign: 'middle', marginRight: '6px'}} /> Gửi bill qua Messenger
+                </button>
+                <button
+                  className="btn-track-order"
+                  onClick={handleTrackOrder}
+                >
+                  <IoHappyOutline style={{verticalAlign: 'middle', marginRight: '6px'}} /> Theo dõi đơn mang về
                 </button>
                 <button 
                   className="btn-complete"

@@ -78,6 +78,25 @@ class OrderController {
     }
   }
 
+  static async lookupOrdersForGuest(req, res) {
+    try {
+      const orders = await OrderService.lookupOrdersForGuest(req.query);
+
+      res.json({
+        success: true,
+        data: orders
+      });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      console.error('Lookup orders for guest error:', error);
+      res.status(statusCode).json({
+        success: false,
+        message: error.message || 'Lỗi khi tra cứu đơn hàng',
+        error: error.message
+      });
+    }
+  }
+
   static async getOrderDetailForStaff(req, res) {
     try {
       const orderId = parseInt(req.params.id, 10);

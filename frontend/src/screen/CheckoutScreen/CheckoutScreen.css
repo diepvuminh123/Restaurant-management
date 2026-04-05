@@ -573,6 +573,24 @@
   background: #c85a24;
 }
 
+.btn-track-order {
+  width: 100%;
+  padding: 14px 24px;
+  background: #fff7ec;
+  color: #b45309;
+  border: 1px solid #f4c48a;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.btn-track-order:hover {
+  background: #ffefda;
+}
+
 .btn-complete {
   width: 100%;
   padding: 14px 24px;

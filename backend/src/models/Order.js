@@ -418,6 +418,72 @@ class Order {
 
     return result.rows[0] || null;
   }
+// khách chưa đăng nhập (guest) tra cứu đơn
+  static async lookupOrdersForGuest({ orderCode = null, customerPhone = null, customerEmail = null, limit = 10 }) {
+    const where = [];
+    const values = [];
+    let idx = 1;
+
+    // Chỉ dùng duy nhất 1 tiêu chí (ưu tiên theo service): mã đơn > sđt > email
+    if (orderCode) {
+      where.push(`UPPER(o.order_code) = UPPER($${idx++})`);
+      values.push(orderCode);
+    } else if (customerPhone) {
+      where.push(`o.customer_phone = $${idx++}`);
+      values.push(customerPhone);
+    } else if (customerEmail) {
+      where.push(`LOWER(o.customer_email) = LOWER($${idx++})`);
+      values.push(customerEmail);
+    }
+
+    if (where.length === 0) {
+      return [];
+    }
+
+    const safeLimit = Math.max(1, Math.min(20, Number(limit) || 10));
+    values.push(safeLimit);
+
+    const result = await pool.query(
+      `SELECT
+         o.id,
+         o.order_code,
+         o.status,
+         o.payment_status,
+         o.customer_name,
+         o.customer_phone,
+         o.customer_email,
+         o.pickup_time,
+         o.final_amount,
+         o.deposit_amount,
+         o.note,
+         o.created_at,
+         o.updated_at,
+         COALESCE(
+           json_agg(
+             json_build_object(
+               'id', oi.id,
+               'menu_item_id', oi.menu_item_id,
+               'item_name', oi.item_name,
+               'item_image', oi.item_image,
+               'note', oi.note,
+               'quantity', oi.quantity,
+               'unit_price', oi.unit_price,
+               'line_total', oi.line_total
+             ) ORDER BY oi.id
+           ) FILTER (WHERE oi.id IS NOT NULL),
+           '[]'
+         ) AS items
+       FROM orders o
+       LEFT JOIN order_items oi ON oi.order_id = o.id
+       WHERE ${where.join(' AND ')}
+       GROUP BY o.id
+       ORDER BY o.created_at DESC
+       LIMIT $${idx}`,
+      values
+    );
+
+    return result.rows;
+  }
 
   static async updateOrderNote(orderId, note) {
     const result = await pool.query(

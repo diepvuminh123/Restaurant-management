@@ -3,6 +3,7 @@ import "./Header.css";
 import { LuUtensilsCrossed } from "react-icons/lu";
 import { Search } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import MenuHeaderLogo from '../../../component/Logo/Logo';
 import Loading from '../../Loading/Loading'
 
@@ -42,6 +43,10 @@ export default function Header({
       </nav>
 
       <div className="menu-header__right">
+        <Link className="tracking-link" to="/order-lookup">
+          Theo doi don mang ve
+        </Link>
+
         <div className="search-box">
           <span className="search-icon"><Search /></span>
           <input

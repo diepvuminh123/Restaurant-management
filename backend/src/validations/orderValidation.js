@@ -63,6 +63,25 @@ const getOrdersForStaffQuerySchema = Joi.object({
   limit: Joi.number().integer().min(1).max(100).default(10)
 });
 
+const guestOrderLookupQuerySchema = Joi.object({
+  order_code: Joi.string().trim().max(50).optional().messages({
+    'string.max': 'Mã đơn hàng không được quá 50 ký tự'
+  }),
+  customer_phone: Joi.string().trim().max(20).optional().messages({
+    'string.max': 'Số điện thoại không được quá 20 ký tự'
+  }),
+  customer_email: Joi.string().trim().email().max(100).optional().messages({
+    'string.email': 'Email không hợp lệ',
+    'string.max': 'Email không được quá 100 ký tự'
+  }),
+  limit: Joi.number().integer().min(1).max(20).default(10)
+})
+  // Khách chỉ cần nhập một trong 3 trường để tra cứu đơn mang về
+  .or('order_code', 'customer_phone', 'customer_email')
+  .messages({
+    'object.missing': 'Cần cung cấp ít nhất một trong các trường: order_code, customer_phone hoặc customer_email'
+  });
+
 const updateOrderStatusSchema = Joi.object({
   status: Joi.string()
     .valid('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')
@@ -90,6 +109,7 @@ module.exports = {
   createOrderSchema,
   orderIdParamSchema,
   getOrdersForStaffQuerySchema,
+  guestOrderLookupQuerySchema,
   updateOrderStatusSchema,
   cancelOrderSchema,
   updateOrderNoteSchema

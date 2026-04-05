@@ -98,6 +98,22 @@ class OrderService {
     return Order.getOrdersForStaff(query);
   }
 
+  static async lookupOrdersForGuest(query) {
+    // Ưu tiên mã đơn vì đây là định danh chính xác nhất
+    const orderCode = query.order_code?.trim();
+    const customerPhone = query.customer_phone?.trim();
+    const customerEmail = query.customer_email?.trim();
+
+    const lookupInput = {
+      orderCode: orderCode || null,
+      customerPhone: orderCode ? null : customerPhone || null,
+      customerEmail: orderCode || customerPhone ? null : customerEmail || null,
+      limit: query.limit
+    };
+
+    return Order.lookupOrdersForGuest(lookupInput);
+  }
+
   static async getOrderDetailForStaff(orderId) {
     const order = await Order.getOrderDetailForStaff(orderId);
     if (!order) {

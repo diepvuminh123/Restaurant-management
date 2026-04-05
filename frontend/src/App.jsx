@@ -7,6 +7,7 @@ import HomeScreen from './screen/HomeScreen/HomeScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
+import GuestOrderLookupScreen from './screen/GuestOrderLookupScreen/GuestOrderLookupScreen';
 import TableMapScreen from './screen/TableMapScreen/TableMapScreen';
 import ReservationSuccessScreen from './screen/ReservationSuccessScreen/ReservationSuccessScreen';
 import ApiService from './services/apiService';
@@ -148,6 +149,11 @@ function AppContent() {
         <Route 
           path="/checkout" 
           element={<CheckoutScreen />} 
+        />
+
+        <Route 
+          path="/order-lookup" 
+          element={<GuestOrderLookupScreen />} 
         />
 
         <Route

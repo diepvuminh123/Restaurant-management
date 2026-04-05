@@ -9,6 +9,7 @@ const {
 	createOrderSchema,
 	orderIdParamSchema,
 	getOrdersForStaffQuerySchema,
+	guestOrderLookupQuerySchema,
 	updateOrderStatusSchema,
 	cancelOrderSchema,
 	updateOrderNoteSchema
@@ -67,6 +68,12 @@ const {
  *         description: Server error
  */
 router.post('/orders', optionalAuth, validate(createOrderSchema), OrderController.createOrder);
+
+router.get(
+	'/orders/lookup',
+	validateQuery(guestOrderLookupQuerySchema),
+	OrderController.lookupOrdersForGuest
+);
 
 router.get(
 	'/orders',
