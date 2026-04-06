@@ -43,6 +43,7 @@ const formatDateTime = (value) => {
 
 const GuestOrderLookupScreen = () => {
   const [searchParams] = useSearchParams();
+  const PAGE_LIMIT = 10;
 
   // Đọc giá trị từ URL để khách vừa đặt xong có thể tra cứu ngay.
   const [filters, setFilters] = useState({
@@ -56,6 +57,13 @@ const GuestOrderLookupScreen = () => {
   const [errorText, setErrorText] = useState("");
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [pagination, setPagination] = useState({
+    limit: PAGE_LIMIT,
+    offset: 0,
+    total: 0,
+    hasNext: false,
+  });
 
   const selectedOrder = useMemo(
     () => orders.find((order) => order.id === selectedOrderId) || null,
@@ -66,8 +74,7 @@ const GuestOrderLookupScreen = () => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
-  const onSearch = async (event) => {
-    event.preventDefault();
+  const performLookup = async (nextOffset = 0) => {
     setHasSearched(true);
     setErrorText("");
 
@@ -75,7 +82,8 @@ const GuestOrderLookupScreen = () => {
       order_code: filters.order_code.trim(),
       customer_phone: filters.customer_phone.trim(),
       customer_email: filters.customer_email.trim(),
-      limit: 10,
+      limit: PAGE_LIMIT,
+      offset: nextOffset,
     };
 
     // Bắt lỗi ở client trước để phản hồi nhanh hơn cho khách.
@@ -86,6 +94,13 @@ const GuestOrderLookupScreen = () => {
     ) {
       setOrders([]);
       setSelectedOrderId(null);
+      setPagination((prev) => ({
+        ...prev,
+        offset: 0,
+        total: 0,
+        hasNext: false,
+      }));
+      setOffset(0);
       setErrorText(
         "Vui lòng nhập mã đơn hàng hoặc số điện thoại hoặc email để tra cứu.",
       );
@@ -96,18 +111,54 @@ const GuestOrderLookupScreen = () => {
       setLoading(true);
       const response = await ApiService.lookupGuestOrders(payload);
       const nextOrders = response.data || [];
+      const nextPagination = response.pagination || {
+        limit: PAGE_LIMIT,
+        offset: nextOffset,
+        total: nextOrders.length,
+        hasNext: false,
+      };
 
       setOrders(nextOrders);
+      setOffset(nextPagination.offset || 0);
+      setPagination(nextPagination);
       setSelectedOrderId(nextOrders.length > 0 ? nextOrders[0].id : null);
     } catch (error) {
       setOrders([]);
       setSelectedOrderId(null);
+      setPagination((prev) => ({
+        ...prev,
+        offset: 0,
+        total: 0,
+        hasNext: false,
+      }));
+      setOffset(0);
       setErrorText(
         error.message || "Không thể tra cứu đơn hàng, vui lòng thử lại.",
       );
     } finally {
       setLoading(false);
     }
+  };
+
+  const onSearch = async (event) => {
+    event.preventDefault();
+    await performLookup(0);
+  };
+
+  const onNextPage = async () => {
+    if (loading || !pagination.hasNext) {
+      return;
+    }
+
+    await performLookup(offset + PAGE_LIMIT);
+  };
+
+  const onPrevPage = async () => {
+    if (loading || offset <= 0) {
+      return;
+    }
+
+    await performLookup(Math.max(0, offset - PAGE_LIMIT));
   };
 
   useEffect(() => {
@@ -117,8 +168,7 @@ const GuestOrderLookupScreen = () => {
       filters.customer_phone ||
       filters.customer_email
     ) {
-      const formLikeEvent = { preventDefault: () => {} };
-      onSearch(formLikeEvent);
+      performLookup(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -279,6 +329,32 @@ const GuestOrderLookupScreen = () => {
               </>
             )}
           </section>
+        </div>
+      )}
+
+      {hasSearched && !loading && (orders.length > 0 || pagination.total > 0) && (
+        <div className="lookup-pagination">
+          <button
+            type="button"
+            className="lookup-pagination__btn"
+            onClick={onPrevPage}
+            disabled={offset <= 0 || loading}
+          >
+            Trang trước
+          </button>
+
+          <span className="lookup-pagination__meta">
+            Hiển thị {pagination.total === 0 ? 0 : offset + 1} - {Math.min(offset + orders.length, pagination.total)} / {pagination.total}
+          </span>
+
+          <button
+            type="button"
+            className="lookup-pagination__btn"
+            onClick={onNextPage}
+            disabled={!pagination.hasNext || loading}
+          >
+            Trang sau
+          </button>
         </div>
       )}
     </div>

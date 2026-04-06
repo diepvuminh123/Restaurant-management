@@ -70,6 +70,13 @@ class ApiService {
     });
   }
 
+  static async changePassword(currentPassword, newPassword) {
+    return this.request('/auth/changePassword', {
+      method: 'POST',
+      body: { currentPassword, newPassword },
+    });
+  }
+
   static async logout() {
     return this.request("/auth/logout", {
       method: "POST",

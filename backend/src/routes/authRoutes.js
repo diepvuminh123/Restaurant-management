@@ -3,7 +3,15 @@ const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const { requireAuth, optionalAuth  } = require('../middlewares/auth');
-const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema, resetPasswordSchema, updateProfileSchema } = require('../validations/authValidation');
+const {
+	registerSchema,
+	loginSchema,
+	sendOtpSchema,
+	verifyOtpSchema,
+	resetPasswordSchema,
+	changePasswordSchema,
+	updateProfileSchema
+} = require('../validations/authValidation');
 
 /**
  * @swagger
@@ -188,6 +196,8 @@ router.post('/login', validate(loginSchema), AuthController.login);
  *         description: Validation error
  */
 router.post('/resetPassword', validate(resetPasswordSchema), AuthController.resetPassword);
+
+router.post('/changePassword', requireAuth, validate(changePasswordSchema), AuthController.changePassword);
 
 /**
  * @swagger

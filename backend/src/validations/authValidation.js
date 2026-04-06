@@ -86,6 +86,16 @@ const resetPasswordSchema = Joi.object({
   }),
 });
 
+const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required().messages({
+    "any.required": "Mật khẩu hiện tại là bắt buộc",
+  }),
+  newPassword: Joi.string().min(6).required().messages({
+    "string.min": "Mật khẩu mới phải có ít nhất 6 ký tự",
+    "any.required": "Mật khẩu mới là bắt buộc",
+  }),
+});
+
 const updateProfileSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).optional().messages({
     "string.alphanum": "Username chỉ được chứa chữ và số",
@@ -108,5 +118,6 @@ module.exports = {
   sendOtpSchema,
   verifyOtpSchema,
   resetPasswordSchema,
+  changePasswordSchema,
   updateProfileSchema,
 };

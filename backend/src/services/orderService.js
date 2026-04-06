@@ -108,7 +108,8 @@ class OrderService {
       orderCode: orderCode || null,
       customerPhone: orderCode ? null : customerPhone || null,
       customerEmail: orderCode || customerPhone ? null : customerEmail || null,
-      limit: query.limit
+      limit: query.limit,
+      offset: query.offset
     };
 
     return Order.lookupOrdersForGuest(lookupInput);

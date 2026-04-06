@@ -6,6 +6,7 @@ import SettingTabBar from '../../component/SettingForm/SettingTabBar/SettingTabB
 import ReservationHistory from '../../component/SettingForm/SettingTabBar/ReservationHistory/ReservationHistory';
 import TakeawayOrderTracking from '../../component/SettingForm/SettingTabBar/TakeawayOrderTracking/TakeawayOrderTracking';
 import UserInfoForm from '../../component/SettingForm/SettingTabBar/UserInfoForm/UserInfoForm';
+import ChangePasswordForm from '../../component/SettingForm/SettingTabBar/ChangePasswordForm/ChangePasswordForm';
 import BackButton from '../../component/BackButton/BackButton'
 
 import './SettingScreen.css'
@@ -26,7 +27,7 @@ export default function SettingScreen({user, onProfileUpdated}) {
       case 'profile':
         return <UserInfoForm user={user} onProfileUpdated={onProfileUpdated} />;
       case 'password':
-        return <div>Form Đổi mật khẩu</div>;
+        return <ChangePasswordForm />;
       case 'delivery':
         return <TakeawayOrderTracking />;
       case 'history':

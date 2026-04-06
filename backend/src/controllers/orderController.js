@@ -80,11 +80,12 @@ class OrderController {
 
   static async lookupOrdersForGuest(req, res) {
     try {
-      const orders = await OrderService.lookupOrdersForGuest(req.query);
+      const result = await OrderService.lookupOrdersForGuest(req.query);
 
       res.json({
         success: true,
-        data: orders
+        data: result.items,
+        pagination: result.pagination
       });
     } catch (error) {
       const statusCode = error.statusCode || 500;

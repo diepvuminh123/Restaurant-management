@@ -151,6 +151,32 @@ class AuthController {
       });
     }
   }
+
+  /**
+   * POST /api/auth/changePassword
+   * Đổi mật khẩu khi đã đăng nhập
+   */
+  static async changePassword(req, res) {
+    try {
+      const userId = req.session?.userId;
+
+      await AuthService.changePassword({
+        userId,
+        currentPassword: req.body.currentPassword,
+        newPassword: req.body.newPassword,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Đổi mật khẩu thành công',
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
   /**
    * POST /api/auth/logout
    * Đăng xuất

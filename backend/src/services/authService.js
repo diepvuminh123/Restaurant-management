@@ -217,6 +217,38 @@ class AuthService {
   }
 
   /**
+   * Đổi mật khẩu cho user đã đăng nhập
+   */
+  static async changePassword({ userId, currentPassword, newPassword }) {
+    if (!userId) {
+      throw new Error('Bạn chưa đăng nhập');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User không tồn tại');
+    }
+
+    const isCurrentPasswordValid = await User.verifyPassword(
+      currentPassword,
+      user.password_hash
+    );
+    if (!isCurrentPasswordValid) {
+      throw new Error('Mật khẩu hiện tại không đúng');
+    }
+
+    const isNewPasswordSameAsOld = await User.verifyPassword(
+      newPassword,
+      user.password_hash
+    );
+    if (isNewPasswordSameAsOld) {
+      throw new Error('Mật khẩu mới không được trùng với mật khẩu hiện tại');
+    }
+
+    await User.updatePassword(userId, newPassword);
+  }
+
+  /**
    * Cập nhật thông tin cá nhân
    */
   static async updateProfile(userId, profileData) {

@@ -74,7 +74,8 @@ const guestOrderLookupQuerySchema = Joi.object({
     'string.email': 'Email không hợp lệ',
     'string.max': 'Email không được quá 100 ký tự'
   }),
-  limit: Joi.number().integer().min(1).max(20).default(10)
+  limit: Joi.number().integer().min(1).max(20).default(10),
+  offset: Joi.number().integer().min(0).default(0)
 })
   // Khách chỉ cần nhập một trong 3 trường để tra cứu đơn mang về
   .or('order_code', 'customer_phone', 'customer_email')

@@ -419,7 +419,7 @@ class Order {
     return result.rows[0] || null;
   }
 // khách chưa đăng nhập (guest) tra cứu đơn
-  static async lookupOrdersForGuest({ orderCode = null, customerPhone = null, customerEmail = null, limit = 10 }) {
+  static async lookupOrdersForGuest({ orderCode = null, customerPhone = null, customerEmail = null, limit = 10, offset = 0 }) {
     const where = [];
     const values = [];
     let idx = 1;
@@ -437,11 +437,31 @@ class Order {
     }
 
     if (where.length === 0) {
-      return [];
+      return {
+        items: [],
+        pagination: {
+          limit: 10,
+          offset: 0,
+          total: 0,
+          hasNext: false,
+        },
+      };
     }
 
     const safeLimit = Math.max(1, Math.min(20, Number(limit) || 10));
+    const safeOffset = Math.max(0, Number(offset) || 0);
+    const whereClause = where.join(' AND ');
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::int AS total
+       FROM orders o
+       WHERE ${whereClause}`,
+      values
+    );
+    const total = countResult.rows[0]?.total || 0;
+
     values.push(safeLimit);
+    values.push(safeOffset);
 
     const result = await pool.query(
       `SELECT
@@ -475,14 +495,22 @@ class Order {
          ) AS items
        FROM orders o
        LEFT JOIN order_items oi ON oi.order_id = o.id
-       WHERE ${where.join(' AND ')}
+       WHERE ${whereClause}
        GROUP BY o.id
        ORDER BY o.created_at DESC
-       LIMIT $${idx}`,
+       LIMIT $${idx} OFFSET $${idx + 1}`,
       values
     );
 
-    return result.rows;
+    return {
+      items: result.rows,
+      pagination: {
+        limit: safeLimit,
+        offset: safeOffset,
+        total,
+        hasNext: safeOffset + result.rows.length < total,
+      },
+    };
   }
 
   static async getOrdersForUser(userId, { status = 'ALL', page = 1, limit = 20 } = {}) {

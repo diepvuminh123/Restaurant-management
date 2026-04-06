@@ -114,6 +114,35 @@
   padding: 14px;
 }
 
+.lookup-pagination {
+  max-width: 1100px;
+  margin: 14px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.lookup-pagination__btn {
+  border: 1px solid #fed7aa;
+  background: #fff;
+  color: #9a3412;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lookup-pagination__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lookup-pagination__meta {
+  font-size: 14px;
+  color: #6b7280;
+}
+
 .lookup-order-list h2,
 .lookup-order-detail h2 {
   margin: 0 0 10px;
@@ -249,6 +278,11 @@
 
   .lookup-result-layout {
     grid-template-columns: 1fr;
+  }
+
+  .lookup-pagination {
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .detail-grid {
