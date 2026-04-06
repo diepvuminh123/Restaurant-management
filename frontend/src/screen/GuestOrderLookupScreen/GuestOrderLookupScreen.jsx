@@ -1,42 +1,43 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { IoSearchOutline } from 'react-icons/io5';
-import ApiService from '../../services/apiService';
-import './GuestOrderLookupScreen.css';
+import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { IoSearchOutline } from "react-icons/io5";
+import ApiService from "../../services/apiService";
+import "./GuestOrderLookupScreen.css";
+import BackButton from "../../component/BackButton/BackButton";
 
 const STATUS_LABEL_MAP = {
-  PENDING: 'Chờ xác nhận',
-  CONFIRMED: 'Đã xác nhận',
-  PREPARING: 'Đang chuẩn bị',
-  READY: 'Sẵn sàng để lấy',
-  COMPLETED: 'Đã hoàn tất',
-  CANCELED: 'Đã hủy',
+  PENDING: "Chờ xác nhận",
+  CONFIRMED: "Đã xác nhận",
+  PREPARING: "Đang chuẩn bị",
+  READY: "Sẵn sàng để lấy",
+  COMPLETED: "Đã hoàn tất",
+  CANCELED: "Đã hủy",
 };
 
 const STATUS_BADGE_MAP = {
-  PENDING: 'status-pending',
-  CONFIRMED: 'status-confirmed',
-  PREPARING: 'status-preparing',
-  READY: 'status-ready',
-  COMPLETED: 'status-completed',
-  CANCELED: 'status-canceled',
+  PENDING: "status-pending",
+  CONFIRMED: "status-confirmed",
+  PREPARING: "status-preparing",
+  READY: "status-ready",
+  COMPLETED: "status-completed",
+  CANCELED: "status-canceled",
 };
 
 const NOTE_PAYMENT_TAG_REGEX = /^\[PAYMENT_METHOD:[^\]]+\]\s*/;
 
-const formatCurrency = (amount) => Number(amount || 0).toLocaleString('vi-VN');
+const formatCurrency = (amount) => Number(amount || 0).toLocaleString("vi-VN");
 
 const formatDateTime = (value) => {
-  if (!value) return '--';
+  if (!value) return "--";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '--';
+  if (Number.isNaN(date.getTime())) return "--";
 
-  return date.toLocaleString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
+  return date.toLocaleString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
 };
 
@@ -45,20 +46,20 @@ const GuestOrderLookupScreen = () => {
 
   // Đọc giá trị từ URL để khách vừa đặt xong có thể tra cứu ngay.
   const [filters, setFilters] = useState({
-    order_code: searchParams.get('order_code') || '',
-    customer_phone: searchParams.get('customer_phone') || '',
-    customer_email: searchParams.get('customer_email') || '',
+    order_code: searchParams.get("order_code") || "",
+    customer_phone: searchParams.get("customer_phone") || "",
+    customer_email: searchParams.get("customer_email") || "",
   });
 
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [errorText, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState("");
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const selectedOrder = useMemo(
     () => orders.find((order) => order.id === selectedOrderId) || null,
-    [orders, selectedOrderId]
+    [orders, selectedOrderId],
   );
 
   const onFieldChange = (field, value) => {
@@ -68,7 +69,7 @@ const GuestOrderLookupScreen = () => {
   const onSearch = async (event) => {
     event.preventDefault();
     setHasSearched(true);
-    setErrorText('');
+    setErrorText("");
 
     const payload = {
       order_code: filters.order_code.trim(),
@@ -78,10 +79,16 @@ const GuestOrderLookupScreen = () => {
     };
 
     // Bắt lỗi ở client trước để phản hồi nhanh hơn cho khách.
-    if (!payload.order_code && !payload.customer_phone && !payload.customer_email) {
+    if (
+      !payload.order_code &&
+      !payload.customer_phone &&
+      !payload.customer_email
+    ) {
       setOrders([]);
       setSelectedOrderId(null);
-      setErrorText('Vui lòng nhập mã đơn hàng hoặc số điện thoại hoặc email để tra cứu.');
+      setErrorText(
+        "Vui lòng nhập mã đơn hàng hoặc số điện thoại hoặc email để tra cứu.",
+      );
       return;
     }
 
@@ -95,7 +102,9 @@ const GuestOrderLookupScreen = () => {
     } catch (error) {
       setOrders([]);
       setSelectedOrderId(null);
-      setErrorText(error.message || 'Không thể tra cứu đơn hàng, vui lòng thử lại.');
+      setErrorText(
+        error.message || "Không thể tra cứu đơn hàng, vui lòng thử lại.",
+      );
     } finally {
       setLoading(false);
     }
@@ -103,7 +112,11 @@ const GuestOrderLookupScreen = () => {
 
   useEffect(() => {
     // Auto lookup nếu có sẵn query param từ màn checkout.
-    if (filters.order_code || filters.customer_phone || filters.customer_email) {
+    if (
+      filters.order_code ||
+      filters.customer_phone ||
+      filters.customer_email
+    ) {
       const formLikeEvent = { preventDefault: () => {} };
       onSearch(formLikeEvent);
     }
@@ -112,9 +125,16 @@ const GuestOrderLookupScreen = () => {
 
   return (
     <div className="guest-order-lookup">
+      <div className="back-btn-container">
+        <BackButton />
+      </div>
+
       <div className="guest-order-lookup__hero">
         <h1>Theo dõi đơn mang về</h1>
-        <p>Không cần đăng nhập. Nhập một trong các thông tin bên dưới để xem trạng thái đơn của bạn.</p>
+        <p>
+          Không cần đăng nhập. Nhập một trong các thông tin bên dưới để xem
+          trạng thái đơn của bạn.
+        </p>
       </div>
 
       <form className="lookup-form" onSubmit={onSearch}>
@@ -124,7 +144,7 @@ const GuestOrderLookupScreen = () => {
             id="lookup-order-code"
             type="text"
             value={filters.order_code}
-            onChange={(e) => onFieldChange('order_code', e.target.value)}
+            onChange={(e) => onFieldChange("order_code", e.target.value)}
             placeholder="Ví dụ: ORD-20260406-000123"
           />
         </div>
@@ -136,7 +156,7 @@ const GuestOrderLookupScreen = () => {
               id="lookup-phone"
               type="text"
               value={filters.customer_phone}
-              onChange={(e) => onFieldChange('customer_phone', e.target.value)}
+              onChange={(e) => onFieldChange("customer_phone", e.target.value)}
               placeholder="Ví dụ: 0912345678"
             />
           </div>
@@ -147,22 +167,28 @@ const GuestOrderLookupScreen = () => {
               id="lookup-email"
               type="email"
               value={filters.customer_email}
-              onChange={(e) => onFieldChange('customer_email', e.target.value)}
+              onChange={(e) => onFieldChange("customer_email", e.target.value)}
               placeholder="Ví dụ: customer@email.com"
             />
           </div>
         </div>
 
-        <button type="submit" className="lookup-form__submit" disabled={loading}>
+        <button
+          type="submit"
+          className="lookup-form__submit"
+          disabled={loading}
+        >
           <IoSearchOutline />
-          {loading ? 'Đang tra cứu...' : 'Tra cứu đơn hàng'}
+          {loading ? "Đang tra cứu..." : "Tra cứu đơn hàng"}
         </button>
       </form>
 
       {errorText && <p className="lookup-error">{errorText}</p>}
 
       {hasSearched && !loading && orders.length === 0 && !errorText && (
-        <p className="lookup-empty">Không tìm thấy đơn phù hợp với thông tin đã nhập.</p>
+        <p className="lookup-empty">
+          Không tìm thấy đơn phù hợp với thông tin đã nhập.
+        </p>
       )}
 
       {orders.length > 0 && (
@@ -173,12 +199,14 @@ const GuestOrderLookupScreen = () => {
               <button
                 key={order.id}
                 type="button"
-                className={`lookup-order-card ${selectedOrderId === order.id ? 'lookup-order-card--active' : ''}`}
+                className={`lookup-order-card ${selectedOrderId === order.id ? "lookup-order-card--active" : ""}`}
                 onClick={() => setSelectedOrderId(order.id)}
               >
                 <div className="lookup-order-card__line">
                   <strong>{order.order_code}</strong>
-                  <span className={`lookup-status ${STATUS_BADGE_MAP[order.status] || 'status-pending'}`}>
+                  <span
+                    className={`lookup-status ${STATUS_BADGE_MAP[order.status] || "status-pending"}`}
+                  >
                     {STATUS_LABEL_MAP[order.status] || order.status}
                   </span>
                 </div>
@@ -198,7 +226,10 @@ const GuestOrderLookupScreen = () => {
                   <strong>{selectedOrder.order_code}</strong>
 
                   <span>Trạng thái:</span>
-                  <strong>{STATUS_LABEL_MAP[selectedOrder.status] || selectedOrder.status}</strong>
+                  <strong>
+                    {STATUS_LABEL_MAP[selectedOrder.status] ||
+                      selectedOrder.status}
+                  </strong>
 
                   <span>Thời gian nhận:</span>
                   <strong>{formatDateTime(selectedOrder.pickup_time)}</strong>
@@ -207,7 +238,9 @@ const GuestOrderLookupScreen = () => {
                   <strong>{formatCurrency(selectedOrder.final_amount)}đ</strong>
 
                   <span>Tiền cọc:</span>
-                  <strong>{formatCurrency(selectedOrder.deposit_amount)}đ</strong>
+                  <strong>
+                    {formatCurrency(selectedOrder.deposit_amount)}đ
+                  </strong>
                 </div>
 
                 <div className="detail-items">
@@ -237,7 +270,10 @@ const GuestOrderLookupScreen = () => {
                 {selectedOrder.note && (
                   <div className="detail-note">
                     <h3>Ghi chú</h3>
-                    <p>{selectedOrder.note.replace(NOTE_PAYMENT_TAG_REGEX, '') || '(Không có ghi chú)'}</p>
+                    <p>
+                      {selectedOrder.note.replace(NOTE_PAYMENT_TAG_REGEX, "") ||
+                        "(Không có ghi chú)"}
+                    </p>
                   </div>
                 )}
               </>

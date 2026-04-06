@@ -230,6 +230,17 @@
   color: #7c2d12;
   line-height: 1.6;
 }
+/* .back-btn-container { 
+    
+    margin-bottom: 25px; 
+    font-size: 16px;
+    font-weight: 500;
+} */
+.back-btn-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px;
+}
 
 @media (max-width: 900px) {
   .lookup-form__row--split {
