@@ -28,7 +28,8 @@
     "contact": "Contact",
     "phone": "(+84)90 123 4567",
     "logout": "Logout",
-    "profile": "Profile"
+    "profile": "Profile",
+    "account": "Account"
   },
   "home": {
     "restaurantName": "Huan Minh Quanh Restaurant",

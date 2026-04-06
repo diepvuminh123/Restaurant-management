@@ -5,7 +5,6 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import MenuHeaderLogo from "../Logo/Logo";
-import SettingTabBar from "../SettingForm/SettingTabBar/SettingTabBar";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher'
 const HomeScreenHeader = ({ user, onLogout }) => {
@@ -23,10 +22,12 @@ const HomeScreenHeader = ({ user, onLogout }) => {
     navigate("/");
     setIsDropdownOpen(false);
   };
-  const handleSetting = () =>  {
-    navigate("/setting")
+  const handleProfile = () =>  {
+    navigate('/profile');
     setIsDropdownOpen(false);
   }
+
+
  
 
   return (
@@ -66,7 +67,6 @@ const HomeScreenHeader = ({ user, onLogout }) => {
           />
           {user && (
             <>
-            {console.log('User Info:', user)}
               <span
                 className="header__username"
                 onClick={handleProfileClick}
@@ -84,10 +84,11 @@ const HomeScreenHeader = ({ user, onLogout }) => {
                   </button>
                   <button
                     className="dropdown__logout-btn"
-                    onClick={handleSetting}
+                    onClick={handleProfile}
                   >
                    {t('header.profile')}
                   </button>
+                  
                   
                   
                 </div>

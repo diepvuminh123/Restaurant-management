@@ -3,7 +3,7 @@ const router = express.Router();
 const AuthController = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const { requireAuth, optionalAuth  } = require('../middlewares/auth');
-const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema,resetPasswordSchema } = require('../validations/authValidation');
+const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema, resetPasswordSchema, updateProfileSchema } = require('../validations/authValidation');
 
 /**
  * @swagger
@@ -255,5 +255,40 @@ router.get('/me', requireAuth, AuthController.getCurrentUser);
  *                   $ref: '#/components/schemas/User'
  */
 router.get('/check', AuthController.checkAuth);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update current user profile
+ *     description: Update profile fields for the currently logged-in user
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "new_username"
+ *               fullName:
+ *                 type: string
+ *                 example: "Nguyen Van A"
+ *               phone:
+ *                 type: string
+ *                 example: "0901234567"
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Not authenticated
+ */
+router.put('/profile', requireAuth, validate(updateProfileSchema), AuthController.updateProfile);
 
 module.exports = router;

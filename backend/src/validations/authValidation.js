@@ -86,10 +86,27 @@ const resetPasswordSchema = Joi.object({
   }),
 });
 
+const updateProfileSchema = Joi.object({
+  username: Joi.string().alphanum().min(3).max(30).optional().messages({
+    "string.alphanum": "Username chỉ được chứa chữ và số",
+    "string.min": "Username phải có ít nhất 3 ký tự",
+    "string.max": "Username không được quá 30 ký tự",
+  }),
+  fullName: Joi.string().max(100).allow('').optional().messages({
+    "string.max": "Họ tên không được quá 100 ký tự",
+  }),
+  phone: Joi.string().pattern(/^[0-9]{9,11}$/).allow('').optional().messages({
+    "string.pattern.base": "Số điện thoại phải có 9-11 chữ số",
+  }),
+}).min(1).messages({
+  "object.min": "Cần ít nhất một trường để cập nhật",
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   sendOtpSchema,
   verifyOtpSchema,
   resetPasswordSchema,
+  updateProfileSchema,
 };

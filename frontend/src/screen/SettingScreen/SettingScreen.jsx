@@ -3,28 +3,28 @@
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SettingTabBar from '../../component/SettingForm/SettingTabBar/SettingTabBar';
-import UserInfoForm from '../../component/SettingForm/SettingTabBar/UserInfoForm/UserInfoForm';
 import ReservationHistory from '../../component/SettingForm/SettingTabBar/ReservationHistory/ReservationHistory';
 import TakeawayOrderTracking from '../../component/SettingForm/SettingTabBar/TakeawayOrderTracking/TakeawayOrderTracking';
+import UserInfoForm from '../../component/SettingForm/SettingTabBar/UserInfoForm/UserInfoForm';
 import BackButton from '../../component/BackButton/BackButton'
 
 import './SettingScreen.css'
 
 
-export default function SettingScreen({user}) {
+export default function SettingScreen({user, onProfileUpdated}) {
   const [searchParams] = useSearchParams();
   const initialTab = useMemo(() => {
     const fromQuery = searchParams.get('tab');
-    const allowedTabs = ['info', 'password', 'delivery', 'history'];
-    return allowedTabs.includes(fromQuery) ? fromQuery : 'info';
+    const allowedTabs = ['profile', 'password', 'delivery', 'history'];
+    return allowedTabs.includes(fromQuery) ? fromQuery : 'profile';
   }, [searchParams]);
 
   const [currentView, setCurrentView] = useState(initialTab);
 
   const renderContent = () => {
     switch (currentView) {
-      case 'info':
-        return <UserInfoForm user={user} />; 
+      case 'profile':
+        return <UserInfoForm user={user} onProfileUpdated={onProfileUpdated} />;
       case 'password':
         return <div>Form Đổi mật khẩu</div>;
       case 'delivery':
@@ -32,7 +32,7 @@ export default function SettingScreen({user}) {
       case 'history':
         return <ReservationHistory />;
       default:
-        return <UserInfoForm user={user} />;
+        return <UserInfoForm user={user} onProfileUpdated={onProfileUpdated} />;
     }
   };
 

@@ -108,6 +108,17 @@ function AppContent() {
     }
   };
 
+  const handleUserUpdated = (updatedUser) => {
+    setUser((prevUser) => {
+      const nextUser = {
+        ...prevUser,
+        ...updatedUser,
+      };
+      sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(nextUser));
+      return nextUser;
+    });
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -177,17 +188,20 @@ function AppContent() {
           } 
         />
 
-        {/* Setting route */}
+        {/* Profile route */}
         <Route
-          path="/setting"
+          path="/profile"
           element={
             user ? (
-              <SettingScreen user={user} onLogout={handleLogout} />
+              <SettingScreen user={user} onProfileUpdated={handleUserUpdated} />
             ) : (
               <Navigate to="/home" replace />
             )
           }
         />
+
+        {/* Backward-compatible redirect */}
+        <Route path="/setting" element={<Navigate to="/profile" replace />} />
 
         {/* Error pages */}
         <Route path="/403" element={<Unauthorized />} />

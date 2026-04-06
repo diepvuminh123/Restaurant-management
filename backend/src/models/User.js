@@ -106,6 +106,22 @@ class User {
       [lockUntil, userId]
     );
   }
+
+  static async updateProfile(userId, profileData) {
+    const { username, fullName, phone } = profileData;
+
+    const result = await pool.query(
+      `UPDATE users
+       SET username = COALESCE($1, username),
+           full_name = COALESCE($2, full_name),
+           phone = COALESCE($3, phone)
+       WHERE user_id = $4
+       RETURNING user_id, username, email, full_name, phone, role, created_at`,
+      [username, fullName, phone, userId]
+    );
+
+    return result.rows[0];
+  }
   
 }
 module.exports = User;

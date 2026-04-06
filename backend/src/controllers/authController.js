@@ -232,6 +232,42 @@ class AuthController {
       });
     }
   }
+
+  /**
+   * PUT /api/auth/profile
+   * Cập nhật hồ sơ user hiện tại
+   */
+  static async updateProfile(req, res) {
+    try {
+      const userId = req.session.userId;
+      const updatedUser = await AuthService.updateProfile(userId, req.body);
+
+      if (updatedUser.username) {
+        req.session.username = updatedUser.username;
+      }
+
+      res.json({
+        success: true,
+        message: 'Cập nhật thông tin cá nhân thành công',
+        data: {
+          user: {
+            userId: updatedUser.user_id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            fullName: updatedUser.full_name,
+            phone: updatedUser.phone,
+            role: updatedUser.role,
+            createdAt: updatedUser.created_at,
+          },
+        },
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = AuthController;

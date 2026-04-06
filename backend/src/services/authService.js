@@ -215,6 +215,39 @@ class AuthService {
 
     await User.updatePassword(userId, newPassword);
   }
+
+  /**
+   * Cập nhật thông tin cá nhân
+   */
+  static async updateProfile(userId, profileData) {
+    if (!userId) {
+      throw new Error('Bạn chưa đăng nhập');
+    }
+
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      throw new Error('User không tồn tại');
+    }
+
+    const normalizedData = {
+      username: profileData.username?.trim() || undefined ,
+      fullName: profileData.fullName?.trim(),
+      phone: profileData.phone?.trim(),
+    };
+
+    if (
+      normalizedData.username &&
+      normalizedData.username !== existingUser.username
+    ) {
+      const usernameExists = await User.isUsernameExists(normalizedData.username);
+      if (usernameExists) {
+        throw new Error('Username đã tồn tại');
+      }
+    }
+
+    const updatedUser = await User.updateProfile(userId, normalizedData);
+    return updatedUser;
+  }
 }
 
 module.exports = AuthService;

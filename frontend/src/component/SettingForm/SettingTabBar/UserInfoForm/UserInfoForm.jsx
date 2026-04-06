@@ -1,31 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import ApiService from '../../../../services/apiService';
+import { useToastContext } from '../../../../context/ToastContext';
 import './UserInfoForm.css';
 
-const UserInfoForm = ({ user }) => {
-    // Khởi tạo state cho form bằng dữ liệu người dùng (userInfo)
+const UserInfoForm = ({ user, onProfileUpdated }) => {
+    const toast = useToastContext();
     const [formData, setFormData] = useState({
-        name: user?.username || '',
+        username: user?.username || '',
+        fullName: user?.fullName || '',
         email: user?.email || '',
-        date_of_birth: user?.date_of_birth || '',
         phone: user?.phone || '',
     });
     const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setFormData({
+            username: user?.username || '',
+            fullName: user?.fullName || '',
+            email: user?.email || '',
+            phone: user?.phone || '',
+        });
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleUpdate = (e) => {
+    const handleUpdate = async (e) => {
         e.preventDefault();
-        // 🎯 LOGIC TÍCH HỢP API CẬP NHẬT Ở ĐÂY
-        console.log("Dữ liệu cập nhật:", formData);
-        setIsEditing(false); // Tắt chế độ chỉnh sửa sau khi cập nhật thành công
-    };
-    
-    // Hàm này format ngày tháng năm sinh (giả sử nó là chuỗi 'DD/MM/YYYY')
-    const formatDOB = (dateString) => {
-        return dateString ? dateString : 'Chưa cập nhật';
+        if (!isEditing || isSubmitting) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            const response = await ApiService.updateProfile({
+                username: formData.username,
+                fullName: formData.fullName,
+                phone: formData.phone,
+            });
+
+            const updatedUser = response?.data?.user;
+            if (updatedUser && typeof onProfileUpdated === 'function') {
+                onProfileUpdated(updatedUser);
+            }
+
+            toast.success('Cập nhật thông tin cá nhân thành công!');
+            setIsEditing(false);
+        } catch (error) {
+            toast.error(error.message || 'Không thể cập nhật thông tin cá nhân');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -44,13 +72,26 @@ const UserInfoForm = ({ user }) => {
 
             <form onSubmit={handleUpdate} className="user-form">
                 
-                {/* Trường Tên */}
+                {/* Trường Username */}
                 <div className="form-group">
-                    <label htmlFor="name">Tên</label>
+                    <label htmlFor="username">Tên đăng nhập</label>
                     <input
                         type="text"
-                        name="name"
-                        value={formData.name}
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className={isEditing ? 'editable' : 'read-only'}
+                    />
+                </div>
+
+                {/* Trường Họ và tên */}
+                <div className="form-group">
+                    <label htmlFor="fullName">Họ và tên</label>
+                    <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
                         onChange={handleChange}
                         disabled={!isEditing}
                         className={isEditing ? 'editable' : 'read-only'}
@@ -69,19 +110,6 @@ const UserInfoForm = ({ user }) => {
                     />
                 </div>
 
-                {/* Trường Ngày sinh */}
-                <div className="form-group">
-                    <label htmlFor="date_of_birth">Ngày sinh</label>
-                    <input
-                        type="text"
-                        name="date_of_birth"
-                        value={formatDOB(formData.date_of_birth)}
-                        onChange={handleChange}
-                        disabled={!isEditing}
-                        className={isEditing ? 'editable' : 'read-only'}
-                    />
-                </div>
-                
                 {/* Trường Số điện thoại */}
                 <div className="form-group">
                     <label htmlFor="phone">Số điện thoại</label>
@@ -96,7 +124,9 @@ const UserInfoForm = ({ user }) => {
                 </div>
 
                 {isEditing && (
-                    <button type="submit" className="save-btn">Lưu thay đổi</button>
+                    <button type="submit" className="save-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+                    </button>
                 )}
             </form>
             

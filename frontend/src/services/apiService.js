@@ -82,6 +82,13 @@ class ApiService {
     });
   }
 
+  static async updateProfile(profileData) {
+    return this.request('/auth/profile', {
+      method: 'PUT',
+      body: profileData,
+    });
+  }
+
   static async checkAuth() {
     return this.request("/auth/check", {
       method: "GET",
