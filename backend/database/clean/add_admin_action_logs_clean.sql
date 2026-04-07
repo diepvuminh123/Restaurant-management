@@ -1,13 +1,9 @@
--- Add system_admin support and admin audit logs
-
--- Expand users.role constraint to include system_admin
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 
 ALTER TABLE users
 ADD CONSTRAINT users_role_check
 CHECK (role IN ('customer', 'employee', 'admin', 'system_admin'));
 
--- Audit log table for admin/system admin sensitive actions
 CREATE TABLE IF NOT EXISTS admin_action_logs (
   id BIGSERIAL PRIMARY KEY,
   actor_user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
