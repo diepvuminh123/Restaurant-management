@@ -9,6 +9,7 @@ const ROLE_OPTIONS = [
   { value: 'customer', label: 'Khách hàng' },
   { value: 'employee', label: 'Nhân viên' },
   { value: 'admin', label: 'Admin' },
+  { value: 'system_admin', label: 'System Admin' },
 ];
 
 const BOOLEAN_FILTER_OPTIONS = [
@@ -21,6 +22,7 @@ const ROLE_LABEL = {
   customer: 'Khách hàng',
   employee: 'Nhân viên',
   admin: 'Admin',
+  system_admin: 'System Admin',
 };
 
 const formatDateTime = (value) => {
@@ -38,6 +40,7 @@ const formatDateTime = (value) => {
 
 const UserManagement = ({ currentUser }) => {
   const toast = useToastContext();
+  const isSystemAdmin = currentUser?.role === 'system_admin';
 
   const [draftFilters, setDraftFilters] = useState({
     search: '',
@@ -215,6 +218,10 @@ const UserManagement = ({ currentUser }) => {
               {users.map((user) => {
                 const isBusy = updatingUserId === user.userId;
                 const isCurrentUser = currentUser?.userId === user.userId;
+                const canChangeToAdmin = isSystemAdmin;
+                const isRoleEditDisabled = isBusy
+                  || user.role === 'system_admin'
+                  || (!isSystemAdmin && user.role === 'admin');
 
                 return (
                   <tr key={user.userId}>
@@ -230,14 +237,18 @@ const UserManagement = ({ currentUser }) => {
                       <select
                         className="user-table__role-select"
                         value={user.role}
-                        disabled={isBusy}
+                        disabled={isRoleEditDisabled}
                         onChange={(event) => handleRoleChange(user.userId, event.target.value)}
                       >
-                        {ROLE_OPTIONS.filter((item) => item.value !== 'all').map((roleOption) => (
+                        {ROLE_OPTIONS
+                          .filter((item) => item.value !== 'all')
+                          .filter((item) => item.value !== 'system_admin')
+                          .filter((item) => canChangeToAdmin || item.value !== 'admin')
+                          .map((roleOption) => (
                           <option key={roleOption.value} value={roleOption.value}>
                             {ROLE_LABEL[roleOption.value]}
                           </option>
-                        ))}
+                          ))}
                       </select>
                     </td>
                     <td>
@@ -251,9 +262,13 @@ const UserManagement = ({ currentUser }) => {
                         <button
                           type="button"
                           className={`btn btn--mini ${user.isLocked ? 'btn--success' : 'btn--danger'}`}
-                          disabled={isBusy || (isCurrentUser && !user.isLocked)}
+                          disabled={isBusy || user.role === 'system_admin' || (isCurrentUser && !user.isLocked)}
                           onClick={() => handleLockToggle(user)}
-                          title={isCurrentUser && !user.isLocked ? 'Không thể tự khóa tài khoản đang đăng nhập' : ''}
+                          title={
+                            user.role === 'system_admin'
+                              ? 'Không thể khóa tài khoản system admin'
+                              : (isCurrentUser && !user.isLocked ? 'Không thể tự khóa tài khoản đang đăng nhập' : '')
+                          }
                         >
                           {user.isLocked ? 'Mở khóa' : 'Khóa 24h'}
                         </button>

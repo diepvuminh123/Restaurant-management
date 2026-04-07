@@ -30,7 +30,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             } />
             <Route path="menu" element={<MenuManagement user={user} />} />
             <Route path="users" element={
-              user.role === 'admin' ? (
+              (user.role === 'admin' || user.role === 'system_admin') ? (
                 <UserManagement currentUser={user} />
               ) : (
                 <Navigate to="/admin/dashboard" replace />

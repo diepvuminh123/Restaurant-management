@@ -36,10 +36,10 @@ const registerSchema = Joi.object({
   //   }),
 
   role: Joi.string()
-    .valid("customer", "employee", "admin")
+    .valid("customer", "employee", "admin", "system_admin")
     .default("customer")
     .messages({
-      "any.only": "Role phải là customer, employee hoặc admin",
+      "any.only": "Role phải là customer, employee, admin hoặc system_admin",
     }),
 });
 // ĐĂNG NHẬP

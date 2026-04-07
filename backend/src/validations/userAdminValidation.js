@@ -11,7 +11,7 @@ const userIdParamSchema = Joi.object({
 
 const getUsersQuerySchema = Joi.object({
   search: Joi.string().trim().allow('').max(100).optional(),
-  role: Joi.string().valid('all', 'customer', 'employee', 'admin').default('all'),
+  role: Joi.string().valid('all', 'customer', 'employee', 'admin', 'system_admin').default('all'),
   locked: Joi.string().valid('all', 'true', 'false').default('all'),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(10),
@@ -21,6 +21,13 @@ const updateRoleSchema = Joi.object({
   role: Joi.string().valid('customer', 'employee', 'admin').required().messages({
     'any.only': 'Role phải là customer, employee hoặc admin',
     'any.required': 'Role là bắt buộc',
+  }),
+});
+
+const updateVerificationSchema = Joi.object({
+  is_verified: Joi.boolean().required().messages({
+    'boolean.base': 'is_verified phải là true hoặc false',
+    'any.required': 'is_verified là bắt buộc',
   }),
 });
 
@@ -46,5 +53,6 @@ module.exports = {
   userIdParamSchema,
   getUsersQuerySchema,
   updateRoleSchema,
+  updateVerificationSchema,
   updateLockStateSchema,
 };
