@@ -116,6 +116,23 @@ class Reservation {
 
     return result.rows;
   }
+  static async getReservationDetailForStaff(reservationId){
+    const query = `SELECT
+      reservation_id,
+      user_id,
+      session_id,
+      table_id,
+      number_of_guests,
+      reservation_state,
+      reservation_time,
+      note,
+      restaurant_note,
+      created_at
+    FROM reservation
+    WHERE reservation_id = $1`;
+    const result = await pool.query(query, [reservationId]);
+    return result.rows[0] || null;
+  }
 
 }
 

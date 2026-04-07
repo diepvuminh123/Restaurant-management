@@ -139,6 +139,20 @@ class ReservationService {
       restaurantNote: finalRestaurantNote || null,
     });
   }
+
+  static async getReservationDetailForStaff(reservationId) {
+    if (!reservationId) {
+      throw new Error('reservation_id không hợp lệ');
+    }
+    const reservation = await Reservation.getReservationDetailForStaff(reservationId);
+    if (!reservation) return null;
+
+    // Frontend staff modal expects `customer_name`.
+    // In current schema, staff flow stores customer name in `note`.
+    const name = typeof reservation.note === 'string' ? reservation.note.trim() : '';
+    reservation.customer_name = name || null;
+    return reservation;
+  }
 }
 
 module.exports = ReservationService;

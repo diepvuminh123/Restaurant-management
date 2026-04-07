@@ -55,5 +55,10 @@ router.post(
 	ReservationController.createReservationForStaff
 )
 
-
+//Tính năng xem đơn đặt bàn chi tiết cho admin/employee
+router.get(
+	'/reservations/staff/viewReservationDetail/:id',
+	requireRole('admin', 'employee'),
+	ReservationController.viewReservationDetailForStaff
+)
 module.exports = router;

@@ -175,6 +175,39 @@ class ReservationController {
 			});
 		}
 	}
+
+	//Xem chi tiết đơn đặt bàn cho admin/employee
+	static async viewReservationDetailForStaff(req, res){
+		try{
+			const reservationIdRaw = req?.params?.id;
+			const reservationId = Number(reservationIdRaw);
+			if (!Number.isFinite(reservationId)){
+				return res.status(400).json({
+					success: false,
+					message: 'reservation_id không hợp lệ'
+				})
+			}
+			const reservation = await ReservationService.getReservationDetailForStaff(reservationId);
+			if (!reservation){
+				return res.status(404).json({
+					success: false,
+					message: 'Không tìm thấy đơn đặt bàn trong hệ thống'
+				})
+			}
+			res.json({
+				success: true,
+				message: 'Đây là chi tiết đơn đặt bàn',
+				data: reservation
+			})
+		} catch(error){
+			console.log('Không thể tải chi tiết đơn đặt bàn', error)
+			res.status(500).json({
+				success: false,
+				message: error.message || 'Không thể tải chi tiết đơn đặt bàn',
+				error: error.message,
+			});
+		}
+	}
 }
 
 module.exports = ReservationController;

@@ -486,6 +486,16 @@ class ApiService {
       },
     });
   }
+
+  /**
+   * (Admin/Employee) Xem chi tiết đặt bàn
+   */
+  static async getReservationDetailForStaff(reservationId, options = {}) {
+    return this.request(`/reservations/staff/viewReservationDetail/${reservationId}`, {
+      method: 'GET',
+      ...options,
+    });
+  }
   
 }
 

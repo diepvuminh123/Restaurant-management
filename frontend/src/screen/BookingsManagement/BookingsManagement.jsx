@@ -8,6 +8,7 @@ import {
 } from 'react-icons/io5';
 import ApiService from '../../services/apiService';
 import ReservationCreateModal from '../../component/ReservationCreateModal/ReservationCreateModal';
+import ReservationDetailModal from '../../component/ReservationDetailModal/ReservationDetailModal';
 import { generateTimeSlots, getLocalMinutes, isSameLocalDate } from '../../utils/timeSlots';
 import './BookingsManagement.css';
 
@@ -80,6 +81,11 @@ const BookingsManagement = () => {
   });
 
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
+  const [reservationDetail, setReservationDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
 
   const [reservations, setReservations] = useState([]);
   const [availableTables, setAvailableTables] = useState(null);
@@ -184,6 +190,7 @@ const BookingsManagement = () => {
 
       items.push({
         id: String(reservation?.reservation_id ?? `${slotId}:${current}`),
+        reservationId: reservation?.reservation_id ?? null,
         slotId,
         row: current,
         name,
@@ -194,6 +201,36 @@ const BookingsManagement = () => {
 
     return items;
   }, [reservations]);
+
+  useEffect(() => {
+    if (!isDetailOpen) return;
+    if (!selectedReservationId) return;
+
+    const controller = new AbortController();
+    setDetailLoading(true);
+    setDetailError('');
+    setReservationDetail(null);
+
+    ApiService.getReservationDetailForStaff(selectedReservationId, { signal: controller.signal })
+      .then((response) => {
+        if (controller.signal.aborted) return;
+        setReservationDetail(response?.data || null);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        console.error('Fetch reservation detail for staff error:', error);
+        setDetailError(error?.message || 'Không thể tải chi tiết đặt bàn');
+        setReservationDetail(null);
+      })
+      .finally(() => {
+        if (controller.signal.aborted) return;
+        setDetailLoading(false);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [isDetailOpen, selectedReservationId]);
 
   const bookingMap = useMemo(() => {
     const map = new Map();
@@ -231,6 +268,22 @@ const BookingsManagement = () => {
     await fetchReservations(date);
   };
 
+  const openDetail = (reservationId) => {
+    if (reservationId === null || reservationId === undefined) return;
+    const id = Number(reservationId);
+    if (!Number.isFinite(id) || id <= 0) return;
+    setSelectedReservationId(id);
+    setIsDetailOpen(true);
+  };
+
+  const closeDetail = () => {
+    setIsDetailOpen(false);
+    setSelectedReservationId(null);
+    setReservationDetail(null);
+    setDetailLoading(false);
+    setDetailError('');
+  };
+
   return (
     <div className="bookings-page">
       <div className="bookings-page__header">
@@ -253,6 +306,16 @@ const BookingsManagement = () => {
         timeSlots={TIME_SLOTS}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={handleCreateReservation}
+      />
+
+      <ReservationDetailModal
+        isOpen={isDetailOpen}
+        reservationId={selectedReservationId}
+        detail={reservationDetail}
+        loading={detailLoading}
+        error={detailError}
+        timeSlots={TIME_SLOTS}
+        onClose={closeDetail}
       />
 
       <div className="bookings-page__top">
@@ -351,12 +414,17 @@ const BookingsManagement = () => {
               return (
                 <div key={`${rowIndex}:${slot.id}`} className="bookings-grid__cell">
                   {booking ? (
-                    <div className={getBookingClassName(booking.status)}>
+          <button
+            type="button"
+            className={getBookingClassName(booking.status)}
+            onClick={() => openDetail(booking.reservationId)}
+            aria-label={`Xem chi tiết đặt bàn ${booking.name}`}
+          >
                       <div className="booking-item__name" title={booking.name}>
                         {booking.name}
                       </div>
                       <div className="booking-item__meta">People: {booking.people}</div>
-                    </div>
+          </button>
                   ) : null}
                 </div>
               );
