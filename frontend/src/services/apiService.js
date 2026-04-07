@@ -397,6 +397,43 @@ class ApiService {
     });
   }
 
+  // ============= ADMIN USER MANAGEMENT API =============
+
+  static async getAdminUsers(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/users${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async updateAdminUserRole(userId, role) {
+    return this.request(`/users/${userId}/role`, {
+      method: 'PATCH',
+      body: { role },
+    });
+  }
+
+  static async updateAdminUserLock(userId, locked, lockHours = 24) {
+    const body = { locked };
+
+    if (locked) {
+      body.lockHours = lockHours;
+    }
+
+    return this.request(`/users/${userId}/lock`, {
+      method: 'PATCH',
+      body,
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**

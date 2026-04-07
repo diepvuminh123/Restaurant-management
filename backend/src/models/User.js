@@ -122,6 +122,148 @@ class User {
 
     return result.rows[0];
   }
+
+  static async getUsersForAdmin(filters = {}) {
+    const {
+      search = '',
+      role = 'all',
+      verified = 'all',
+      locked = 'all',
+      page = 1,
+      limit = 10,
+    } = filters;
+
+    const conditions = [];
+    const params = [];
+
+    if (search && search.trim()) {
+      const keyword = `%${search.trim()}%`;
+      params.push(keyword);
+      const idx = params.length;
+      conditions.push(`(
+        username ILIKE $${idx}
+        OR email ILIKE $${idx}
+        OR COALESCE(full_name, '') ILIKE $${idx}
+        OR COALESCE(phone, '') ILIKE $${idx}
+      )`);
+    }
+
+    if (role !== 'all') {
+      params.push(role);
+      conditions.push(`role = $${params.length}`);
+    }
+
+    if (verified !== 'all') {
+      params.push(verified === 'true');
+      conditions.push(`is_verified = $${params.length}`);
+    }
+
+    if (locked === 'true') {
+      conditions.push('locked_until IS NOT NULL AND locked_until > NOW()');
+    }
+
+    if (locked === 'false') {
+      conditions.push('(locked_until IS NULL OR locked_until <= NOW())');
+    }
+
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const safeLimit = Number(limit);
+    const safePage = Number(page);
+    const offset = (safePage - 1) * safeLimit;
+
+    const listParams = [...params, safeLimit, offset];
+    const result = await pool.query(
+      `SELECT
+        user_id,
+        username,
+        email,
+        full_name,
+        phone,
+        role,
+        is_verified,
+        fail_login_attempts,
+        locked_until,
+        created_at
+      FROM users
+      ${whereClause}
+      ORDER BY created_at DESC
+      LIMIT $${listParams.length - 1} OFFSET $${listParams.length}`,
+      listParams
+    );
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::int AS total
+       FROM users
+       ${whereClause}`,
+      params
+    );
+
+    return {
+      rows: result.rows,
+      total: countResult.rows[0]?.total || 0,
+    };
+  }
+
+  static async countAdmins() {
+    const result = await pool.query(
+      `SELECT COUNT(*)::int AS total
+       FROM users
+       WHERE role = 'admin'`
+    );
+
+    return result.rows[0]?.total || 0;
+  }
+
+  static async updateUserRole(userId, role) {
+    const result = await pool.query(
+      `UPDATE users
+       SET role = $1
+       WHERE user_id = $2
+       RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
+      [role, userId]
+    );
+
+    return result.rows[0];
+  }
+
+  static async updateUserVerification(userId, isVerified) {
+    const result = await pool.query(
+      `UPDATE users
+       SET is_verified = $1
+       WHERE user_id = $2
+       RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
+      [isVerified, userId]
+    );
+
+    return result.rows[0];
+  }
+
+  static async updateUserLockState(userId, locked, lockHours = 24) {
+    if (locked) {
+      const lockUntil = new Date(Date.now() + Number(lockHours) * 60 * 60 * 1000);
+      const result = await pool.query(
+        `UPDATE users
+         SET locked_until = $1,
+             fail_login_attempts = 5
+         WHERE user_id = $2
+         RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
+        [lockUntil, userId]
+      );
+
+      return result.rows[0];
+    }
+
+    const result = await pool.query(
+      `UPDATE users
+       SET locked_until = NULL,
+           fail_login_attempts = 0
+       WHERE user_id = $1
+       RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
+      [userId]
+    );
+
+    return result.rows[0];
+  }
   
 }
 module.exports = User;

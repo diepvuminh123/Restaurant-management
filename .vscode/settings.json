@@ -11,5 +11,6 @@
       "username": "postgres",
       "password": "22112004"
     }
-  ]
+  ],
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

@@ -5,6 +5,7 @@ import AdminSidebar from '../../component/AdminSidebar/AdminSidebar';
 import MenuManagement from '../MenuManagement/MenuManagement';
 import TakeawayOrdersScreen from '../TakeawayOrdersScreen/TakeawayOrdersScreen';
 import BookingsManagement from '../BookingsManagement/BookingsManagement';
+import UserManagement from '../UserManagement/UserManagement';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -30,10 +31,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             <Route path="menu" element={<MenuManagement user={user} />} />
             <Route path="users" element={
               user.role === 'admin' ? (
-                <div>
-                  <h1>Quản lý người dùng</h1>
-                  <p>Chỉ admin mới thấy trang này...</p>
-                </div>
+                <UserManagement currentUser={user} />
               ) : (
                 <Navigate to="/admin/dashboard" replace />
               )
