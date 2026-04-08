@@ -4,7 +4,6 @@ require("dotenv").config();
 const { sendVerificationEmail } = require("../mailer");
 const { generateOtp6 } = require("../utils/otp");
 const bcrypt = require("bcrypt");
-const AdminActionLog = require('../models/AdminActionLog');
 
 const otpExpiresMin = Number(process.env.OTP_EXPIRES_MIN || 10);
 
@@ -76,15 +75,7 @@ class AuthService {
       throw new Error("Mã code không đúng");
     }
     if (record.otp_type === "signup") {
-      const oldValue = { is_verified: user.is_verified };
       await User.setUserVerified(user_id);
-      await AdminActionLog.create({
-        actorUserId: user_id,
-        targetUserId: user_id,
-        action: 'VERIFY_USER',
-        oldValue,
-        newValue: { is_verified: true, source: 'otp' },
-      });
       await Mail.clearOtpByUserId(user_id);
       return {
         success: true,

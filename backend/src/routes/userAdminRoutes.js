@@ -9,7 +9,6 @@ const {
   userIdParamSchema,
   getUsersQuerySchema,
   updateRoleSchema,
-  updateVerificationSchema,
   updateLockStateSchema,
 } = require('../validations/userAdminValidation');
 
@@ -26,14 +25,6 @@ router.patch(
   validateParams(userIdParamSchema),
   validate(updateRoleSchema),
   UserAdminController.updateRole
-);
-
-router.patch(
-  '/users/:id/verification',
-  requireRole('admin', 'system_admin'),
-  validateParams(userIdParamSchema),
-  validate(updateVerificationSchema),
-  UserAdminController.updateVerification
 );
 
 router.patch(

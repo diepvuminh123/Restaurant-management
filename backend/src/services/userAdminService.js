@@ -95,24 +95,6 @@ class UserAdminService {
     return UserAdminService.toUserView(updated);
   }
 
-  static async updateUserVerification(userId, isVerified, actorUserId) {
-    const targetUser = await User.findById(userId);
-    if (!targetUser) {
-      throw UserAdminService.buildError('Không tìm thấy người dùng', 404);
-    }
-
-    const updated = await User.updateUserVerification(userId, isVerified);
-    await AdminActionLog.create({
-      actorUserId,
-      targetUserId: userId,
-      action: isVerified ? 'VERIFY_USER' : 'UNVERIFY_USER',
-      oldValue: { is_verified: targetUser.is_verified },
-      newValue: { is_verified: updated.is_verified },
-    });
-
-    return UserAdminService.toUserView(updated);
-  }
-
   static async updateUserLockState(userId, locked, lockHours, actorUserId) {
     const targetUser = await User.findById(userId);
     if (!targetUser) {

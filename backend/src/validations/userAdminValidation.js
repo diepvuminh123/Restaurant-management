@@ -24,13 +24,6 @@ const updateRoleSchema = Joi.object({
   }),
 });
 
-const updateVerificationSchema = Joi.object({
-  is_verified: Joi.boolean().required().messages({
-    'boolean.base': 'is_verified phải là true hoặc false',
-    'any.required': 'is_verified là bắt buộc',
-  }),
-});
-
 const updateLockStateSchema = Joi.object({
   locked: Joi.boolean().required().messages({
     'boolean.base': 'locked phải là true hoặc false',
@@ -53,6 +46,5 @@ module.exports = {
   userIdParamSchema,
   getUsersQuerySchema,
   updateRoleSchema,
-  updateVerificationSchema,
   updateLockStateSchema,
 };

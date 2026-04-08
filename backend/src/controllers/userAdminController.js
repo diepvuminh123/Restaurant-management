@@ -41,29 +41,6 @@ class UserAdminController {
     }
   }
 
-  static async updateVerification(req, res) {
-    try {
-      const updated = await UserAdminService.updateUserVerification(
-        Number(req.params.id),
-        req.body.is_verified,
-        req.session.userId,
-        req.session.userRole
-      );
-
-      res.json({
-        success: true,
-        message: req.body.is_verified ? 'Đã xác thực tài khoản' : 'Đã bỏ xác thực tài khoản',
-        data: updated,
-      });
-    } catch (error) {
-      const statusCode = error.statusCode || 500;
-      res.status(statusCode).json({
-        success: false,
-        message: error.message || 'Không thể cập nhật trạng thái xác thực',
-      });
-    }
-  }
-
   static async updateLockState(req, res) {
     try {
       const updated = await UserAdminService.updateUserLockState(

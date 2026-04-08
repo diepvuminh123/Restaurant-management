@@ -226,18 +226,6 @@ class User {
     return result.rows[0];
   }
 
-  static async updateUserVerification(userId, isVerified) {
-    const result = await pool.query(
-      `UPDATE users
-       SET is_verified = $1
-       WHERE user_id = $2
-       RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
-      [isVerified, userId]
-    );
-
-    return result.rows[0];
-  }
-
   static async updateUserLockState(userId, locked, lockHours = 24) {
     if (locked) {
       const lockUntil = new Date(Date.now() + Number(lockHours) * 60 * 60 * 1000);
