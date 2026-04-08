@@ -28,6 +28,29 @@
 #### Team Rule (MUST) 🐍🍎
 - Mỗi lần chỉnh sửa code xong và đã verify ổn, **phải commit + push ngay** để không thất lạc thay đổi.
 - Khi có thay đổi nghiệp vụ quan trọng, cập nhật thêm mục tóm tắt tại `ISSUES_LOG.md`.
+- Khi fix bug, **phải ghi bug đó vào `ISSUES_LOG.md` ngay trong cùng lần xử lý**, không để dồn sau.
+
+### ✅ Bug Fix: Cột Vai Trò không hiển thị Admin với admin thường 🐍🍎
+**Priority:** Medium  
+**Component:** Frontend - User Management  
+**Status:** ✅ Resolved & Pushed
+
+#### Problem
+- Ở cột Vai trò, admin thường chỉ nhìn thấy lựa chọn Khách hàng/Nhân viên.
+- Các user đang có role `admin` không được hiển thị đúng trong dropdown đối với admin thường.
+
+#### Root Cause
+- Logic filter option role đã ẩn toàn bộ option `admin` khi người đăng nhập không phải `system_admin`.
+- Vì vậy dropdown cũng không thể render trạng thái hiện tại là `admin` cho các dòng user admin.
+
+#### Solution
+- Điều chỉnh điều kiện filter để:
+  - Non-system admin vẫn không thể gán ai đó thành `admin` mới.
+  - Nhưng nếu user hiện tại của dòng đã là `admin`, vẫn phải hiển thị option `admin` để phản ánh đúng dữ liệu.
+
+#### Result
+- Admin vẫn xem được role admin của nhau trong bảng.
+- Quyền phân vai vẫn đúng: chỉ `system_admin` mới được đổi role sang `admin`.
 
 ---
 
