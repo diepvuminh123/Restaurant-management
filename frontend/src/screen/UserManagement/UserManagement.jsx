@@ -245,7 +245,7 @@ const UserManagement = ({ currentUser }) => {
                         {ROLE_OPTIONS
                           .filter((item) => item.value !== 'all')
                           .filter((item) => item.value !== 'system_admin')
-                          .filter((item) => canChangeToAdmin || item.value !== 'admin')
+                          .filter((item) => canChangeToAdmin || item.value !== 'admin' || user.role === 'admin')
                           .map((roleOption) => (
                           <option key={roleOption.value} value={roleOption.value}>
                             {ROLE_LABEL[roleOption.value]}
