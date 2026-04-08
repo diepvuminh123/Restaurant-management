@@ -72,6 +72,21 @@
   - System admin sửa được customer/employee/admin, không sửa target `system_admin`.
   - Nếu dòng hiện tại là `admin`, dropdown vẫn có option `admin` để `value` luôn hợp lệ.
 
+  ### ✅ Bug Fix: "column reference role is ambiguous" khi lọc user 🐍🍎
+  **Priority:** High  
+  **Component:** Backend - User Admin Query  
+  **Status:** ✅ Resolved
+
+  #### Problem
+  - Khi lọc danh sách user ở trang quản lý, PostgreSQL báo lỗi: `column reference "role" is ambiguous`.
+
+  #### Root Cause
+  - Query danh sách đã join thêm `users actor`, nhưng các điều kiện `WHERE` vẫn dùng cột không prefix alias (`role`, `is_verified`, `locked_until`, ...).
+
+  #### Solution
+  - Prefix toàn bộ cột filter/search bằng alias `u.` trong `getUsersForAdmin`.
+  - Đồng bộ query count dùng `FROM users u` để tái sử dụng `whereClause` an toàn.
+
 ---
 
 ## 📅 March 12, 2026

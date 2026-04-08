@@ -141,29 +141,29 @@ class User {
       params.push(keyword);
       const idx = params.length;
       conditions.push(`(
-        username ILIKE $${idx}
-        OR email ILIKE $${idx}
-        OR COALESCE(full_name, '') ILIKE $${idx}
-        OR COALESCE(phone, '') ILIKE $${idx}
+        u.username ILIKE $${idx}
+        OR u.email ILIKE $${idx}
+        OR COALESCE(u.full_name, '') ILIKE $${idx}
+        OR COALESCE(u.phone, '') ILIKE $${idx}
       )`);
     }
 
     if (role !== 'all') {
       params.push(role);
-      conditions.push(`role = $${params.length}`);
+      conditions.push(`u.role = $${params.length}`);
     }
 
     if (verified !== 'all') {
       params.push(verified === 'true');
-      conditions.push(`is_verified = $${params.length}`);
+      conditions.push(`u.is_verified = $${params.length}`);
     }
 
     if (locked === 'true') {
-      conditions.push('locked_until IS NOT NULL AND locked_until > NOW()');
+      conditions.push('u.locked_until IS NOT NULL AND u.locked_until > NOW()');
     }
 
     if (locked === 'false') {
-      conditions.push('(locked_until IS NULL OR locked_until <= NOW())');
+      conditions.push('(u.locked_until IS NULL OR u.locked_until <= NOW())');
     }
 
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -204,7 +204,7 @@ class User {
 
     const countResult = await pool.query(
       `SELECT COUNT(*)::int AS total
-       FROM users
+       FROM users u
        ${whereClause}`,
       params
     );
