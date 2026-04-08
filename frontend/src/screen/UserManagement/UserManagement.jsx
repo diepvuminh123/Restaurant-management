@@ -25,6 +25,51 @@ const ROLE_LABEL = {
   system_admin: 'System Admin',
 };
 
+const ASSIGNABLE_ROLE_OPTIONS = ROLE_OPTIONS.filter(
+  (item) => item.value !== 'all' && item.value !== 'system_admin'
+);
+
+const isSystemAdminUser = (actorUser) => actorUser?.role === 'system_admin';
+
+const canEditRole = (actorUser, targetUser) => {
+  if (!targetUser) return false;
+
+  // Rule: Nobody can edit system_admin role from this page.
+  if (targetUser.role === 'system_admin') return false;
+
+  // Rule: system_admin can edit customer/employee/admin.
+  if (isSystemAdminUser(actorUser)) return true;
+
+  // Rule: normal admin can only edit customer/employee.
+  return targetUser.role === 'customer' || targetUser.role === 'employee';
+};
+
+const canSeeRoleOption = (actorUser, targetUser, roleValue) => {
+  // Rule: filter option only, never a role to assign.
+  if (roleValue === 'all') return false;
+
+  // Rule: never allow assigning system_admin from dropdown UI.
+  if (roleValue === 'system_admin') return false;
+
+  if (isSystemAdminUser(actorUser)) return true;
+
+  // Rule: admin cannot promote to admin, but must still see current admin role value.
+  if (roleValue === 'admin') return targetUser?.role === 'admin';
+
+  return true;
+};
+
+const getAssignableRoleOptions = (actorUser, targetUser) => {
+  // Keep value valid for read-only system_admin row while still blocking assignment.
+  if (targetUser?.role === 'system_admin') {
+    return [{ value: 'system_admin', label: ROLE_LABEL.system_admin }];
+  }
+
+  return ASSIGNABLE_ROLE_OPTIONS.filter((roleOption) =>
+    canSeeRoleOption(actorUser, targetUser, roleOption.value)
+  );
+};
+
 const formatDateTime = (value) => {
   if (!value) return '--';
   const date = new Date(value);
@@ -40,7 +85,6 @@ const formatDateTime = (value) => {
 
 const UserManagement = ({ currentUser }) => {
   const toast = useToastContext();
-  const isSystemAdmin = currentUser?.role === 'system_admin';
 
   const [draftFilters, setDraftFilters] = useState({
     search: '',
@@ -220,10 +264,8 @@ const UserManagement = ({ currentUser }) => {
               {users.map((user) => {
                 const isBusy = updatingUserId === user.userId;
                 const isCurrentUser = currentUser?.userId === user.userId;
-                const canChangeToAdmin = isSystemAdmin;
-                const isRoleEditDisabled = isBusy
-                  || user.role === 'system_admin'
-                  || (!isSystemAdmin && user.role === 'admin');
+                const roleOptions = getAssignableRoleOptions(currentUser, user);
+                const isRoleEditDisabled = isBusy || !canEditRole(currentUser, user);
 
                 return (
                   <tr key={user.userId}>
@@ -242,15 +284,11 @@ const UserManagement = ({ currentUser }) => {
                         disabled={isRoleEditDisabled}
                         onChange={(event) => handleRoleChange(user.userId, event.target.value)}
                       >
-                        {ROLE_OPTIONS
-                          .filter((item) => item.value !== 'all')
-                          .filter((item) => item.value !== 'system_admin')
-                          .filter((item) => canChangeToAdmin || item.value !== 'admin' || user.role === 'admin')
-                          .map((roleOption) => (
+                        {roleOptions.map((roleOption) => (
                           <option key={roleOption.value} value={roleOption.value}>
                             {ROLE_LABEL[roleOption.value]}
                           </option>
-                          ))}
+                        ))}
                       </select>
                     </td>
                     <td>

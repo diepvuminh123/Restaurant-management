@@ -52,6 +52,26 @@
 - Admin vẫn xem được role admin của nhau trong bảng.
 - Quyền phân vai vẫn đúng: chỉ `system_admin` mới được đổi role sang `admin`.
 
+### ✅ Refactor/Fix: Tách helper rõ nghĩa cho logic chọn role 🐍🍎
+**Priority:** Medium  
+**Component:** Frontend - User Management  
+**Status:** ✅ Resolved
+
+#### Problem
+- Logic hiển thị option role dùng chain `.filter(...)` dài, khó đọc và khó kiểm soát rule.
+
+#### Solution
+- Refactor thành các helper tường minh:
+  - `canEditRole(currentUser, targetUser)`
+  - `canSeeRoleOption(currentUser, targetUser, roleValue)`
+  - `getAssignableRoleOptions(currentUser, targetUser)`
+- Giữ đúng business rules:
+  - Không cho gán `system_admin` từ dropdown.
+  - Không dùng `all` cho assign role.
+  - Admin thường chỉ sửa customer/employee.
+  - System admin sửa được customer/employee/admin, không sửa target `system_admin`.
+  - Nếu dòng hiện tại là `admin`, dropdown vẫn có option `admin` để `value` luôn hợp lệ.
+
 ---
 
 ## 📅 March 12, 2026
