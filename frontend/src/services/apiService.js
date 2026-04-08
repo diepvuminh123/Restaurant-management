@@ -421,13 +421,6 @@ class ApiService {
     });
   }
 
-  static async updateAdminUserVerification(userId, is_verified) {
-    return this.request(`/users/${userId}/verification`, {
-      method: 'PATCH',
-      body: { is_verified },
-    });
-  }
-
   static async updateAdminUserLock(userId, locked, lockHours = 24) {
     const body = { locked };
 

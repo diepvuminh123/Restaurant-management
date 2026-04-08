@@ -22,6 +22,9 @@ class UserAdminService {
       lockedUntil: user.locked_until,
       isLocked: !!(user.locked_until && new Date(user.locked_until) > new Date()),
       createdAt: user.created_at,
+      lastEditorUserId: user.last_editor_user_id,
+      lastEditorUsername: user.last_editor_username,
+      lastEditedAt: user.last_edited_at,
     };
   }
 
@@ -92,7 +95,8 @@ class UserAdminService {
       newValue: { role: updated.role },
     });
 
-    return UserAdminService.toUserView(updated);
+    const latestUser = await User.getAdminUserById(userId);
+    return UserAdminService.toUserView(latestUser);
   }
 
   static async updateUserLockState(userId, locked, lockHours, actorUserId) {
@@ -124,7 +128,8 @@ class UserAdminService {
       },
     });
 
-    return UserAdminService.toUserView(updated);
+    const latestUser = await User.getAdminUserById(userId);
+    return UserAdminService.toUserView(latestUser);
   }
 }
 

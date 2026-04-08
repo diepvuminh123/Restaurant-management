@@ -209,7 +209,9 @@ const UserManagement = ({ currentUser }) => {
                 <th>Tài khoản</th>
                 <th>Liên hệ</th>
                 <th>Vai trò</th>
+                <th>Xác thực</th>
                 <th>Khóa</th>
+                <th>Người sửa cuối</th>
                 <th>Tạo lúc</th>
                 <th>Hành động</th>
               </tr>
@@ -252,9 +254,18 @@ const UserManagement = ({ currentUser }) => {
                       </select>
                     </td>
                     <td>
+                      <span className={`pill ${user.isVerified ? 'pill--ok' : 'pill--warn'}`}>
+                        {user.isVerified ? 'Đã xác thực' : 'Chưa xác thực'}
+                      </span>
+                    </td>
+                    <td>
                       <span className={`pill ${user.isLocked ? 'pill--danger' : 'pill--neutral'}`}>
                         {user.isLocked ? 'Đang khóa' : 'Hoạt động'}
                       </span>
+                    </td>
+                    <td>
+                      <p className="user-table__main">{user.lastEditorUsername || '--'}</p>
+                      <p className="user-table__sub">{formatDateTime(user.lastEditedAt)}</p>
                     </td>
                     <td>{formatDateTime(user.createdAt)}</td>
                     <td>

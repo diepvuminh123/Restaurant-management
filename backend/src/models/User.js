@@ -174,19 +174,30 @@ class User {
     const listParams = [...params, safeLimit, offset];
     const result = await pool.query(
       `SELECT
-        user_id,
-        username,
-        email,
-        full_name,
-        phone,
-        role,
-        is_verified,
-        fail_login_attempts,
-        locked_until,
-        created_at
-      FROM users
+        u.user_id,
+        u.username,
+        u.email,
+        u.full_name,
+        u.phone,
+        u.role,
+        u.is_verified,
+        u.fail_login_attempts,
+        u.locked_until,
+        u.created_at,
+        last_log.actor_user_id AS last_editor_user_id,
+        actor.username AS last_editor_username,
+        last_log.created_at AS last_edited_at
+      FROM users u
+      LEFT JOIN LATERAL (
+        SELECT actor_user_id, created_at
+        FROM admin_action_logs
+        WHERE target_user_id = u.user_id
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) last_log ON TRUE
+      LEFT JOIN users actor ON actor.user_id = last_log.actor_user_id
       ${whereClause}
-      ORDER BY created_at DESC
+      ORDER BY u.created_at DESC
       LIMIT $${listParams.length - 1} OFFSET $${listParams.length}`,
       listParams
     );
@@ -221,6 +232,38 @@ class User {
        WHERE user_id = $2
        RETURNING user_id, username, email, full_name, phone, role, is_verified, fail_login_attempts, locked_until, created_at`,
       [role, userId]
+    );
+
+    return result.rows[0];
+  }
+
+  static async getAdminUserById(userId) {
+    const result = await pool.query(
+      `SELECT
+        u.user_id,
+        u.username,
+        u.email,
+        u.full_name,
+        u.phone,
+        u.role,
+        u.is_verified,
+        u.fail_login_attempts,
+        u.locked_until,
+        u.created_at,
+        last_log.actor_user_id AS last_editor_user_id,
+        actor.username AS last_editor_username,
+        last_log.created_at AS last_edited_at
+      FROM users u
+      LEFT JOIN LATERAL (
+        SELECT actor_user_id, created_at
+        FROM admin_action_logs
+        WHERE target_user_id = u.user_id
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) last_log ON TRUE
+      LEFT JOIN users actor ON actor.user_id = last_log.actor_user_id
+      WHERE u.user_id = $1`,
+      [userId]
     );
 
     return result.rows[0];

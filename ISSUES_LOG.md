@@ -4,6 +4,33 @@
 
 ---
 
+## 📅 April 9, 2026
+
+### ✅ Update: Scope lại xác thực tài khoản + theo dõi người sửa cuối 🐍🍎🍎
+**Priority:** High  
+**Component:** Backend Auth + Admin User Management + Frontend User Table  
+**Status:** ✅ Pushed
+
+#### What Was Changed
+- Bỏ ghi `VERIFY_USER` vào `admin_action_logs` trong luồng OTP signup.
+- Gỡ API admin/system admin cập nhật `is_verified` (`/users/:id/verification`).
+- Giữ `is_verified` để FE hiển thị trạng thái tài khoản đã xác thực hay chưa.
+- Thêm dữ liệu người chỉnh sửa cuối cùng cho từng user từ `admin_action_logs`.
+- FE bảng quản lý user hiển thị thêm:
+  - Cột trạng thái xác thực tài khoản.
+  - Cột người chỉnh sửa cuối cùng + thời gian chỉnh sửa.
+
+#### Why
+- `admin_action_logs` chỉ dùng để lưu hành động cập nhật do admin/system admin thực hiện.
+- Tránh trộn log hệ thống OTP với log quản trị.
+- Giúp admin nhìn nhanh tình trạng xác thực và ai là người tác động cuối cùng lên tài khoản.
+
+#### Team Rule (MUST) 🐍🍎
+- Mỗi lần chỉnh sửa code xong và đã verify ổn, **phải commit + push ngay** để không thất lạc thay đổi.
+- Khi có thay đổi nghiệp vụ quan trọng, cập nhật thêm mục tóm tắt tại `ISSUES_LOG.md`.
+
+---
+
 ## 📅 March 12, 2026
 
 ### ❌ Issue: Guest Cart Session Not Persisting
