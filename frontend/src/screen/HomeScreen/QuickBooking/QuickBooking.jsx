@@ -102,7 +102,7 @@ const QuickBooking = ({ user }) => {
 
                     
                     <div className="action-buttons">
-                        <button className="btn btn-primary">
+                        <button className="btn btn-primary" onClick={() => navigate('/booking')}>
                             <CiCalendar className="btn-icon" /> {t('home.bookTable')}
                         </button>
                         <button className="btn btn-secondary" onClick={() => navigate('/menu')}>

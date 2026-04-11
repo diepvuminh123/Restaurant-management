@@ -10,6 +10,7 @@ import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
 import GuestOrderLookupScreen from './screen/GuestOrderLookupScreen/GuestOrderLookupScreen';
 import TableMapScreen from './screen/TableMapScreen/TableMapScreen';
 import ReservationSuccessScreen from './screen/ReservationSuccessScreen/ReservationSuccessScreen';
+import BookingScreen from './screen/BookingScreen/BookingScreen';
 import ApiService from './services/apiService';
 import Loading from './component/Loading/Loading';
 import SettingScreen from './screen/SettingScreen/SettingScreen';
@@ -157,6 +158,14 @@ function AppContent() {
           path="/menu" 
           element={<MenuScreen onLogout={handleLogout} user={user} />} 
         />
+
+        <Route
+          path="/booking"
+          element={<BookingScreen user={user} />}
+        />
+
+        {/* Backward-compatible redirect (header used to point here) */}
+        <Route path="/reservation" element={<Navigate to="/booking" replace />} />
         <Route 
           path="/checkout" 
           element={<CheckoutScreen />} 

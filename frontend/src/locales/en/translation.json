@@ -1,6 +1,7 @@
 {
   "common": {
     "welcome": "Welcome",
+    "back": "Back",
     "home": "Home",
     "menu": "Menu",
     "reservation": "Reservation",
