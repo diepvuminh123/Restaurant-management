@@ -1,92 +1,180 @@
 .floating-contact-buttons {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 22px;
+  bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   z-index: 1000;
+  isolation: isolate;
 }
 
 .contact-btn {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: visible;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  box-shadow: 0 12px 24px rgba(23, 34, 51, 0.22);
   color: white;
   font-size: 24px;
+  animation: btnEnter 0.45s cubic-bezier(0.2, 0.85, 0.25, 1) both;
 }
 
 .contact-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 16px 30px rgba(16, 24, 40, 0.3);
+  filter: saturate(1.05);
 }
 
 .contact-btn:active {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.97);
+}
+
+.contact-btn:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
+}
+
+.contact-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.02) 55%, rgba(255, 255, 255, 0) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.contact-btn::after {
+  content: none;
+}
+
+.contact-btn__icon {
+  position: relative;
+  z-index: 3;
+}
+
+.contact-btn__icon--phone {
+  animation: phoneSwing 3s ease-in-out infinite;
+  transform-origin: 60% 40%;
+}
+
+.contact-btn__label {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+  line-height: 1;
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+}
+
+.contact-btn__ring {
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 2px solid var(--ring-color, rgba(255, 255, 255, 0.45));
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+  z-index: 0;
+  animation: ringWave 2.6s cubic-bezier(0.15, 0.7, 0.2, 1) infinite;
+}
+
+.contact-btn__ring::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ring-color, rgba(255, 255, 255, 0.3));
+  opacity: 0;
+  transform: scale(1.02);
+  animation: ringWave 2.6s cubic-bezier(0.15, 0.7, 0.2, 1) infinite;
+  animation-delay: 1.3s;
 }
 
 /* Messenger Button - Facebook Blue */
 .messenger-btn {
-  background-color: #0084ff;
+  --ring-color: rgba(57, 132, 255, 0.42);
+  background: radial-gradient(circle at 28% 22%, #9fc8ff 0%, #5f9eff 38%, #2f7cf1 72%, #1f66df 100%);
+  animation-delay: 0.03s;
+}
+
+.messenger-btn .contact-btn__ring {
+  animation-delay: 0.2s;
 }
 
 .messenger-btn:hover {
-  background-color: #0073e6;
+  box-shadow: 0 0 0 6px rgba(70, 145, 255, 0.17), 0 16px 30px rgba(16, 24, 40, 0.32);
 }
 
 /* Zalo Button - Zalo Blue */
 .zalo-btn {
-  background-color: #0084ff;
+  --ring-color: rgba(67, 153, 255, 0.4);
+  background: radial-gradient(circle at 28% 20%, #98d0ff 0%, #62aeff 36%, #2c88f1 72%, #1d69da 100%);
+  animation-delay: 0.13s;
+}
+
+.zalo-btn .contact-btn__ring {
+  animation-delay: 0.65s;
 }
 
 .zalo-btn:hover {
-  background-color: #0073e6;
+  box-shadow: 0 0 0 6px rgba(81, 165, 255, 0.16), 0 16px 30px rgba(16, 24, 40, 0.32);
 }
 
 /* Phone Button - Green */
 .phone-btn {
-  background-color: #25c329;
+  --ring-color: rgba(101, 212, 84, 0.4);
+  background: radial-gradient(circle at 28% 20%, #adf08e 0%, #7de062 38%, #4dc94d 68%, #30b13b 100%);
+  animation-delay: 0.23s;
+}
+
+.phone-btn .contact-btn__ring {
+  animation-delay: 1s;
 }
 
 .phone-btn:hover {
-  background-color: #1fa520;
+  box-shadow: 0 0 0 6px rgba(102, 214, 86, 0.18), 0 16px 30px rgba(16, 24, 40, 0.32);
 }
 
 /* Phone Popup Styles - Small popup next to icon */
 .phone-popup-container {
   position: fixed;
-  right: 80px;
-  bottom: 20px;
+  right: 84px;
+  bottom: 18px;
   z-index: 1500;
-  animation: popupSlideIn 0.3s ease;
+  animation: popupSlideIn 0.32s ease;
 }
 
 @keyframes popupSlideIn {
   from {
     opacity: 0;
-    transform: translateX(10px);
+    transform: translateX(10px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }
 
 .phone-popup {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(208, 217, 228, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(10, 22, 40, 0.22);
   width: auto;
   overflow: visible;
   position: relative;
   padding: 0;
+  backdrop-filter: blur(5px);
 }
 
 .phone-popup-close {
@@ -110,7 +198,7 @@
 }
 
 .phone-popup-content {
-  padding: 12px 14px;
+  padding: 12px 16px;
   text-align: center;
 }
 
@@ -126,15 +214,78 @@
 .phone-number {
   font-size: 16px;
   font-weight: 700;
-  color: #333;
+  color: #1a2a3d;
   letter-spacing: 0.5px;
+}
+
+@keyframes btnEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes phoneSwing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(10deg);
+  }
+  22% {
+    transform: rotate(-8deg);
+  }
+  34% {
+    transform: rotate(6deg);
+  }
+  46% {
+    transform: rotate(-3deg);
+  }
+  58% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ringWave {
+  0% {
+    opacity: 0.46;
+    transform: scale(0.98);
+  }
+  72% {
+    opacity: 0.08;
+    transform: scale(1.42);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.52);
+  }
 }
 
 /* Responsive - smaller on mobile */
 @media (max-width: 768px) {
+  .floating-contact-buttons {
+    right: 14px;
+    bottom: 16px;
+    gap: 12px;
+  }
+
+  .contact-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .contact-btn__label {
+    font-size: 17px;
+  }
+
   .phone-popup-container {
-    right: 65px;
-    bottom: 10px;
+    right: 70px;
+    bottom: 14px;
   }
 
   .phone-popup {
@@ -144,9 +295,18 @@
 
 /* Hide on very small screens if needed */
 @media (max-width: 480px) {
+  .contact-btn {
+    width: 52px;
+    height: 52px;
+  }
+
+  .contact-btn__label {
+    font-size: 16px;
+  }
+
   .phone-popup-container {
-    right: 60px;
-    bottom: 8px;
+    right: 64px;
+    bottom: 10px;
   }
 
   .phone-popup {

@@ -4,6 +4,32 @@
 
 ---
 
+## 📌 Team Rules (Applies To All Dates) 🐍🍎
+
+- Mỗi lần chỉnh sửa code xong và đã verify ổn, **phải commit + push ngay** để không thất lạc thay đổi.
+- Khi có thay đổi nghiệp vụ quan trọng, cập nhật thêm mục tóm tắt tại `ISSUES_LOG.md`.
+- Khi fix bug, **phải ghi bug đó vào `ISSUES_LOG.md` ngay trong cùng lần xử lý**, không để dồn sau.
+- Sau mỗi phiên làm việc trong ngày, **phải cập nhật `ISSUES_LOG.md` ngay** với mục "hôm nay làm thêm được gì" (ít nhất: thay đổi chính + trạng thái), không để sang ngày hôm sau.
+
+---
+
+## 📅 April 11, 2026
+
+### ✅ Update: Nâng cấp hiệu ứng cụm icon liên hệ nổi (Facebook/Zalo/Phone) 🐍🍎
+**Priority:** Medium  
+**Component:** Frontend - FloatingContactButtons  
+**Status:** ✅ Updated
+
+#### What Was Added Today
+- Thêm hiệu ứng xuất hiện theo nhịp (stagger) cho từng nút để cụm icon nhìn sống động hơn khi vào trang.
+- Nâng cấp hiệu ứng hover/active: nhấc nút theo trục Y, đổ bóng sâu hơn, và phản hồi bấm rõ ràng.
+- Thêm hiệu ứng tỏa ra (ripple lan ngoài icon) để nút liên hệ thu hút hơn.
+- Cải thiện hiển thị cho mobile để giữ đúng tỉ lệ, khoảng cách và không che nội dung chính.
+- Tinh chỉnh nút Zalo hiển thị text rõ ràng trong hình tròn, đồng bộ phong cách với ảnh mẫu.
+- Tinh chỉnh lại thẩm mỹ tổng thể theo hướng tối giản: giảm hiệu ứng rối, chuyển sang halo mềm + ripple mượt hơn.
+
+---
+
 ## 📅 April 9, 2026
 
 ### ✅ Update: Scope lại xác thực tài khoản + theo dõi người sửa cuối 🐍🍎🍎
@@ -24,11 +50,6 @@
 - `admin_action_logs` chỉ dùng để lưu hành động cập nhật do admin/system admin thực hiện.
 - Tránh trộn log hệ thống OTP với log quản trị.
 - Giúp admin nhìn nhanh tình trạng xác thực và ai là người tác động cuối cùng lên tài khoản.
-
-#### Team Rule (MUST) 🐍🍎
-- Mỗi lần chỉnh sửa code xong và đã verify ổn, **phải commit + push ngay** để không thất lạc thay đổi.
-- Khi có thay đổi nghiệp vụ quan trọng, cập nhật thêm mục tóm tắt tại `ISSUES_LOG.md`.
-- Khi fix bug, **phải ghi bug đó vào `ISSUES_LOG.md` ngay trong cùng lần xử lý**, không để dồn sau.
 
 ### ✅ Bug Fix: Cột Vai Trò không hiển thị Admin với admin thường 🐍🍎
 **Priority:** Medium  

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FaFacebook, FaPhone } from 'react-icons/fa';
-import { SiZalo } from 'react-icons/si';
 import './FloatingContactButtons.css';
 
 const FloatingContactButtons = () => {
@@ -33,7 +32,8 @@ const FloatingContactButtons = () => {
           title="Chat với chúng tôi trên Messenger"
           aria-label="Messenger"
         >
-          <FaFacebook size={24} />
+          <span className="contact-btn__ring" aria-hidden="true" />
+          <FaFacebook size={24} className="contact-btn__icon" />
         </button>
 
         {/* Zalo Button */}
@@ -43,7 +43,8 @@ const FloatingContactButtons = () => {
           title="Liên hệ qua Zalo"
           aria-label="Zalo"
         >
-          <SiZalo size={24} />
+          <span className="contact-btn__ring" aria-hidden="true" />
+          <span className="contact-btn__label">Zalo</span>
         </button>
 
         {/* Phone Button */}
@@ -53,7 +54,8 @@ const FloatingContactButtons = () => {
           title="Gọi điện cho chúng tôi"
           aria-label="Phone"
         >
-          <FaPhone size={24} />
+          <span className="contact-btn__ring" aria-hidden="true" />
+          <FaPhone size={24} className="contact-btn__icon contact-btn__icon--phone" />
         </button>
       </div>
 
