@@ -1,29 +1,29 @@
-/* Container chính của toàn bộ khu vực Quick Booking */
+/* Main page rhythm and typography tuned to the provided Figma screenshot. */
 .home-quick-booking-section {
-    /* max-width: 1200px; /* Chiều rộng tối đa cho phần nội dung */
-    /* margin: 40px auto; Căn giữa trang */
-    /* padding: 0 20px; */
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 0 80px;
 }
 
 /* Phần trên: Thông tin Nhà hàng (Trái) và Form (Phải) */
 .booking-content-top {
     display: flex;
-    /* Căn chỉnh các phần tử con theo trục ngang */
     justify-content: space-between; 
-    /* Căn chỉnh các phần tử con theo trục dọc (nếu chiều cao khác nhau) */
-    align-items: flex-start; 
-    gap: 50px; /* Khoảng cách giữa hai cột */
-    padding-bottom: 50px;
-    /* Thiết lập background màu be nhạt cho phần trên theo Figma */
+    align-items: stretch;
+    gap: 56px;
     background-color: #FBF8F4; 
-    padding: 60px 80px; 
-    border-radius: 15px 15px 0 0; /* Bo góc trên */
+    padding: 52px 60px 46px;
+    border-radius: 0;
 }
 
 /* A. Cột bên trái: Thông tin Nhà hàng */
 .restaurant-info-panel {
-    flex-basis: 50%; /* Chiếm khoảng 50% không gian */
-    padding-right: 20px;
+    flex-basis: 52%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Đánh giá */
@@ -34,10 +34,10 @@
     padding: 5px 10px;
     border-radius: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    font-size: 0.9em;
-    font-weight: 500;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: #333;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .star-icon {
@@ -47,27 +47,29 @@
 
 /* Tên nhà hàng */
 .restaurant-title {
-    font-size: 3em; 
-    font-weight: bold;
+    font-size: clamp(2.4rem, 4.6vw, 3.3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
     color: #333;
     margin-top: 0;
-    margin-bottom: 20px;
-    line-height: 1.1;
+    margin-bottom: 18px;
+    line-height: 1.05;
 }
 
 /* Mô tả */
 .restaurant-description {
-    font-size: 1.1em;
+    font-size: 1.02rem;
     color: #666;
-    line-height: 1.5;
-    margin-bottom: 40px;
+    line-height: 1.62;
+    margin-bottom: 30px;
+    max-width: 530px;
 }
 
 /* Các nút hành động */
 .action-buttons {
     display: flex;
-    width: 50%;
-    gap: 15px;
+    width: fit-content;
+    gap: 10px;
 }
 .action-buttons > .btn {
         flex: 1 1 0;
@@ -80,18 +82,19 @@
 .home-quick-booking-section .btn {
     display: flex;
     align-items: center;
-    padding: 12px 25px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-sizing: border-box;
 }
 
 .home-quick-booking-section .btn-icon {
-    font-size: 1.2em;
-    margin-right: 8px;
+    font-size: 1.05em;
+    margin-right: 6px;
 }
 
 .home-quick-booking-section .btn-primary {
@@ -117,8 +120,7 @@
 
 /* B. Cột bên phải: Form Đặt Bàn Nhanh */
 .quick-booking-form-wrapper {
-    flex-basis: 50%; /* Chiếm khoảng 50% không gian */
-    /* Dùng Flexbox để căn giữa form theo chiều ngang */
+    flex-basis: 48%;
     display: flex;
     justify-content: flex-end; 
 }
@@ -127,10 +129,349 @@
 /* 2. Phần Hình ảnh lớn ở dưới */
 .restaurant-main-image {
     width: 100%;
-    height: 400px; /* Chiều cao cố định cho hình ảnh */
-    /* Thêm hình ảnh nền */
-    background-image: url('../../../picture/HomeReservation.jpg'); /* THAY THẾ ĐƯỜNG DẪN */
+    height: 300px;
+    background-image: url('../../../picture/HomeReservation.jpg');
     background-size: cover;
     background-position: center;
-    border-radius: 0 0 15px 15px; /* Bo góc dưới */
+    border-radius: 0;
+}
+
+.home-section {
+    margin-top: 32px;
+    padding: 40px 34px;
+    background: #ffffff;
+    border: 1px solid #ece6de;
+    border-radius: 18px;
+}
+
+.home-section:first-of-type {
+    margin-top: 18px;
+}
+
+.section-head {
+    margin-bottom: 24px;
+}
+
+.section-head.centered {
+    text-align: center;
+}
+
+.section-subtitle {
+    margin: 0;
+    color: #cf6f2f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+}
+
+.section-head h2 {
+    margin: 10px 0 0;
+    font-size: clamp(1.55rem, 2.4vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #232323;
+}
+
+.featured-grid,
+.testimonial-grid,
+.gallery-grid,
+.perk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.dish-card,
+.testimonial-card,
+.perk-card {
+    background: #fff;
+    border: 1px solid #efe9e2;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 22px rgba(24, 28, 35, 0.08);
+}
+
+.dish-thumb {
+    width: 100%;
+    height: 188px;
+    object-fit: cover;
+}
+
+.dish-content {
+    padding: 16px;
+}
+
+.dish-content h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.dish-content p {
+    margin: 8px 0 14px;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.dish-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dish-price {
+    color: #cb5d1b;
+    font-weight: 800;
+}
+
+.mini-btn {
+    border: none;
+    border-radius: 10px;
+    background: #d36c2f;
+    color: #fff;
+    font-weight: 700;
+    padding: 9px 14px;
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+}
+
+.mini-btn:hover {
+    background: #be5f28;
+}
+
+.testimonial-card {
+    padding: 18px;
+}
+
+.testimonial-stars {
+    color: #f7a500;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+}
+
+.testimonial-text {
+    margin: 12px 0 14px;
+    color: #4a4a4a;
+    min-height: 80px;
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+
+.testimonial-author {
+    display: grid;
+    gap: 2px;
+}
+
+.testimonial-author span {
+    color: #777;
+    font-size: 0.82rem;
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.why-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fef9f4 0%, #f9f2e9 100%);
+    border: 1px solid #f0e4d5;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #3d3d3d;
+}
+
+.why-item svg {
+    color: #d36c2f;
+    flex: 0 0 auto;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: 198px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.perk-card {
+    padding: 20px;
+}
+
+.perk-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8ede3;
+    color: #d36c2f;
+    margin-bottom: 10px;
+}
+
+.perk-card h3 {
+    margin: 0 0 8px;
+}
+
+.perk-card p {
+    margin: 0 0 18px;
+    color: #666;
+    line-height: 1.55;
+}
+
+.contact-map-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.map-card,
+.contact-card {
+    background: #f4fbf6;
+    border: 1px solid #d7ecdd;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.map-pin {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #dbf5e0;
+    color: #27ae60;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.map-card a {
+    color: #1b9b4f;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.92rem;
+}
+
+.contact-card p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    color: #31503d;
+    font-size: 0.93rem;
+}
+
+.faq-list {
+    border: 1px solid #efe9e2;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.faq-item {
+    border-bottom: 1px solid #f3ece4;
+    background: #fff;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    padding: 15px 18px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #2d2d2d;
+}
+
+.faq-item p {
+    margin: 0;
+    padding: 0 18px 15px;
+    color: #656565;
+    line-height: 1.55;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+    .home-quick-booking-section {
+        padding: 0 0 64px;
+    }
+
+    .booking-content-top {
+        flex-direction: column;
+        gap: 28px;
+        padding: 34px 18px;
+    }
+
+    .restaurant-info-panel,
+    .quick-booking-form-wrapper {
+        flex-basis: 100%;
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .quick-booking-form-wrapper {
+        justify-content: flex-start;
+    }
+
+    .action-buttons {
+        width: 100%;
+    }
+
+    .featured-grid,
+    .testimonial-grid,
+    .gallery-grid,
+    .perk-grid,
+    .contact-map-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-section {
+        padding: 30px 22px;
+    }
+}
+
+@media (max-width: 640px) {
+    .restaurant-title {
+        font-size: 2rem;
+    }
+
+    .restaurant-main-image {
+        height: 220px;
+    }
+
+    .home-section {
+        padding: 24px 15px;
+        margin-top: 24px;
+        border-radius: 14px;
+    }
+
+    .section-head h2 {
+        font-size: 1.32rem;
+    }
+
+    .featured-grid,
+    .testimonial-grid,
+    .gallery-grid,
+    .perk-grid,
+    .contact-map-grid,
+    .why-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonial-text {
+        min-height: 0;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
 }

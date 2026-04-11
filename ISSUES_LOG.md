@@ -27,6 +27,9 @@
 - Cải thiện hiển thị cho mobile để giữ đúng tỉ lệ, khoảng cách và không che nội dung chính.
 - Tinh chỉnh nút Zalo hiển thị text rõ ràng trong hình tròn, đồng bộ phong cách với ảnh mẫu.
 - Tinh chỉnh lại thẩm mỹ tổng thể theo hướng tối giản: giảm hiệu ứng rối, chuyển sang halo mềm + ripple mượt hơn.
+- Bổ sung đầy đủ các section Home còn thiếu theo hướng bám Figma: thông tin nhà hàng, món nổi bật, review, gallery, ưu đãi, contact-map và FAQ.
+- Chuyển layout Home sang full-width: bỏ giới hạn max-width ở container chính để các section hiển thị full màn hình.
+- Fix khoảng trắng còn dư ở Hero Home: bỏ outer padding, bỏ bo góc block đầu và cân lại cột trái để cảm giác full màn rõ ràng hơn.
 
 ---
 
