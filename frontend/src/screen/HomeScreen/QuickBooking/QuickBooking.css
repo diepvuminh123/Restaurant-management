@@ -11,7 +11,7 @@
     display: flex;
     justify-content: space-between; 
     align-items: stretch;
-    gap: 56px;
+    gap: clamp(24px, 3vw, 44px);
     background-color: #FBF8F4; 
     padding: 52px 60px 46px;
     border-radius: 0;
@@ -19,7 +19,7 @@
 
 /* A. Cột bên trái: Thông tin Nhà hàng */
 .restaurant-info-panel {
-    flex-basis: 52%;
+    flex: 1 1 0;
     max-width: 620px;
     display: flex;
     flex-direction: column;
@@ -123,7 +123,8 @@
 
 /* B. Cột bên phải: Form Đặt Bàn Nhanh */
 .quick-booking-form-wrapper {
-    flex-basis: 48%;
+    flex: 0 1 430px;
+    max-width: 430px;
     display: flex;
     justify-content: flex-end; 
 }
@@ -416,6 +417,8 @@
     .restaurant-info-panel,
     .quick-booking-form-wrapper {
         flex-basis: 100%;
+        flex: 1 1 auto;
+        max-width: none;
         width: 100%;
         padding-right: 0;
     }

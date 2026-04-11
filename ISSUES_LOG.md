@@ -31,6 +31,7 @@
 - Chuyển layout Home sang full-width: bỏ giới hạn max-width ở container chính để các section hiển thị full màn hình.
 - Fix khoảng trắng còn dư ở Hero Home: bỏ outer padding, bỏ bo góc block đầu và cân lại cột trái để cảm giác full màn rõ ràng hơn.
 - Căn lại hero gần Figma hơn: badge không bị kéo dài, giảm cỡ heading và giữ nút CTA 1 dòng để đúng tỷ lệ thiết kế.
+- Fix lỗi kéo ngang (horizontal drag/scroll): giảm tràn bố cục hero và thu gọn vùng ripple icon nổi để không vượt viewport.
 
 ---
 

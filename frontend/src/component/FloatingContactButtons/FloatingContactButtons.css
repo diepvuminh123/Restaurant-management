@@ -1,6 +1,6 @@
 .floating-contact-buttons {
   position: fixed;
-  right: 22px;
+  right: 30px;
   bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -78,7 +78,7 @@
 
 .contact-btn__ring {
   position: absolute;
-  inset: -7px;
+  inset: -5px;
   border-radius: 50%;
   border: 2px solid var(--ring-color, rgba(255, 255, 255, 0.45));
   opacity: 0;
@@ -258,11 +258,11 @@
   }
   72% {
     opacity: 0.08;
-    transform: scale(1.42);
+    transform: scale(1.25);
   }
   100% {
     opacity: 0;
-    transform: scale(1.52);
+    transform: scale(1.32);
   }
 }
 
