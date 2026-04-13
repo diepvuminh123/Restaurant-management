@@ -1,6 +1,7 @@
 {
   "common": {
     "welcome": "Chào mừng",
+    "back": "Quay lại",
     "home": "Trang chủ",
     "menu": "Thực đơn",
     "reservation": "Đặt bàn",
@@ -95,7 +96,7 @@
     "editItem": "Sửa món"
   },
  "reservationQuick": {
-  "quickReservation": "Đặt bàn nhanh",
+  "quickReservation": "Đặt bàn",
   "subtitle": "Chọn thời gian và số lượng người",
   "date": "Ngày",
   "datePlaceholder": "mm / dd / yyyy",

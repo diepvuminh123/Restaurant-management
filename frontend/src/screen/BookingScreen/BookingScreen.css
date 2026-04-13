@@ -1,0 +1,12 @@
+.BookingScreen {
+  min-height: 100vh;
+  background: #fafafa;
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .BookingScreen {
+    padding: 18px;
+  }
+}
