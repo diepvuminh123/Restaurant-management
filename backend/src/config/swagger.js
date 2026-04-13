@@ -202,6 +202,64 @@ const options = {
               example: '425000.00'
             }
           }
+        },
+        RestaurantInfo: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              example: 1
+            },
+            name: {
+              type: 'string',
+              example: 'Nha Hang ABC'
+            },
+            slogan: {
+              type: 'string',
+              nullable: true,
+              example: 'Huong vi Viet trong tung mon an'
+            },
+            logo_url: {
+              type: 'string',
+              nullable: true,
+              example: 'https://example.com/logo.png'
+            },
+            brand_image_url: {
+              type: 'string',
+              nullable: true,
+              example: 'https://example.com/banner.png'
+            },
+            address_line: {
+              type: 'string',
+              example: '123 Le Loi, Quan 1, TP.HCM'
+            },
+            contact_phone: {
+              type: 'string',
+              nullable: true,
+              example: '0909123456'
+            },
+            contact_email: {
+              type: 'string',
+              nullable: true,
+              example: 'contact@restaurant.com'
+            },
+            opening_time: {
+              type: 'string',
+              example: '08:00:00'
+            },
+            closing_time: {
+              type: 'string',
+              example: '22:00:00'
+            },
+            created_at: {
+              type: 'string',
+              format: 'date-time'
+            },
+            updated_at: {
+              type: 'string',
+              format: 'date-time'
+            }
+          }
         }
       }
     },
@@ -221,6 +279,10 @@ const options = {
       {
         name: 'Orders',
         description: 'Order management endpoints'
+      },
+      {
+        name: 'Restaurant',
+        description: 'Restaurant profile endpoints'
       }
     ]
   },

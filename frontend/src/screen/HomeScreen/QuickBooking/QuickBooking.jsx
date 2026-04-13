@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
 import RestaurantInformation from '../../../component/RestaurantInformation/RestaurantInfromation';
+import HomeReservationImage from '../../../picture/HomeReservation.jpg';
 import './QuickBooking.css';
 import { CiCalendar, CiStar } from 'react-icons/ci';
+import { FiPlus, FiShoppingBag } from 'react-icons/fi';
 import { FiGift, FiClock, FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 
@@ -14,22 +16,28 @@ const QuickBooking = ({ user }) => {
 
     const featuredDishes = [
         {
-            name: 'Pho Bo Kobe',
-            desc: 'Rich slow-cooked broth with tender premium beef slices.',
-            price: '85,000 VND',
-            image: '/HomeReservation.jpg',
+            name: 'Phở Bò Đặc Biệt',
+            desc: 'Phở bò truyền thống với nước dùng ninh từ xương bò 24 giờ',
+            price: '85.000đ',
+            rating: 4.9,
+            popular: true,
+            image: HomeReservationImage,
         },
         {
-            name: 'Com Cuon Tom The',
-            desc: 'Vietnamese seasoned rice topped with fresh grilled shrimp.',
-            price: '45,000 VND',
-            image: '/HomeReservation.jpg',
+            name: 'Gỏi Cuốn Tôm Thịt',
+            desc: 'Gỏi cuốn tươi ngon với tôm, thịt heo và rau sống',
+            price: '45.000đ',
+            rating: 4.7,
+            popular: false,
+            image: HomeReservationImage,
         },
         {
-            name: 'Xien Nuong Lua',
-            desc: 'Charcoal grilled skewers marinated in house signature sauce.',
-            price: '75,000 VND',
-            image: '/HomeReservation.jpg',
+            name: 'Bún Chả Hà Nội',
+            desc: 'Thịt nướng thơm phức, bún tươi và nước chấm đậm đà',
+            price: '75.000đ',
+            rating: 4.8,
+            popular: true,
+            image: HomeReservationImage,
         },
     ];
 
@@ -125,20 +133,40 @@ const QuickBooking = ({ user }) => {
             <RestaurantInformation />
 
             <section className="home-section home-featured-menu">
-                <div className="section-head">
-                    <p className="section-subtitle">Most Loved Dishes</p>
-                    <h2>Featured Delivery Menu</h2>
+                <div className="section-head centered">
+                    <h2>Thực đơn của chúng tôi</h2>
+                    <p className="home-featured-menu__subtitle">Khám phá các món ăn đặc sắc được chế biến từ nguyên liệu tươi ngon hằng ngày</p>
                 </div>
+                <div className="home-featured-menu__tabs" role="tablist" aria-label="Danh mục món ăn">
+                    <button className="home-featured-menu__tab home-featured-menu__tab--active" type="button">Món nổi bật</button>
+                    <button className="home-featured-menu__tab" type="button">Theo mùa</button>
+                    <button className="home-featured-menu__tab" type="button">Gợi ý cho bạn</button>
+                </div>
+
                 <div className="featured-grid">
                     {featuredDishes.map((dish) => (
-                        <article className="dish-card" key={dish.name}>
-                            <img src={dish.image} alt={dish.name} className="dish-thumb" />
-                            <div className="dish-content">
-                                <h3>{dish.name}</h3>
+                        <article className="featured-dish-card" key={dish.name}>
+                            <div className="featured-dish-card__media">
+                                <img src={dish.image} alt={dish.name} className="dish-thumb" />
+                                {dish.popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
+                            </div>
+
+                            <div className="featured-dish-card__content">
+                                <div className="featured-dish-card__headline">
+                                    <h3>{dish.name}</h3>
+                                    <span className="featured-dish-card__rating"><CiStar /> {dish.rating}</span>
+                                </div>
+
                                 <p>{dish.desc}</p>
-                                <div className="dish-footer">
-                                    <span className="dish-price">{dish.price}</span>
-                                    <button className="mini-btn" onClick={() => navigate('/menu')}>Order now</button>
+                                <div className="dish-price">{dish.price}</div>
+
+                                <div className="featured-dish-card__actions">
+                                    <button className="featured-dish-card__btn featured-dish-card__btn--ghost" type="button">
+                                        <FiPlus /> Thêm
+                                    </button>
+                                    <button className="featured-dish-card__btn featured-dish-card__btn--primary" type="button" onClick={() => navigate('/menu')}>
+                                        <FiShoppingBag /> Đặt mang về
+                                    </button>
                                 </div>
                             </div>
                         </article>

@@ -62,6 +62,11 @@ https://api.restaurant.com/api-docs
 - `POST /api/cart/migrate` - Migrate guest cart → user cart
 - `GET /api/cart/validate` - Validate cart trước checkout
 
+### 🏪 Restaurant APIs
+- `GET /api/restaurant-info` - Lấy thông tin nhà hàng
+- `POST /api/restaurant-info` - Tạo thông tin nhà hàng
+- `PUT /api/restaurant-info/:id` - Cập nhật thông tin nhà hàng
+
 ---
 
 ## 🧪 Cách sử dụng
@@ -143,6 +148,24 @@ https://api.restaurant.com/api-docs
   "item_count": "2",
   "total_quantity": "5",
   "total_amount": "425000.00"
+}
+```
+
+### RestaurantInfo Schema
+```json
+{
+  "id": 1,
+  "name": "Nha Hang ABC",
+  "slogan": "Huong vi Viet trong tung mon an",
+  "logo_url": "https://example.com/logo.png",
+  "brand_image_url": "https://example.com/banner.png",
+  "address_line": "123 Le Loi, Quan 1, TP.HCM",
+  "contact_phone": "0909123456",
+  "contact_email": "contact@restaurant.com",
+  "opening_time": "08:00:00",
+  "closing_time": "22:00:00",
+  "created_at": "2026-04-14T09:00:00Z",
+  "updated_at": "2026-04-14T09:00:00Z"
 }
 ```
 
@@ -298,10 +321,10 @@ npm start
 
 ## 📊 Statistics
 
-**Total APIs Documented:** 25+  
-**Modules:** Auth (8), Menu (10+), Cart (7)  
-**Response Schemas:** 4 (Error, User, MenuItem, Cart)  
-**Last Updated:** March 12, 2026
+**Total APIs Documented:** 27+  
+**Modules:** Auth (8), Menu (10+), Cart (7), Restaurant (2)  
+**Response Schemas:** 5 (Error, User, MenuItem, Cart, RestaurantInfo)  
+**Last Updated:** April 14, 2026
 
 ---
 

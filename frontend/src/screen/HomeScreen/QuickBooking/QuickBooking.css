@@ -177,6 +177,163 @@
     color: #232323;
 }
 
+/* Featured menu section - tuned to Figma structure */
+.home-featured-menu {
+    border: 1px solid #efefef;
+    box-shadow: none;
+}
+
+.home-featured-menu .section-head {
+    margin-bottom: 24px;
+}
+
+.home-featured-menu .section-head h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2b2f38;
+}
+
+.home-featured-menu__subtitle {
+    margin: 10px auto 0;
+    max-width: 780px;
+    color: #767b88;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.home-featured-menu__tabs {
+    width: fit-content;
+    margin: 0 auto 26px;
+    padding: 4px;
+    display: flex;
+    gap: 4px;
+    border-radius: 16px;
+    background: #dcc9a8;
+}
+
+.home-featured-menu__tab {
+    border: none;
+    background: transparent;
+    color: #3f3a31;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 11px 34px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.home-featured-menu__tab--active {
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(30, 41, 59, 0.08);
+}
+
+.home-featured-menu .featured-grid {
+    gap: 22px;
+}
+
+.featured-dish-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.featured-dish-card__media {
+    position: relative;
+}
+
+.home-featured-menu .dish-thumb {
+    height: 320px;
+}
+
+.featured-dish-card__tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #d06f35;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.featured-dish-card__content {
+    padding: 17px 16px 16px;
+}
+
+.featured-dish-card__headline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.featured-dish-card__headline h3 {
+    margin: 0;
+    color: #2f3135;
+    font-size: 1.95rem;
+    font-weight: 700;
+}
+
+.featured-dish-card__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #455061;
+    font-weight: 600;
+}
+
+.featured-dish-card__rating svg {
+    color: #f3b118;
+}
+
+.featured-dish-card__content p {
+    margin: 0 0 11px;
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.featured-dish-card .dish-price {
+    color: #cb6b33;
+    font-size: 1.9rem;
+    font-weight: 800;
+}
+
+.featured-dish-card__actions {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.featured-dish-card__btn {
+    height: 44px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.featured-dish-card__btn--ghost {
+    border: 1px solid #d7d7d7;
+    background: #fff;
+    color: #363a43;
+}
+
+.featured-dish-card__btn--primary {
+    border: 1px solid #d06f35;
+    background: #d06f35;
+    color: #fff;
+}
+
 .featured-grid,
 .testimonial-grid,
 .gallery-grid,
@@ -442,6 +599,29 @@
     .home-section {
         padding: 30px 22px;
     }
+
+    .home-featured-menu__tabs {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .home-featured-menu__tab {
+        flex: 1;
+        padding: 11px 12px;
+        font-size: 0.93rem;
+    }
+
+    .home-featured-menu .dish-thumb {
+        height: 250px;
+    }
+
+    .featured-dish-card__headline h3 {
+        font-size: 1.4rem;
+    }
+
+    .featured-dish-card .dish-price {
+        font-size: 1.45rem;
+    }
 }
 
 @media (max-width: 640px) {
@@ -484,5 +664,33 @@
     .action-buttons > .btn {
         min-width: 0;
         width: 100%;
+    }
+
+    .home-featured-menu .section-head h2 {
+        font-size: 1.55rem;
+    }
+
+    .home-featured-menu__subtitle {
+        font-size: 0.93rem;
+    }
+
+    .home-featured-menu__tabs {
+        margin-bottom: 18px;
+    }
+
+    .featured-dish-card__actions {
+        grid-template-columns: 1fr;
+    }
+
+    .home-featured-menu .dish-thumb {
+        height: 210px;
+    }
+
+    .featured-dish-card__headline h3 {
+        font-size: 1.18rem;
+    }
+
+    .featured-dish-card .dish-price {
+        font-size: 1.2rem;
     }
 }

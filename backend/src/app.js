@@ -13,6 +13,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userAdminRoutes = require('./routes/userAdminRoutes');
+const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -51,6 +52,7 @@ app.use('/api', cartRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', userAdminRoutes);
+app.use('/api', restaurantInfoRoutes);
 
 
 // Error Handler

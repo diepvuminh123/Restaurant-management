@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Phone, MapPin, Map, Globe } from 'lucide-react';
+import { Clock, Phone, MapPin, Map } from 'lucide-react';
 import './RestaurantInformation.css'; // Import file CSS
 
 const RestaurantInformation = () => {
@@ -23,15 +23,14 @@ const RestaurantInformation = () => {
                         
                         {/* 1. Trạng thái mở/đóng */}
                         <div className={`contact-bar__status ${openStatusClass}`}>
-                            <Globe className="w-4 h-4 mr-2" />
+                            <span className="contact-bar__statusDot" aria-hidden="true" />
                             {isOpen ? 'Đang mở cửa' : 'Đóng cửa'}
                         </div>
                         
                         {/* 2. Chi tiết giờ */}
                         <div className="contact-bar__time">
                             <Clock className="w-4 h-4 contact-bar__icon-color mr-1" />
-                            <span className="contact-bar__time-text">{currentDay}:</span>
-                            <span className="contact-bar__time-detail">09:00 - 22:00</span>
+                            <span className="contact-bar__time-text">{currentDay}: 09:00 - 22:00</span>
                         </div>
                     </div>
                     

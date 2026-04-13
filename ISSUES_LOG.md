@@ -13,6 +13,43 @@
 
 ---
 
+## 📅 April 14, 2026
+
+### ✅ Refactor: Clean status code handling cho Restaurant Info API 🐍🍎
+**Priority:** Medium  
+**Component:** Backend - Restaurant Info Controller/Service  
+**Status:** ✅ Updated
+
+#### Problem
+- `restaurantInfoController` đang suy luận `statusCode` bằng cách kiểm tra chuỗi trong `error.message` (`includes(...)`).
+- Logic này khó maintain, dễ sai khi đổi message và lặp lại giữa các action create/update.
+
+#### Solution
+- Chuẩn hóa xử lý lỗi theo hướng explicit:
+  - Thêm helper `handleError` trong controller, chỉ đọc `error.statusCode` và fallback `500`.
+  - Service ném lỗi có `statusCode` rõ ràng bằng helper `createHttpError(message, statusCode)`.
+- Áp dụng status semantics rõ ràng:
+  - `400` cho lỗi validate nghiệp vụ thời gian.
+  - `404` khi không tìm thấy `restaurant_info` để update.
+  - `409` khi create nhưng dữ liệu restaurant info đã tồn tại.
+
+#### Result
+- Controller sạch, không phụ thuộc text message để quyết định HTTP status.
+- Dễ mở rộng và đồng bộ error handling cho các module backend khác.
+
+### ✅ Follow-up: Đồng bộ format xử lý lỗi theo pattern chung controller 🐍🍎
+**Priority:** Medium  
+**Component:** Backend - Restaurant Info Controller  
+**Status:** ✅ Updated
+
+#### What Was Updated
+- Cập nhật `restaurantInfoController` theo cùng format đang dùng ở `orderController` và `userAdminController`:
+  - `const statusCode = error.statusCode || 500`
+  - `message: error.message || <fallback_message>`
+- Bỏ helper nội bộ `handleError` để cấu trúc catch block đồng nhất và dễ đọc khi so sánh giữa các controller.
+
+---
+
 ## 📅 April 11, 2026
 
 ### ✅ Update: Nâng cấp hiệu ứng cụm icon liên hệ nổi (Facebook/Zalo/Phone) 🐍🍎
@@ -32,6 +69,9 @@
 - Fix khoảng trắng còn dư ở Hero Home: bỏ outer padding, bỏ bo góc block đầu và cân lại cột trái để cảm giác full màn rõ ràng hơn.
 - Căn lại hero gần Figma hơn: badge không bị kéo dài, giảm cỡ heading và giữ nút CTA 1 dòng để đúng tỷ lệ thiết kế.
 - Fix lỗi kéo ngang (horizontal drag/scroll): giảm tràn bố cục hero và thu gọn vùng ripple icon nổi để không vượt viewport.
+- Căn lại thanh thông tin liên hệ theo Figma: style phẳng, badge trạng thái dạng chấm, bỏ link phone màu xanh và giữ các cụm thông tin trên một dòng.
+- Dịch cụm thông tin bên phải (phone, địa chỉ, chỉ đường) sang trái thêm một nhịp để khớp vị trí theo Figma.
+- Refactor section "Thực đơn của chúng tôi" theo Figma: thêm tab dạng pill, card món chuẩn layout (ảnh, tag, rating, giá, nút Thêm/Đặt mang về) và sửa nguồn ảnh không còn bị vỡ.
 
 ---
 
