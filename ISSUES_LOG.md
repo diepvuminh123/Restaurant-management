@@ -48,6 +48,39 @@
   - `message: error.message || <fallback_message>`
 - Bỏ helper nội bộ `handleError` để cấu trúc catch block đồng nhất và dễ đọc khi so sánh giữa các controller.
 
+### ✅ Refactor: Tái cấu trúc tab Theo dõi đơn mang về theo layout mới (Profile) 🐍🍎
+**Priority:** High  
+**Component:** Frontend - Setting/Profile - Takeaway Order Tracking  
+**Status:** ✅ Updated
+
+#### What Was Updated
+- Refactor lại toàn bộ giao diện tab Theo dõi đơn mang về theo dạng card chi tiết như mockup:
+  - Header thông tin đơn (mã đơn, chi tiết món, tổng tiền, ghi chú, thời gian nhận, ngày đặt, trạng thái).
+  - Khối Địa điểm nhận món dùng địa chỉ nhà hàng.
+  - Timeline tiến trình 4 bước: Nhận đơn → Chế biến → Sẵn sàng lấy → Hoàn tất.
+  - Khối Thanh toán cọc (badge trạng thái cọc + nút Tiến hành cọc).
+  - Khối cảnh báo/hướng dẫn xác nhận cọc.
+  - Khối thời gian dự kiến nhận món.
+  - Khối Hủy đơn và bảng danh sách món trong đơn.
+- Cập nhật CSS để khớp bố cục mới và responsive tốt cho mobile.
+- Bổ sung API frontend `getRestaurantInfo()` để lấy `address_line` render ở mục Địa điểm nhận.
+
+#### Database/API Readiness Check
+- Dữ liệu trả về từ `/orders/my` đã đủ cho phần lớn nội dung màn hình:
+  - `status`, `payment_status`, `pickup_time`, `deposit_amount`, `final_amount`, `created_at`, `note`, `items`.
+- Schema `orders` hiện có đủ các field quan trọng để render tiến trình/cọc/hủy:
+  - `payment_status`, `deposit_amount`, `pickup_time`, `confirmed_at`, `canceled_reason`, `canceled_at`.
+- Địa điểm nhận món không nằm trong `orders`, nhưng đã có sẵn trong `restaurant_info.address_line` và có endpoint `GET /restaurant-info`.
+
+#### Known Gap / Follow-up
+- Endpoint hủy đơn hiện tại (`PATCH /orders/:id/cancel`) đang giới hạn quyền `admin/employee`, nên user ở trang cá nhân chưa thể hủy đơn hoàn toàn theo self-service flow.
+- Đề xuất follow-up backend:
+  - Bổ sung endpoint user tự hủy đơn (có kiểm tra rule thời gian hủy trước giờ nhận món).
+  - Nếu cần, thêm endpoint user gửi yêu cầu xác nhận cọc để đồng bộ đúng hành vi UI.
+
+#### Verification
+- Frontend build thành công sau refactor (`vite build`), không có lỗi compile ở các file đã chỉnh.
+
 ---
 
 ## 📅 April 11, 2026
