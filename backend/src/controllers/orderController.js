@@ -211,6 +211,39 @@ class OrderController {
     }
   }
 
+  static async cancelOrderForUser(req, res) {
+    try {
+      const orderId = parseInt(req.params.id, 10);
+      if (!orderId) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID đơn hàng không hợp lệ'
+        });
+      }
+
+      const userId = req.session?.userId;
+      const order = await OrderService.cancelOrderForUser(
+        userId,
+        orderId,
+        req.body.reason
+      );
+
+      res.json({
+        success: true,
+        message: 'Đã hủy đơn hàng',
+        data: order
+      });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      console.error('Cancel order for user error:', error);
+      res.status(statusCode).json({
+        success: false,
+        message: error.message || 'Lỗi khi hủy đơn hàng',
+        error: error.message
+      });
+    }
+  }
+
   static async updateOrderNote(req, res) {
     try {
       const orderId = parseInt(req.params.id, 10);

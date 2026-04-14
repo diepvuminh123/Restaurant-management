@@ -213,7 +213,7 @@ const TakeawayOrderTracking = () => {
     if (!selectedOrder) return;
 
     try {
-      const response = await ApiService.cancelTakeawayOrder(selectedOrder.id, 'Khách hủy từ trang cá nhân');
+      const response = await ApiService.cancelMyTakeawayOrder(selectedOrder.id, 'Khách hủy từ trang cá nhân');
       const updatedOrder = response?.data;
 
       if (updatedOrder) {

@@ -81,6 +81,34 @@
 #### Verification
 - Frontend build thành công sau refactor (`vite build`), không có lỗi compile ở các file đã chỉnh.
 
+### ✅ Feature: User tự hủy đơn mang về + bổ sung Swagger cho Order Flow 🐍🍎
+**Priority:** High  
+**Component:** Backend Orders API + Frontend Profile Tracking  
+**Status:** ✅ Updated
+
+#### Problem
+- User ở trang cá nhân chưa hủy đơn được vì endpoint hủy đơn hiện tại chỉ cho `admin/employee`.
+- Swagger cho luồng đặt món/theo dõi đơn còn thiếu nhiều endpoint quan trọng (`lookup`, `my orders`, hủy đơn user).
+
+#### Solution
+- Thêm flow hủy đơn dành cho user đăng nhập:
+  - Endpoint mới: `PATCH /api/orders/my/:id/cancel` (requireAuth).
+  - Service kiểm tra ownership theo `user_id`, chặn hủy khi đơn đã `COMPLETED`, giữ nguyên behavior nếu đã `CANCELED`.
+  - Controller mới `cancelOrderForUser` để xử lý và trả response thống nhất.
+- Frontend Profile cập nhật gọi endpoint user mới khi bấm nút hủy đơn.
+- Giữ nguyên endpoint staff/admin hủy đơn hiện có (`PATCH /api/orders/:id/cancel`) để không ảnh hưởng nghiệp vụ nội bộ.
+- Bổ sung Swagger cho các endpoint order flow:
+  - `GET /api/orders/lookup`
+  - `GET /api/orders/my`
+  - `GET /api/orders` (staff)
+  - `PATCH /api/orders/my/{id}/cancel`
+  - `PATCH /api/orders/{id}/cancel`
+  - (giữ/chuẩn hóa mô tả cho `POST /api/orders`, `PATCH /api/orders/{id}/deposit-confirm`)
+
+#### Result
+- User có quyền hủy đơn từ phần thông tin cá nhân như yêu cầu.
+- Tài liệu API cho luồng order đầy đủ và dễ kiểm thử hơn trong Swagger UI.
+
 ---
 
 ## 📅 April 11, 2026

@@ -184,6 +184,34 @@ class OrderService {
     return Order.cancelOrder(orderId, canceledBy, canceledReason || null);
   }
 
+  static async cancelOrderForUser(userId, orderId, canceledReason) {
+    if (!userId) {
+      const error = new Error('Bạn cần đăng nhập để hủy đơn');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const order = await Order.getOrderById(orderId, userId, null);
+
+    if (!order) {
+      const error = new Error('Không tìm thấy đơn hàng thuộc tài khoản của bạn');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (order.status === 'CANCELED') {
+      return order;
+    }
+
+    if (order.status === 'COMPLETED') {
+      const error = new Error('Đơn đã hoàn tất, không thể hủy');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    return Order.cancelOrder(orderId, userId, canceledReason || null);
+  }
+
   static async updateOrderNote(orderId, note) {
     const order = await Order.getOrderByIdForStaff(orderId);
 

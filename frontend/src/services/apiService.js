@@ -358,6 +358,15 @@ class ApiService {
     });
   }
 
+  static async cancelMyTakeawayOrder(orderId, reason = '') {
+    return this.request(`/orders/my/${orderId}/cancel`, {
+      method: 'PATCH',
+      body: {
+        reason,
+      },
+    });
+  }
+
   static async updateTakeawayOrderNote(orderId, note) {
     return this.request(`/orders/${orderId}/note`, {
       method: 'PATCH',
