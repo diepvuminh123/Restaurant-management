@@ -13,6 +13,7 @@ This document summarizes key tables in the clean schema set.
 - menu_categories: categories under a section.
 - menu_items: menu catalog with pricing, availability, and media.
 - menu_item_categories: many-to-many relation between menu items and categories.
+- reviews: user reviews for menu items (1-5 rating, optional comment, one review per user-item).
 
 ## Cart Domain
 - carts: cart owner (user or guest session) and lifecycle state.
@@ -35,8 +36,11 @@ This document summarizes key tables in the clean schema set.
 Use files under backend/database/clean in this order:
 1. auth_schema_clean.sql
 2. menu_schema_clean.sql
-3. Cart_clean.sql
-4. order_flow_schema_clean.sql
-5. restaurant_table_clean.sql
-6. Reservation_clean.sql
-7. add_admin_action_logs_clean.sql
+3. reviews_schema_clean.sql
+4. Cart_clean.sql
+5. order_flow_schema_clean.sql
+6. restaurant_table_clean.sql
+7. restaurant_tables_data_clean.sql
+8. restaurant_info_clean.sql
+9. Reservation_clean.sql
+10. add_admin_action_logs_clean.sql

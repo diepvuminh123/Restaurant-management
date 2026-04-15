@@ -13,11 +13,14 @@ Chay dung thu tu duoi day trong thu muc clean:
 
 1. auth_schema_clean.sql
 2. menu_schema_clean.sql
-3. Cart_clean.sql
-4. order_flow_schema_clean.sql
-5. restaurant_table_clean.sql
-6. Reservation_clean.sql
-7. add_admin_action_logs_clean.sql
+3. reviews_schema_clean.sql
+4. Cart_clean.sql
+5. order_flow_schema_clean.sql
+6. restaurant_table_clean.sql
+7. restaurant_tables_data_clean.sql
+8. restaurant_info_clean.sql
+9. Reservation_clean.sql
+10. add_admin_action_logs_clean.sql
 
 ## Lenh chay bang psql
 
@@ -26,9 +29,12 @@ cd backend\database\clean
 
 psql -U postgres -d restaurant_db -f auth_schema_clean.sql
 psql -U postgres -d restaurant_db -f menu_schema_clean.sql
+psql -U postgres -d restaurant_db -f reviews_schema_clean.sql
 psql -U postgres -d restaurant_db -f Cart_clean.sql
 psql -U postgres -d restaurant_db -f order_flow_schema_clean.sql
 psql -U postgres -d restaurant_db -f restaurant_table_clean.sql
+psql -U postgres -d restaurant_db -f restaurant_tables_data_clean.sql
+psql -U postgres -d restaurant_db -f restaurant_info_clean.sql
 psql -U postgres -d restaurant_db -f Reservation_clean.sql
 psql -U postgres -d restaurant_db -f add_admin_action_logs_clean.sql
 ```
@@ -68,9 +74,12 @@ ORDER BY ordinal_position;
 ## Danh sach file clean hien co
 - clean/auth_schema_clean.sql
 - clean/menu_schema_clean.sql
+- clean/reviews_schema_clean.sql
 - clean/Cart_clean.sql
 - clean/order_flow_schema_clean.sql
 - clean/restaurant_table_clean.sql
+- clean/restaurant_tables_data_clean.sql
+- clean/restaurant_info_clean.sql
 - clean/Reservation_clean.sql
 - clean/add_admin_action_logs_clean.sql
 
