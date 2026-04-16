@@ -260,6 +260,85 @@ const options = {
               format: 'date-time'
             }
           }
+        },
+        Review: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              example: 101
+            },
+            user_id: {
+              type: 'integer',
+              example: 5
+            },
+            menu_item_id: {
+              type: 'integer',
+              example: 12
+            },
+            rating: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 5,
+              example: 4
+            },
+            comment: {
+              type: 'string',
+              example: 'Phan an ngon, phuc vu nhanh'
+            },
+            is_hidden: {
+              type: 'boolean',
+              example: false
+            },
+            hidden_reason: {
+              type: 'string',
+              nullable: true,
+              example: null
+            },
+            created_at: {
+              type: 'string',
+              format: 'date-time'
+            },
+            updated_at: {
+              type: 'string',
+              format: 'date-time'
+            }
+          }
+        },
+        ReviewReport: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              example: 501
+            },
+            review_id: {
+              type: 'integer',
+              example: 101
+            },
+            reporter_id: {
+              type: 'integer',
+              example: 8
+            },
+            reason: {
+              type: 'string',
+              enum: ['spam', 'offensive', 'harassment', 'fake', 'irrelevant'],
+              example: 'offensive'
+            },
+            note: {
+              type: 'string',
+              nullable: true,
+              example: 'Noi dung xuc pham'
+            },
+            created_at: {
+              type: 'string',
+              format: 'date-time'
+            },
+            updated_at: {
+              type: 'string',
+              format: 'date-time'
+            }
+          }
         }
       }
     },
@@ -283,6 +362,14 @@ const options = {
       {
         name: 'Restaurant',
         description: 'Restaurant profile endpoints'
+      },
+      {
+        name: 'Reviews',
+        description: 'Review endpoints for customers'
+      },
+      {
+        name: 'Admin Reviews',
+        description: 'Review moderation endpoints for admin'
       }
     ]
   },
