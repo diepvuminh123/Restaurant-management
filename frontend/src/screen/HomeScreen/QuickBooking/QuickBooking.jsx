@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
 import RestaurantInformation from '../../../component/RestaurantInformation/RestaurantInfromation';
 import HomeReservationImage from '../../../picture/HomeReservation.jpg';
+import Restaurant1 from '../../../picture/Restaurant1.jpg';
+import Restaurant2 from '../../../picture/Restaurant2.jpg';
+import Restaurant3 from '../../../picture/Restaurant3.jpg';
+import ApiService from '../../../services/apiService';
 import './QuickBooking.css';
 import { CiCalendar, CiStar } from 'react-icons/ci';
 import { FiPlus, FiShoppingBag } from 'react-icons/fi';
@@ -13,77 +17,93 @@ import { useTranslation } from 'react-i18next';
 const QuickBooking = ({ user }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    
+    const [activeTab, setActiveTab] = useState('new');
+    const [featuredDishes, setFeaturedDishes] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const featuredDishes = [
-        {
-            name: 'Phở Bò Đặc Biệt',
-            desc: 'Phở bò truyền thống với nước dùng ninh từ xương bò 24 giờ',
-            price: '85.000đ',
-            rating: 4.9,
-            popular: true,
-            image: HomeReservationImage,
-        },
-        {
-            name: 'Gỏi Cuốn Tôm Thịt',
-            desc: 'Gỏi cuốn tươi ngon với tôm, thịt heo và rau sống',
-            price: '45.000đ',
-            rating: 4.7,
-            popular: false,
-            image: HomeReservationImage,
-        },
-        {
-            name: 'Bún Chả Hà Nội',
-            desc: 'Thịt nướng thơm phức, bún tươi và nước chấm đậm đà',
-            price: '75.000đ',
-            rating: 4.8,
-            popular: true,
-            image: HomeReservationImage,
-        },
-    ];
+    // Fetch menu items dựa trên tab được chọn
+    useEffect(() => {
+        fetchFeaturedDishes();
+    }, [activeTab]);
+
+    const fetchFeaturedDishes = async () => {
+        try {
+            setLoading(true);
+            let filters = { limit: 100 }; // Lấy nhiều items hơn
+
+            // Lọc theo tab
+            if (activeTab === 'new') {
+                filters.is_new = true;
+            } else if (activeTab === 'popular') {
+                filters.is_popular = true;
+            } else if (activeTab === 'rating') {
+                // Sắp xếp theo rating cao nhất (backend sẽ xử lý)
+                filters.sort_by = 'rating_avg';
+                filters.sort_order = 'DESC';
+            }
+
+            const response = await ApiService.getMenuItems(filters);
+            if (response.success && response.items) {
+                // Nếu tab là rating, lọc chỉ những món từ 4.5 sao trở lên
+                let items = response.items;
+                if (activeTab === 'rating') {
+                    items = items.filter(item => item.rating_avg >= 4.5);
+                }
+                setFeaturedDishes(items);
+            }
+        } catch (error) {
+            console.error('Error fetching featured dishes:', error);
+            // Fallback: hiển thị array rỗng hoặc data mẫu
+            setFeaturedDishes([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const testimonials = [
         {
             name: 'Diep Vu Minh',
-            role: 'Food lover',
+            role: 'Yêu thích ẩm thực',
             stars: 5,
-            text: 'Food came out quickly, plating was elegant, and flavors were balanced. Great dinner atmosphere.',
+            text: 'Món ăn nhanh chóng được phục vụ, trình bày sang trọng và hương vị cân bằng. Bầu không khí bữa tối tuyệt vời.',
         },
         {
             name: 'Nguyen Le Minh Han',
-            role: 'Family guest',
+            role: 'Khách hàng gia đình',
             stars: 5,
-            text: 'The staff supported us very well and arranged our table fast. My family was very satisfied.',
+            text: 'Nhân viên phục vụ rất tuyệt vời và sắp xếp bàn cho chúng tôi nhanh chóng. Gia đình tôi rất hài lòng.',
         },
         {
             name: 'Ngo Quang Danh',
-            role: 'Corporate guest',
+            role: 'Khách hàng công ty',
             stars: 4,
-            text: 'Good place for team gatherings with comfortable sound levels and very good grilled dishes.',
+            text: 'Nơi tốt để họp nhóm với mức âm thanh thoải mái và các món nướng rất ngon.',
         },
     ];
 
     const perks = [
-        { icon: <FiGift />, title: 'Weekend Offer', desc: 'Save 20% for groups from 6 guests and above.' },
-        { icon: <FiClock />, title: 'Happy Hour', desc: 'Special combo menu from 14:00 to 17:00 every day.' },
-        { icon: <FiCalendar />, title: 'Private Space', desc: 'Private room for 8-12 guests with custom set menu.' },
+        { icon: <FiGift />, title: 'Ưu đãi cuối tuần', desc: 'Tiết kiệm 20% cho nhóm từ 6 khách trở lên.' },
+        { icon: <FiClock />, title: 'Giờ vàng', desc: 'Thực đơn combo đặc biệt từ 14:00 đến 17:00 mỗi ngày.' },
+        { icon: <FiCalendar />, title: 'Không gian riêng tư', desc: 'Phòng riêng cho 8-12 khách với thực đơn tùy chỉnh.' },
     ];
 
     const faqs = [
         {
-            question: 'How can I book a table?',
-            answer: 'You can fill in the quick reservation form at the top of this page or call our hotline directly.',
+            question: 'Tôi có thể đặt bàn như thế nào?',
+            answer: 'Bạn có thể điền vào biểu mẫu đặt bàn nhanh ở đầu trang này hoặc gọi trực tiếp đến hotline của chúng tôi.',
         },
         {
-            question: 'Do you support group bookings?',
-            answer: 'Yes. We recommend booking 1-2 days in advance so we can prepare space and menu options.',
+            question: 'Bạn có hỗ trợ đặt bàn nhóm không?',
+            answer: 'Có. Chúng tôi khuyên bạn đặt bàn trước 1-2 ngày để chúng tôi có thể chuẩn bị không gian và các tùy chọn thực đơn.',
         },
         {
-            question: 'Is parking available?',
-            answer: 'Yes. Motorbike and car parking are both available near the main entrance.',
+            question: 'Có chỗ đỗ xe không?',
+            answer: 'Có. Cả chỗ đỗ xe máy và ô tô đều có sẵn gần lối vào chính.',
         },
         {
-            question: 'What are your opening hours?',
-            answer: 'We are open from 11:00 to 22:00 daily, and until 22:30 on weekends.',
+            question: 'Giờ mở cửa của bạn là bao nhiêu?',
+            answer: 'Chúng tôi mở cửa từ 11:00 đến 22:00 hàng ngày, và đến 22:30 vào cuối tuần.',
         },
     ];
 
@@ -138,46 +158,83 @@ const QuickBooking = ({ user }) => {
                     <p className="home-featured-menu__subtitle">Khám phá các món ăn đặc sắc được chế biến từ nguyên liệu tươi ngon hằng ngày</p>
                 </div>
                 <div className="home-featured-menu__tabs" role="tablist" aria-label="Danh mục món ăn">
-                    <button className="home-featured-menu__tab home-featured-menu__tab--active" type="button">Món nổi bật</button>
-                    <button className="home-featured-menu__tab" type="button">Theo mùa</button>
-                    <button className="home-featured-menu__tab" type="button">Gợi ý cho bạn</button>
+                    <button 
+                        className={`home-featured-menu__tab ${activeTab === 'new' ? 'home-featured-menu__tab--active' : ''}`} 
+                        type="button"
+                        onClick={() => setActiveTab('new')}
+                    >
+                        Món mới
+                    </button>
+                    <button 
+                        className={`home-featured-menu__tab ${activeTab === 'popular' ? 'home-featured-menu__tab--active' : ''}`} 
+                        type="button"
+                        onClick={() => setActiveTab('popular')}
+                    >
+                        Món phổ biến
+                    </button>
+                    <button 
+                        className={`home-featured-menu__tab ${activeTab === 'rating' ? 'home-featured-menu__tab--active' : ''}`} 
+                        type="button"
+                        onClick={() => setActiveTab('rating')}
+                    >
+                        Món đánh giá cao
+                    </button>
                 </div>
 
                 <div className="featured-grid">
-                    {featuredDishes.map((dish) => (
-                        <article className="featured-dish-card" key={dish.name}>
-                            <div className="featured-dish-card__media">
-                                <img src={dish.image} alt={dish.name} className="dish-thumb" />
-                                {dish.popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
-                            </div>
-
-                            <div className="featured-dish-card__content">
-                                <div className="featured-dish-card__headline">
-                                    <h3>{dish.name}</h3>
-                                    <span className="featured-dish-card__rating"><CiStar /> {dish.rating}</span>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                            <p>Đang tải...</p>
+                        </div>
+                    ) : featuredDishes.length > 0 ? (
+                        featuredDishes.map((dish) => (
+                            <article className="featured-dish-card" key={dish.id || dish.name}>
+                                <div className="featured-dish-card__media">
+                                    <img 
+                                        src={dish.images && Array.isArray(dish.images) && dish.images.length > 0 ? dish.images[0] : HomeReservationImage} 
+                                        alt={dish.name} 
+                                        className="dish-thumb" 
+                                    />
+                                    {dish.is_new ? <span className="featured-dish-card__tag">Mới</span> : null}
+                                    {dish.is_popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
                                 </div>
 
-                                <p>{dish.desc}</p>
-                                <div className="dish-price">{dish.price}</div>
+                                <div className="featured-dish-card__content">
+                                    <div className="featured-dish-card__headline">
+                                        <h3>{dish.name}</h3>
+                                        <span className="featured-dish-card__rating">
+                                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : 'Chưa đánh giá'}
+                                        </span>
+                                    </div>
 
-                                <div className="featured-dish-card__actions">
-                                    <button className="featured-dish-card__btn featured-dish-card__btn--ghost" type="button">
-                                        <FiPlus /> Thêm
-                                    </button>
-                                    <button className="featured-dish-card__btn featured-dish-card__btn--primary" type="button" onClick={() => navigate('/menu')}>
-                                        <FiShoppingBag /> Đặt mang về
-                                    </button>
+                                    <p>{dish.description_short || dish.description || dish.desc}</p>
+                                    <div className="dish-price">{(dish.effective_price || dish.price || 0).toLocaleString()}đ</div>
+
+                                    <div className="featured-dish-card__actions">
+                                        <button 
+                                            className="featured-dish-card__btn featured-dish-card__btn--primary" 
+                                            type="button" 
+                                            onClick={() => navigate('/menu')}
+                                            style={{ width: '100%' }}
+                                        >
+                                            <FiShoppingBag /> Xem thực đơn
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </article>
-                    ))}
+                            </article>
+                        ))
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                            <p>Không có món ăn trong danh mục này</p>
+                        </div>
+                    )}
                 </div>
             </section>
 
             <section className="home-section home-testimonials">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Rated 4.8 out of 5</p>
-                    <h2>Guest Reviews</h2>
+                    <p className="section-subtitle">Đánh giá 4.8 trên 5</p>
+                    <h2>Đánh giá của khách hàng</h2>
                 </div>
                 <div className="testimonial-grid">
                     {testimonials.map((item) => (
@@ -195,26 +252,25 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-why-us">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Service Quality</p>
-                    <h2>What We Always Deliver</h2>
+                    <p className="section-subtitle">Chất lượng dịch vụ</p>
+                    <h2>Những gì chúng tôi luôn mang lại</h2>
                 </div>
                 <div className="why-grid">
-                    <div className="why-item"><FiCheckCircle /> Fresh ingredients prepared daily</div>
-                    <div className="why-item"><FiCheckCircle /> Vietnamese flavors with modern touch</div>
-                    <div className="why-item"><FiCheckCircle /> Warm ambience with refined design</div>
-                    <div className="why-item"><FiCheckCircle /> Fast and professional service</div>
+                    <div className="why-item"><FiCheckCircle /> Nguyên liệu tươi chuẩn bị hàng ngày</div>
+                    <div className="why-item"><FiCheckCircle /> Hương vị Việt Nam với nét hiện đại</div>
+                    <div className="why-item"><FiCheckCircle /> Không gian ấm áp với thiết kế tinh tế</div>
+                    <div className="why-item"><FiCheckCircle /> Dịch vụ nhanh chóng và chuyên nghiệp</div>
                 </div>
             </section>
 
             <section className="home-section home-gallery">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Restaurant Space</p>
-                    <h2>Photo Gallery</h2>
+                    <p className="section-subtitle">Không gian nhà hàng</p>
                 </div>
                 <div className="gallery-grid">
-                    <img src="/HomeReservation.jpg" alt="Dining area" />
-                    <img src="/HomeReservation.jpg" alt="Open kitchen" />
-                    <img src="/HomeReservation.jpg" alt="Signature dish" />
+                    <img src={Restaurant1} alt="Khu vực ăn uống" />
+                    <img src={Restaurant2} alt="Bếp mở" />
+                    <img src={Restaurant3} alt="Không gian đặc biệt" />
                 </div>
             </section>
 
@@ -225,7 +281,7 @@ const QuickBooking = ({ user }) => {
                             <div className="perk-icon">{perk.icon}</div>
                             <h3>{perk.title}</h3>
                             <p>{perk.desc}</p>
-                            <button className="mini-btn" onClick={() => navigate('/menu')}>See details</button>
+                            <button className="mini-btn" onClick={() => navigate('/menu')}>Xem chi tiết</button>
                         </article>
                     ))}
                 </div>
@@ -233,19 +289,19 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-contact-map">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Contact and Map</p>
-                    <h2>Visit Us Today</h2>
+                    <p className="section-subtitle">Liên hệ và bản đồ</p>
+                    <h2>Hãy ghé thăm chúng tôi hôm nay</h2>
                 </div>
                 <div className="contact-map-grid">
                     <div className="map-card">
                         <div className="map-pin"><FiMapPin /></div>
                         <h3>Google Maps</h3>
-                        <p>Find the nearest branch in one tap and get directions instantly.</p>
-                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">Get directions</a>
+                        <p>Tìm chi nhánh gần nhất chỉ trong một lần nhấp và nhận chỉ dẫn ngay lập tức.</p>
+                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">Nhận chỉ dẫn</a>
                     </div>
                     <div className="contact-card">
-                        <h3>Contact Info</h3>
-                        <p><FiMapPin /> 123 Nguyen Hue, Ben Nghe Ward, District 1</p>
+                        <h3>Thông tin liên hệ</h3>
+                        <p><FiMapPin /> 123 Nguyễn Huệ, Phường Bến Nghé, Quận 1</p>
                         <p><FiPhone /> (+84) 90 123 4567</p>
                         <p><FiMail /> info@minhquoa.vn</p>
                     </div>
@@ -254,8 +310,8 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-faq">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Frequently Asked Questions</p>
-                    <h2>Quick Answers</h2>
+                    <p className="section-subtitle">Câu hỏi thường gặp</p>
+                    <h2>Câu trả lời nhanh</h2>
                 </div>
                 <div className="faq-list">
                     {faqs.map((faq) => (

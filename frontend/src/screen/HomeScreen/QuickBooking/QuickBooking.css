@@ -244,7 +244,8 @@
 }
 
 .home-featured-menu .dish-thumb {
-    height: 320px;
+    height: 240px;
+    object-fit: cover;
 }
 
 .featured-dish-card__tag {
@@ -274,7 +275,7 @@
 .featured-dish-card__headline h3 {
     margin: 0;
     color: #2f3135;
-    font-size: 1.95rem;
+    font-size: 1.6rem;
     font-weight: 700;
 }
 
@@ -305,21 +306,22 @@
 
 .featured-dish-card__actions {
     margin-top: 16px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: center;
     gap: 10px;
 }
 
 .featured-dish-card__btn {
     height: 44px;
     border-radius: 10px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     font-size: 0.98rem;
     font-weight: 600;
     cursor: pointer;
+    flex: 1;
 }
 
 .featured-dish-card__btn--ghost {
@@ -341,6 +343,42 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
+}
+
+/* Horizontal scroll cho featured-grid */
+.home-featured-menu .featured-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 22px;
+    padding-bottom: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.home-featured-menu .featured-grid > * {
+    flex: 0 0 calc(25% - 17px);
+    min-width: 250px;
+}
+
+/* Custom scrollbar */
+.home-featured-menu .featured-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.home-featured-menu .featured-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.home-featured-menu .featured-grid::-webkit-scrollbar-thumb {
+    background: #d06f35;
+    border-radius: 10px;
+}
+
+.home-featured-menu .featured-grid::-webkit-scrollbar-thumb:hover {
+    background: #b85a28;
 }
 
 .dish-card,
