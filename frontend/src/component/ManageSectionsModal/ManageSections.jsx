@@ -5,7 +5,7 @@ import ConfirmDialog from "../ConfirmDialog/ConfirmDialog";
 import { useConfirm } from "../../hooks/useConfirm";
 import { useToastContext } from "../../context/ToastContext";
 
-export default function MenuManagementSection({ onClose }) {
+export default function MenuManagementSection({ onClose, onSectionsUpdated }) {
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -40,6 +40,7 @@ export default function MenuManagementSection({ onClose }) {
       if (res?.data?.length > 0) {
         const firstID = res.data[0].id;
         setSelectedSectionId(firstID);
+        setNewCategorySectionId(firstID);
         loadCategories(firstID);
       }
     } catch (err) {
@@ -82,6 +83,10 @@ export default function MenuManagementSection({ onClose }) {
       setNewSectionName("");
       toast.success("Thêm section thành công!");
       loadSections(); // reload lại list
+      // Thông báo component cha cập nhật dữ liệu
+      if (onSectionsUpdated) {
+        onSectionsUpdated();
+      }
     } catch (err) {
       console.log(err);
       toast.error("Tạo section thất bại: " + (err.message || "Lỗi không xác định"));
@@ -108,6 +113,10 @@ export default function MenuManagementSection({ onClose }) {
       await ApiService.deleteMenuSections(id); // method POST
       toast.success("Xóa section thành công!");
       loadSections();
+      // Thông báo component cha cập nhật dữ liệu
+      if (onSectionsUpdated) {
+        onSectionsUpdated();
+      }
     } catch (err) {
       console.error(err);
       toast.error("Xóa section thất bại: " + (err.message || "Lỗi không xác định"));
@@ -131,6 +140,10 @@ export default function MenuManagementSection({ onClose }) {
       setNewCategoryName("");
       toast.success("Thêm category thành công!");
       loadCategories(selectedSectionId);
+      // Thông báo component cha cập nhật dữ liệu
+      if (onSectionsUpdated) {
+        onSectionsUpdated();
+      }
     } catch (err) {
       console.error(err);
       toast.error("Tạo category thất bại: " + (err.message || "Lỗi không xác định"));
@@ -157,6 +170,10 @@ export default function MenuManagementSection({ onClose }) {
       await ApiService.deleteMenuCategory(id);
       toast.success("Xóa category thành công!");
       loadCategories(selectedSectionId);
+      // Thông báo component cha cập nhật dữ liệu
+      if (onSectionsUpdated) {
+        onSectionsUpdated();
+      }
     } catch (err) {
       console.error(err);
       toast.error("Xóa category thất bại: " + (err.message || "Lỗi không xác định"));
@@ -206,6 +223,10 @@ export default function MenuManagementSection({ onClose }) {
       setError("");
       toast.success("Cập nhật thứ tự thành công!");
       loadSections(); // Reload để đồng bộ với server
+      // Thông báo component cha cập nhật dữ liệu
+      if (onSectionsUpdated) {
+        onSectionsUpdated();
+      }
     } catch (err) {
       console.error(err);
       toast.error("Cập nhật thứ tự thất bại: " + (err.message || "Lỗi không xác định"));
@@ -231,7 +252,7 @@ export default function MenuManagementSection({ onClose }) {
 
         {/* Modal Body */}
         <div className="manage-sections-body">
-          {error && <div className="err-box">{error}</div>}
+          
           {loading && <div className="loading">Đang xử lý...</div>}
 
           <div className="columns">

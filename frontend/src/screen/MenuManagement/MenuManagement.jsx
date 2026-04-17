@@ -29,20 +29,19 @@ const MenuManagement = ({ user }) => {
   const isEmployee = user.role === "employee";
   const isAdmin = user.role === "admin";
 
-  useEffect(() => {
-    const fetchMeta = async () => {
-      //  Lấy sections
-      try {
-        const secRes = await ApiService.getMenuSections();
-        if (secRes.success) {
-          setSections(secRes.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching sections:", error);
+  const fetchMeta = async () => {
+    //  Lấy sections
+    try {
+      const secRes = await ApiService.getMenuSections();
+      if (secRes.success) {
+        setSections(secRes.data || []);
       }
-      
-    };
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchMeta();
   }, []);
 
@@ -78,6 +77,11 @@ const MenuManagement = ({ user }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSectionsUpdated = () => {
+    // Refresh sections and categories when they are updated in the modal
+    fetchMeta();
   };
 
   const filterItems = () => {
@@ -409,6 +413,7 @@ const MenuManagement = ({ user }) => {
       {showEditSectionModal && (
         <MenuManagementSection 
           onClose={() => setshowEditSectionModal(false)}
+          onSectionsUpdated={handleSectionsUpdated}
         />
       )}
 
