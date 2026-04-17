@@ -10,6 +10,8 @@ import {
   IoRestaurantOutline,
 } from 'react-icons/io5';
 import ApiService from '../../../../services/apiService';
+import ConfirmDialog from '../../../ConfirmDialog/ConfirmDialog';
+import { useConfirm } from '../../../../hooks/useConfirm';
 import './TakeawayOrderTracking.css';
 
 const STATUS_LABEL_MAP = {
@@ -88,9 +90,11 @@ const FILTER_OPTIONS = [
 ];
 
 const TakeawayOrderTracking = () => {
+  const { confirmState, showConfirm } = useConfirm();
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState('');
   const [actionText, setActionText] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [page, setPage] = useState(1);
   const [restaurantInfo, setRestaurantInfo] = useState(null);
@@ -184,7 +188,7 @@ const TakeawayOrderTracking = () => {
         const response = await ApiService.getRestaurantInfo();
         if (!alive) return;
         setRestaurantInfo(response?.data || null);
-      } catch (error) {
+      } catch {
         if (!alive) return;
         setRestaurantInfo(null);
       }
@@ -212,7 +216,21 @@ const TakeawayOrderTracking = () => {
   const handleCancelOrder = async () => {
     if (!selectedOrder) return;
 
+    const orderLabel = selectedOrder.order_code || `#${selectedOrder.id}`;
+
+    const accepted = await showConfirm({
+      title: 'Xác nhận hủy đơn',
+      message: `Bạn có chắc muốn hủy đơn ${orderLabel} không?`,
+      confirmText: 'Xác nhận hủy',
+      cancelText: 'Giữ đơn',
+      type: 'danger',
+    });
+
+    if (!accepted) return;
+
     try {
+      setIsCancelling(true);
+      setActionText('');
       const response = await ApiService.cancelMyTakeawayOrder(selectedOrder.id, 'Khách hủy từ trang cá nhân');
       const updatedOrder = response?.data;
 
@@ -223,11 +241,15 @@ const TakeawayOrderTracking = () => {
       setActionText('Đơn hàng đã được hủy thành công.');
     } catch (error) {
       setActionText(error.message || 'Hiện chưa thể hủy đơn trực tiếp từ trang cá nhân. Vui lòng liên hệ nhà hàng để được hỗ trợ.');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
   return (
     <div className="takeaway-tracking">
+      <ConfirmDialog {...confirmState} />
+
       <div className="takeaway-tracking__hero">
         <h2>Theo dõi đơn mang về</h2>
         <p>Chi tiết tiến độ, trạng thái cọc và thời gian nhận món của các đơn bạn đã đặt.</p>
@@ -417,9 +439,11 @@ const TakeawayOrderTracking = () => {
                     type="button"
                     className="takeaway-danger-btn"
                     onClick={handleCancelOrder}
-                    disabled={selectedOrder.status === 'CANCELED' || selectedOrder.status === 'COMPLETED'}
+                    disabled={
+                      isCancelling || selectedOrder.status === 'CANCELED' || selectedOrder.status === 'COMPLETED'
+                    }
                   >
-                    Hủy đơn
+                    {isCancelling ? 'Đang hủy...' : 'Hủy đơn'}
                   </button>
                 </div>
 
