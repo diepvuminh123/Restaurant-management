@@ -222,6 +222,11 @@ const ReviewManagement = () => {
                   <td>
                     <div>{Number(item.report_count || 0)} report</div>
                     <div className="review-admin__muted">{Array.isArray(item.reasons) ? item.reasons.join(', ') : '--'}</div>
+                    <div className="review-admin__report-notes">
+                      {Array.isArray(item.report_notes) && item.report_notes.length > 0
+                        ? item.report_notes.join(' | ')
+                        : 'Không có mô tả thêm'}
+                    </div>
                   </td>
                   <td>
                     <span className={`review-admin__status ${item.is_hidden ? 'review-admin__status--hidden' : 'review-admin__status--visible'}`}>

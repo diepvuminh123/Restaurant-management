@@ -269,7 +269,8 @@ class Review {
          mi.name AS menu_item_name,
          report_stats.report_count,
          report_stats.latest_report_at,
-         report_stats.reasons
+         report_stats.reasons,
+         report_stats.notes
        FROM reviews r
        INNER JOIN users u ON u.user_id = r.user_id
        INNER JOIN menu_items mi ON mi.id = r.menu_item_id
@@ -277,7 +278,8 @@ class Review {
          SELECT
            COUNT(*)::int AS report_count,
            MAX(rr.created_at) AS latest_report_at,
-           ARRAY_REMOVE(ARRAY_AGG(DISTINCT rr.reason), NULL) AS reasons
+           ARRAY_REMOVE(ARRAY_AGG(DISTINCT rr.reason), NULL) AS reasons,
+           ARRAY_REMOVE(ARRAY_AGG(DISTINCT NULLIF(BTRIM(rr.note), '')), NULL) AS notes
          FROM review_reports rr
          WHERE rr.review_id = r.id
        ) report_stats ON TRUE

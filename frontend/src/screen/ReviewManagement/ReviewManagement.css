@@ -147,6 +147,14 @@
   font-size: 12px;
 }
 
+.review-admin__report-notes {
+  margin-top: 6px;
+  color: #5b544b;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
 .review-admin__state {
   padding: 14px;
   color: #6c665f;

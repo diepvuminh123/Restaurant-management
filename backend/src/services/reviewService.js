@@ -26,6 +26,7 @@ class ReviewService {
       report_count: review.report_count !== undefined ? Number(review.report_count) : undefined,
       latest_report_at: review.latest_report_at,
       reasons: review.reasons || undefined,
+      report_notes: review.notes || undefined,
     };
   }
 
