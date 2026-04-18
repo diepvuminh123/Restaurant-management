@@ -1,6 +1,63 @@
 const Reservation = require('../models/Reservation');
+const User = require('../models/User');
+
+const extractTaggedValue = (text, tag) => {
+  if (!text) return '';
+  const source = String(text);
+  const regex = new RegExp(String.raw`${tag}\s*:\s*([^|]+)`, 'i');
+  const match = regex.exec(source);
+  return match ? String(match[1]).trim() : '';
+};
+
+const parseReservationMetadata = (restaurantNote) => {
+  const source = String(restaurantNote || '');
+
+  return {
+    customerName: extractTaggedValue(source, 'KH'),
+    customerPhone: extractTaggedValue(source, 'SDT'),
+    customerEmail: extractTaggedValue(source, 'Email'),
+    customerNote: extractTaggedValue(source, 'Ghi chú'),
+  };
+};
+
+const buildRestaurantNote = ({ customerName, customerPhone, customerEmail, customerNote, existingRestaurantNote }) => {
+  const parts = [];
+
+  if (customerName) parts.push(`KH: ${customerName}`);
+  if (customerPhone) parts.push(`SDT: ${customerPhone}`);
+  if (customerEmail) parts.push(`Email: ${customerEmail}`);
+  if (customerNote) parts.push(`Ghi chú: ${customerNote}`);
+  if (existingRestaurantNote) parts.push(existingRestaurantNote);
+
+  return parts.join(' | ').slice(0, 255) || null;
+};
 
 class ReservationService {
+  static async normalizeReservationForStaff(reservation) {
+    if (!reservation) return null;
+
+    const parsed = parseReservationMetadata(reservation.restaurant_note);
+    let user = null;
+
+    if (reservation.user_id) {
+      user = await User.findById(reservation.user_id);
+    }
+
+    const noteValue = typeof reservation.note === 'string' ? reservation.note.trim() : '';
+    const fullName = typeof user?.full_name === 'string' ? user.full_name.trim() : '';
+    const username = typeof user?.username === 'string' ? user.username.trim() : '';
+    const phone = typeof user?.phone === 'string' ? user.phone.trim() : '';
+    const email = typeof user?.email === 'string' ? user.email.trim() : '';
+
+    return {
+      ...reservation,
+      customer_name: parsed.customerName || noteValue || fullName || username || null,
+      customer_phone: parsed.customerPhone || phone || null,
+      customer_email: parsed.customerEmail || email || null,
+      customer_note: parsed.customerNote || null,
+    };
+  }
+
   static resolveReservationOwner(userId, sessionId) {
     if (userId) {
       return { userId, sessionId: null };
@@ -24,7 +81,16 @@ class ReservationService {
   static async createReservation(userId, sessionId, payload) {
     const owner = this.resolveReservationOwner(userId, sessionId);
 
-    const { reservation_time, number_of_guests, table_id, note } = payload;
+    const {
+      reservation_time,
+      number_of_guests,
+      table_id,
+      note,
+      customer_name,
+      customer_phone,
+      customer_email,
+      restaurant_note,
+    } = payload;
     const reservationTime = reservation_time instanceof Date ? reservation_time : new Date(reservation_time);
 
     if (!table_id) {
@@ -43,12 +109,32 @@ class ReservationService {
       throw new Error(`Bàn không khả dụng: ${chosen.disabled_reason}`);
     }
 
+    let user = null;
+    if (owner.userId) {
+      user = await User.findById(owner.userId);
+    }
+
+    const normalizedCustomerName =
+      String(customer_name || '').trim()
+      || String(user?.full_name || '').trim()
+      || String(user?.username || '').trim()
+      || null;
+    const normalizedCustomerPhone = String(customer_phone || '').trim() || String(user?.phone || '').trim() || null;
+    const normalizedCustomerEmail = String(customer_email || '').trim() || String(user?.email || '').trim() || null;
+
     return await Reservation.create({
       owner,
       tableId: table_id,
       reservationTime,
       numberOfGuests: number_of_guests,
       note: note || null,
+      restaurantNote: buildRestaurantNote({
+        customerName: normalizedCustomerName,
+        customerPhone: normalizedCustomerPhone,
+        customerEmail: normalizedCustomerEmail,
+        customerNote: note,
+        existingRestaurantNote: restaurant_note,
+      }),
     });
   }
 
@@ -78,8 +164,9 @@ class ReservationService {
   }
   static async getReservationsForStaff({ limit = 50, offset = 0, state = null, from = null, to = null } = {}) {
     const data = await Reservation.listForStaff({ limit, offset, state, from, to });
+    const normalizedData = await Promise.all(data.map((reservation) => this.normalizeReservationForStaff(reservation)));
     return {
-      data,
+      data: normalizedData,
       meta: {
         limit,
         offset,
@@ -127,8 +214,13 @@ class ReservationService {
       sessionId: `staff:${staffUserId}:${Date.now()}`,
     };
 
-    const autoRestaurantNote = `KH: ${customer_name} | SDT: ${customer_phone}`;
-    const finalRestaurantNote = [autoRestaurantNote, restaurant_note].filter(Boolean).join(' | ').slice(0, 255);
+    const finalRestaurantNote = buildRestaurantNote({
+      customerName: customer_name,
+      customerPhone: customer_phone,
+      customerEmail: null,
+      customerNote: note,
+      existingRestaurantNote: restaurant_note,
+    });
 
     return await Reservation.create({
       owner,
@@ -147,11 +239,7 @@ class ReservationService {
     const reservation = await Reservation.getReservationDetailForStaff(reservationId);
     if (!reservation) return null;
 
-    // Frontend staff modal expects `customer_name`.
-    // In current schema, staff flow stores customer name in `note`.
-    const name = typeof reservation.note === 'string' ? reservation.note.trim() : '';
-    reservation.customer_name = name || null;
-    return reservation;
+    return await this.normalizeReservationForStaff(reservation);
   }
 }
 

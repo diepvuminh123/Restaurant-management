@@ -43,11 +43,13 @@ const extractTagValue = (text, tag) => {
 
 const parseRestaurantNote = (restaurantNote) => {
   const note = String(restaurantNote || '');
+  const customerName = extractTagValue(note, 'KH');
   const phone = extractTagValue(note, 'SDT');
   const email = extractTagValue(note, 'Email');
   const customerNote = extractTagValue(note, 'Ghi chú');
 
   return {
+    customerName,
     phone,
     email,
     customerNote,
@@ -140,17 +142,17 @@ const ReservationDetailModal = ({
           <>
             <div className="reservation-detail__field">
               <div className="reservation-detail__label">Tên khách hàng</div>
-              <input className="reservation-detail__input" value={detail?.customer_name || '--'} readOnly />
+              <input className="reservation-detail__input" value={detail?.customer_name || parsed.customerName || '--'} readOnly />
             </div>
 
             <div className="reservation-detail__field">
               <div className="reservation-detail__label">Số điện thoại</div>
-              <input className="reservation-detail__input" value={parsed.phone || '--'} readOnly />
+              <input className="reservation-detail__input" value={detail?.customer_phone || parsed.phone || '--'} readOnly />
             </div>
 
             <div className="reservation-detail__field">
               <div className="reservation-detail__label">Email</div>
-              <input className="reservation-detail__input" value={parsed.email || '--'} readOnly />
+              <input className="reservation-detail__input" value={detail?.customer_email || parsed.email || '--'} readOnly />
             </div>
 
             <div className="reservation-detail__field">
@@ -180,7 +182,7 @@ const ReservationDetailModal = ({
               <div className="reservation-detail__label">Ghi chú</div>
               <textarea
                 className="reservation-detail__textarea"
-                value={parsed.customerNote || '--'}
+                value={detail?.customer_note || parsed.customerNote || '--'}
                 readOnly
                 rows={3}
               />

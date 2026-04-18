@@ -185,7 +185,9 @@ const BookingsManagement = () => {
       if (state === 'CANCELED') status = 'CANCELED';
 
       const tableText = reservation?.table_id ? `Bàn ${reservation.table_id}` : `#${reservation?.reservation_id ?? '--'}`;
-      const name = (reservation?.note && String(reservation.note).trim()) || tableText;
+      const name = (reservation?.customer_name && String(reservation.customer_name).trim())
+        || (reservation?.note && String(reservation.note).trim())
+        || tableText;
       const people = Number(reservation?.number_of_guests) || 0;
 
       items.push({
@@ -414,17 +416,17 @@ const BookingsManagement = () => {
               return (
                 <div key={`${rowIndex}:${slot.id}`} className="bookings-grid__cell">
                   {booking ? (
-          <button
-            type="button"
-            className={getBookingClassName(booking.status)}
-            onClick={() => openDetail(booking.reservationId)}
-            aria-label={`Xem chi tiết đặt bàn ${booking.name}`}
-          >
+                    <button
+                      type="button"
+                      className={getBookingClassName(booking.status)}
+                      onClick={() => openDetail(booking.reservationId)}
+                      aria-label={`Xem chi tiết đặt bàn ${booking.name}`}
+                    >
                       <div className="booking-item__name" title={booking.name}>
                         {booking.name}
                       </div>
                       <div className="booking-item__meta">People: {booking.people}</div>
-          </button>
+                    </button>
                   ) : null}
                 </div>
               );

@@ -40,6 +40,7 @@ const createReservationBodySchema = Joi.object({
 	}),
 	customer_name: Joi.string().trim().max(100).allow('', null).optional(),
 	customer_phone: Joi.string().trim().max(20).allow('', null).optional(),
+	customer_email: Joi.string().trim().max(100).email().allow('', null).optional(),
 });
 
 const getReservationsForStaffQuerySchema = Joi.object({

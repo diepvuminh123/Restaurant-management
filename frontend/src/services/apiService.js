@@ -463,7 +463,7 @@ class ApiService {
   /**
    * Tạo reservation (guest hoặc user; backend tự lấy user/session từ cookie)
    */
-  static async createReservation({ reservation_time, number_of_guests, table_id, note }) {
+  static async createReservation({ reservation_time, number_of_guests, table_id, note, customer_name, customer_phone, customer_email }) {
     return this.request("/reservations", {
       method: "POST",
       body: {
@@ -471,6 +471,9 @@ class ApiService {
         number_of_guests,
         table_id,
         note,
+        customer_name,
+        customer_phone,
+        customer_email,
       },
     });
   }

@@ -59,6 +59,10 @@ const TableMapScreen = () => {
     numOfGuest,
     guests,
     numGuests,
+    customerName,
+    customerPhone,
+    customerEmail,
+    reservationNote,
   } = location.state || {};
 
   const guestCount = useMemo(() => {
@@ -134,6 +138,10 @@ const TableMapScreen = () => {
         reservation_time,
         number_of_guests: guestCount,
         table_id,
+        note: reservationNote,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        customer_email: customerEmail,
       });
 
       navigate('/reservation-success', {
