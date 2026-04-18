@@ -217,6 +217,87 @@ class ApiService {
     });
    }
 
+  // ============= REVIEW API =============
+
+  static async getPublicReviewsByMenuItem(menuItemId, filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/menus/${menuItemId}/reviews${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async createReview(payload) {
+    return this.request('/reviews', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async updateOwnReview(reviewId, payload) {
+    return this.request(`/reviews/${reviewId}`, {
+      method: 'PATCH',
+      body: payload,
+    });
+  }
+
+  static async deleteOwnReview(reviewId) {
+    return this.request(`/reviews/${reviewId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  static async reportReview(reviewId, payload) {
+    return this.request(`/reviews/${reviewId}/reports`, {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async getReportedReviews(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/admin/reviews/reported${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async getMenuItemReportSummary(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    return this.request(`/admin/reports/menu-items${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  static async updateReviewVisibility(reviewId, payload) {
+    return this.request(`/admin/reviews/${reviewId}/visibility`, {
+      method: 'PATCH',
+      body: payload,
+    });
+  }
+
   // ============= CART API =============
   
   /**

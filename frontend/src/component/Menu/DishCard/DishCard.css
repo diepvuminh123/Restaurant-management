@@ -110,11 +110,12 @@
 .dish-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
   margin-top: 12px;
 }
 
 .btn-outline {
-  flex: 1;
+  flex: 1 1 120px;
   border: 1.5px solid #e36a2d;
   background: white;
   color: #e36a2d;
@@ -139,7 +140,7 @@
 }
 
 .btn-solid {
-  flex: 1;
+  flex: 1 1 120px;
   border: none;
   background: #e36a2d;
   color: white;
@@ -159,4 +160,13 @@
   background: #ccc;
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.btn-review {
+  border-color: #d0cabf;
+  color: #5f584f;
+}
+
+.btn-review:hover {
+  background: #f7f4ef;
 }

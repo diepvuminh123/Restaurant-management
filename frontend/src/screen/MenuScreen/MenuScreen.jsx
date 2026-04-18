@@ -11,6 +11,7 @@ import DishCard from "../../component/Menu/DishCard/DishCard";
 import ApiService from "../../services/apiService";
 import Loading from "../../component/Loading/Loading";
 import CartPopUp from "../../component/Menu/CartPopUp/CartPopUp";
+import ReviewModal from "../../component/Menu/ReviewModal/ReviewModal";
 import { useCart } from "../../hooks/useCart";
 const PAGE_SIZE = 12;
 
@@ -37,6 +38,7 @@ export default function MenuScreen({ user }) {
   } = useCart();
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [reviewDish, setReviewDish] = useState(null);
 
   // State cho API data
   const [menuItems, setMenuItems] = useState([]);
@@ -225,6 +227,23 @@ export default function MenuScreen({ user }) {
     await updateQuantity(id, change);
   };
 
+  const handleOpenReviews = (dish) => {
+    setReviewDish(dish);
+  };
+
+  const handleCloseReviews = () => {
+    setReviewDish(null);
+  };
+
+  const handleRequestReviewLogin = () => {
+    setReviewDish(null);
+    navigate('/login', {
+      state: {
+        redirectTo: '/menu',
+      },
+    });
+  };
+
   // Xóa món khỏi giỏ hàng
   const handleRemoveItem = async (id) => {
     await removeFromCart(id);
@@ -258,6 +277,14 @@ export default function MenuScreen({ user }) {
           onClose={() => setIsCartOpen(false)}
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveItem={handleRemoveItem}
+          />
+        )}
+        {reviewDish && (
+          <ReviewModal
+            dish={reviewDish}
+            user={user}
+            onClose={handleCloseReviews}
+            onRequestLogin={handleRequestReviewLogin}
           />
         )}
         <main className="menu-main">
@@ -316,7 +343,13 @@ export default function MenuScreen({ user }) {
             <>
               <div className="dish-grid">
                 {menuItems.map((d) => (
-                  <DishCard key={d.id} dish={d} onAddOnly={handleAddOnly} onOpenCart={handleOpenCartModal} />
+                  <DishCard
+                    key={d.id}
+                    dish={d}
+                    onAddOnly={handleAddOnly}
+                    onOpenCart={handleOpenCartModal}
+                    onOpenReviews={handleOpenReviews}
+                  />
                 ))}
               </div>
 

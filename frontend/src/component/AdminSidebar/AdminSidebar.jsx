@@ -5,6 +5,7 @@ import { BsCalendar3 } from 'react-icons/bs';
 import { LuUtensilsCrossed } from 'react-icons/lu';
 import { IoBagHandleOutline, IoLogOutOutline } from 'react-icons/io5';
 import { HiOutlineUsers } from 'react-icons/hi2';
+import { MdOutlineRateReview } from 'react-icons/md';
 import './AdminSidebar.css';
 
 const AdminSidebar = ({ onLogout, userRole }) => {
@@ -33,6 +34,12 @@ const AdminSidebar = ({ onLogout, userRole }) => {
 
   // Chỉ admin mới thấy menu Quản lý người dùng
   if (userRole === 'admin') {
+    menuItems.push({
+      path: '/admin/reviews',
+      icon: <MdOutlineRateReview />,
+      label: 'Quản lý đánh giá',
+    });
+
     menuItems.push({
       path: '/admin/users',
       icon: <HiOutlineUsers />,

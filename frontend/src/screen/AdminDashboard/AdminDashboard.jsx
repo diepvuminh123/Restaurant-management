@@ -6,6 +6,7 @@ import MenuManagement from '../MenuManagement/MenuManagement';
 import TakeawayOrdersScreen from '../TakeawayOrdersScreen/TakeawayOrdersScreen';
 import BookingsManagement from '../BookingsManagement/BookingsManagement';
 import UserManagement from '../UserManagement/UserManagement';
+import ReviewManagement from '../ReviewManagement/ReviewManagement';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -29,6 +30,13 @@ const AdminDashboard = ({ user, onLogout }) => {
               <TakeawayOrdersScreen />
             } />
             <Route path="menu" element={<MenuManagement user={user} />} />
+            <Route path="reviews" element={
+              user.role === 'admin' ? (
+                <ReviewManagement />
+              ) : (
+                <Navigate to="/admin/dashboard" replace />
+              )
+            } />
             <Route path="users" element={
               (user.role === 'admin' || user.role === 'system_admin') ? (
                 <UserManagement currentUser={user} />
