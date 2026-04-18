@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
@@ -10,47 +10,38 @@ import Restaurant3 from '../../../picture/Restaurant3.jpg';
 import ApiService from '../../../services/apiService';
 import './QuickBooking.css';
 import { CiCalendar, CiStar } from 'react-icons/ci';
-import { FiPlus, FiShoppingBag } from 'react-icons/fi';
-import { FiGift, FiClock, FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
+import { FiShoppingBag, FiChevronLeft, FiChevronRight, FiGift, FiClock, FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 
 const QuickBooking = ({ user }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    
-    const [activeTab, setActiveTab] = useState('new');
+
     const [featuredDishes, setFeaturedDishes] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch menu items dựa trên tab được chọn
+    const PAGE_SIZE = 3;
+    const [pageIndex, setPageIndex] = useState(0);
+    const [slideDirection, setSlideDirection] = useState('next');
+    const touchStartXRef = useRef(null);
+
+    // Fetch menu items (sorted by rating)
     useEffect(() => {
         fetchFeaturedDishes();
-    }, [activeTab]);
+    }, []);
 
     const fetchFeaturedDishes = async () => {
         try {
             setLoading(true);
-            let filters = { limit: 100 }; // Lấy nhiều items hơn
-
-            // Lọc theo tab
-            if (activeTab === 'new') {
-                filters.is_new = true;
-            } else if (activeTab === 'popular') {
-                filters.is_popular = true;
-            } else if (activeTab === 'rating') {
-                // Sắp xếp theo rating cao nhất (backend sẽ xử lý)
-                filters.sort_by = 'rating_avg';
-                filters.sort_order = 'DESC';
-            }
+            const filters = {
+                limit: 100,
+                sort_by: 'rating_avg',
+                sort_order: 'DESC',
+            };
 
             const response = await ApiService.getMenuItems(filters);
             if (response.success && response.items) {
-                // Nếu tab là rating, lọc chỉ những món từ 4.5 sao trở lên
-                let items = response.items;
-                if (activeTab === 'rating') {
-                    items = items.filter(item => item.rating_avg >= 4.5);
-                }
-                setFeaturedDishes(items);
+                setFeaturedDishes(response.items);
             }
         } catch (error) {
             console.error('Error fetching featured dishes:', error);
@@ -60,6 +51,121 @@ const QuickBooking = ({ user }) => {
             setLoading(false);
         }
     };
+
+    const sortedFeaturedDishes = useMemo(() => {
+        const copy = Array.isArray(featuredDishes) ? [...featuredDishes] : [];
+        copy.sort((a, b) => {
+            const aRating = Number.isFinite(Number(a?.rating_avg)) ? Number(a.rating_avg) : -1;
+            const bRating = Number.isFinite(Number(b?.rating_avg)) ? Number(b.rating_avg) : -1;
+            return bRating - aRating;
+        });
+        return copy;
+    }, [featuredDishes]);
+
+    const totalPages = useMemo(() => {
+        const count = Math.ceil(sortedFeaturedDishes.length / PAGE_SIZE);
+        return Math.max(1, count);
+    }, [sortedFeaturedDishes.length]);
+
+    useEffect(() => {
+        setPageIndex((prev) => Math.min(Math.max(prev, 0), totalPages - 1));
+    }, [totalPages]);
+
+    const pagedDishes = useMemo(() => {
+        const start = pageIndex * PAGE_SIZE;
+        return sortedFeaturedDishes.slice(start, start + PAGE_SIZE);
+    }, [pageIndex, sortedFeaturedDishes]);
+
+    const changePage = (direction) => {
+        setPageIndex((prev) => {
+            const nextIndex = direction === 'prev'
+                ? Math.max(0, prev - 1)
+                : Math.min(totalPages - 1, prev + 1);
+
+            if (nextIndex !== prev) {
+                setSlideDirection(direction);
+            }
+
+            return nextIndex;
+        });
+    };
+
+    const goPrevPage = () => changePage('prev');
+    const goNextPage = () => changePage('next');
+
+    const onTouchStart = (e) => {
+        touchStartXRef.current = e.touches?.[0]?.clientX ?? null;
+    };
+
+    const onTouchEnd = (e) => {
+        const startX = touchStartXRef.current;
+        const endX = e.changedTouches?.[0]?.clientX ?? null;
+        touchStartXRef.current = null;
+
+        if (startX == null || endX == null) return;
+        const deltaX = endX - startX;
+        const threshold = 50;
+
+        if (deltaX <= -threshold) goNextPage();
+        if (deltaX >= threshold) goPrevPage();
+    };
+
+    let featuredMenuContent;
+
+    if (loading) {
+        featuredMenuContent = (
+            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                <p>Đang tải...</p>
+            </div>
+        );
+    } else if (featuredDishes.length > 0) {
+        featuredMenuContent = pagedDishes.map((dish, index) => (
+            <article
+                className="featured-dish-card"
+                key={dish.id || dish.name}
+                style={{ animationDelay: `${index * 70}ms` }}
+            >
+                <div className="featured-dish-card__media">
+                    <img
+                        src={dish.images && Array.isArray(dish.images) && dish.images.length > 0 ? dish.images[0] : HomeReservationImage}
+                        alt={dish.name}
+                        className="dish-thumb"
+                    />
+                    {dish.is_new ? <span className="featured-dish-card__tag">Mới</span> : null}
+                    {dish.is_popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
+                </div>
+
+                <div className="featured-dish-card__content">
+                    <div className="featured-dish-card__headline">
+                        <h3>{dish.name}</h3>
+                        <span className="featured-dish-card__rating">
+                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : 'Chưa đánh giá'}
+                        </span>
+                    </div>
+
+                    <p>{dish.description_short || dish.description || dish.desc}</p>
+                    <div className="dish-price">{(dish.effective_price || dish.price || 0).toLocaleString()}đ</div>
+
+                    <div className="featured-dish-card__actions">
+                        <button
+                            className="featured-dish-card__btn featured-dish-card__btn--primary"
+                            type="button"
+                            onClick={() => navigate('/menu')}
+                            style={{ width: '100%' }}
+                        >
+                            <FiShoppingBag /> Xem thực đơn
+                        </button>
+                    </div>
+                </div>
+            </article>
+        ));
+    } else {
+        featuredMenuContent = (
+            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                <p>Không có món ăn trong danh mục này</p>
+            </div>
+        );
+    }
 
     const testimonials = [
         {
@@ -157,78 +263,52 @@ const QuickBooking = ({ user }) => {
                     <h2>Thực đơn của chúng tôi</h2>
                     <p className="home-featured-menu__subtitle">Khám phá các món ăn đặc sắc được chế biến từ nguyên liệu tươi ngon hằng ngày</p>
                 </div>
-                <div className="home-featured-menu__tabs" role="tablist" aria-label="Danh mục món ăn">
-                    <button 
-                        className={`home-featured-menu__tab ${activeTab === 'new' ? 'home-featured-menu__tab--active' : ''}`} 
-                        type="button"
-                        onClick={() => setActiveTab('new')}
+
+                <div className="home-featured-menu__carousel">
+                    {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                        <button
+                            className="home-featured-menu__nav home-featured-menu__nav--prev"
+                            type="button"
+                            onClick={goPrevPage}
+                            disabled={pageIndex === 0}
+                            aria-label="Xem 3 món trước"
+                        >
+                            <FiChevronLeft />
+                        </button>
+                    ) : null}
+
+                    <div
+                        className={`featured-grid featured-grid--animated featured-grid--${slideDirection}`}
+                        onTouchStart={onTouchStart}
+                        onTouchEnd={onTouchEnd}
                     >
-                        Món mới
-                    </button>
-                    <button 
-                        className={`home-featured-menu__tab ${activeTab === 'popular' ? 'home-featured-menu__tab--active' : ''}`} 
-                        type="button"
-                        onClick={() => setActiveTab('popular')}
-                    >
-                        Món phổ biến
-                    </button>
-                    <button 
-                        className={`home-featured-menu__tab ${activeTab === 'rating' ? 'home-featured-menu__tab--active' : ''}`} 
-                        type="button"
-                        onClick={() => setActiveTab('rating')}
-                    >
-                        Món đánh giá cao
-                    </button>
+                        {featuredMenuContent}
+                    </div>
+
+                    {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                        <button
+                            className="home-featured-menu__nav home-featured-menu__nav--next"
+                            type="button"
+                            onClick={goNextPage}
+                            disabled={pageIndex >= totalPages - 1}
+                            aria-label="Xem 3 món tiếp theo"
+                        >
+                            <FiChevronRight />
+                        </button>
+                    ) : null}
                 </div>
 
-                <div className="featured-grid">
-                    {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                            <p>Đang tải...</p>
+                {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                    <div className="home-featured-menu__status" aria-label={`Trang ${pageIndex + 1} trên ${totalPages}`}>
+                        <div className="home-featured-menu__status-bar" aria-hidden="true">
+                            <span
+                                className="home-featured-menu__status-fill"
+                                style={{ width: `${((pageIndex + 1) / totalPages) * 100}%` }}
+                            />
                         </div>
-                    ) : featuredDishes.length > 0 ? (
-                        featuredDishes.map((dish) => (
-                            <article className="featured-dish-card" key={dish.id || dish.name}>
-                                <div className="featured-dish-card__media">
-                                    <img 
-                                        src={dish.images && Array.isArray(dish.images) && dish.images.length > 0 ? dish.images[0] : HomeReservationImage} 
-                                        alt={dish.name} 
-                                        className="dish-thumb" 
-                                    />
-                                    {dish.is_new ? <span className="featured-dish-card__tag">Mới</span> : null}
-                                    {dish.is_popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
-                                </div>
-
-                                <div className="featured-dish-card__content">
-                                    <div className="featured-dish-card__headline">
-                                        <h3>{dish.name}</h3>
-                                        <span className="featured-dish-card__rating">
-                                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : 'Chưa đánh giá'}
-                                        </span>
-                                    </div>
-
-                                    <p>{dish.description_short || dish.description || dish.desc}</p>
-                                    <div className="dish-price">{(dish.effective_price || dish.price || 0).toLocaleString()}đ</div>
-
-                                    <div className="featured-dish-card__actions">
-                                        <button 
-                                            className="featured-dish-card__btn featured-dish-card__btn--primary" 
-                                            type="button" 
-                                            onClick={() => navigate('/menu')}
-                                            style={{ width: '100%' }}
-                                        >
-                                            <FiShoppingBag /> Xem thực đơn
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-                        ))
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                            <p>Không có món ăn trong danh mục này</p>
-                        </div>
-                    )}
-                </div>
+                        <span className="home-featured-menu__status-text">{pageIndex + 1}/{totalPages}</span>
+                    </div>
+                ) : null}
             </section>
 
             <section className="home-section home-testimonials">
