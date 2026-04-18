@@ -6,6 +6,13 @@ import { useToastContext } from '../../../context/ToastContext';
 import './ReviewModal.css';
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
+const REPORT_REASONS = [
+  { value: 'spam', label: 'Spam' },
+  { value: 'offensive', label: 'Ngôn từ xúc phạm' },
+  { value: 'harassment', label: 'Quấy rối' },
+  { value: 'fake', label: 'Nội dung giả mạo' },
+  { value: 'irrelevant', label: 'Không liên quan món ăn' },
+];
 
 const formatRelativeTime = (value) => {
   if (!value) return 'Vừa xong';
@@ -35,6 +42,10 @@ const getReviewerName = (review) => {
   return review?.full_name || review?.username || `Khách #${review?.user_id || '?'}`;
 };
 
+const getCurrentUserId = (user) => {
+  return Number(user?.id || user?.userId || user?.user_id || 0);
+};
+
 export default function ReviewModal({ dish, user, onClose, onRequestLogin }) {
   const toast = useToastContext();
   const [loading, setLoading] = useState(false);
@@ -43,8 +54,13 @@ export default function ReviewModal({ dish, user, onClose, onRequestLogin }) {
   const [sort, setSort] = useState('newest');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [activeReportReviewId, setActiveReportReviewId] = useState(null);
+  const [reportReason, setReportReason] = useState('spam');
+  const [reportNote, setReportNote] = useState('');
+  const [reportingId, setReportingId] = useState(null);
 
   const canSubmit = Boolean(user);
+  const currentUserId = getCurrentUserId(user);
 
   const reviewStats = useMemo(() => {
     const total = reviews.length;
@@ -143,6 +159,45 @@ export default function ReviewModal({ dish, user, onClose, onRequestLogin }) {
     }
   };
 
+  const openReportForm = (reviewId) => {
+    setActiveReportReviewId(reviewId);
+    setReportReason('spam');
+    setReportNote('');
+  };
+
+  const closeReportForm = () => {
+    setActiveReportReviewId(null);
+    setReportReason('spam');
+    setReportNote('');
+  };
+
+  const handleSubmitReport = async (event) => {
+    event.preventDefault();
+
+    if (!user) {
+      toast.warning('Bạn cần đăng nhập để tố cáo đánh giá');
+      onRequestLogin();
+      return;
+    }
+
+    if (!activeReportReviewId) return;
+
+    setReportingId(activeReportReviewId);
+    try {
+      await ApiService.reportReview(activeReportReviewId, {
+        reason: reportReason,
+        note: reportNote,
+      });
+
+      toast.success('Tố cáo đã được gửi tới quản trị viên');
+      closeReportForm();
+    } catch (error) {
+      toast.error(error?.message || 'Không thể gửi tố cáo');
+    } finally {
+      setReportingId(null);
+    }
+  };
+
   const stopPropagation = (event) => event.stopPropagation();
 
   return (
@@ -234,6 +289,64 @@ export default function ReviewModal({ dish, user, onClose, onRequestLogin }) {
                     </div>
                   </div>
                   <p>{item.comment || 'Không có bình luận'}</p>
+
+                  <div className="review-modal__item-actions">
+                    {Number(item.user_id) !== currentUserId ? (
+                      <button
+                        type="button"
+                        className="review-modal__report-btn"
+                        onClick={() => {
+                          if (!user) {
+                            onRequestLogin();
+                            return;
+                          }
+                          openReportForm(item.id);
+                        }}
+                      >
+                        Tố cáo
+                      </button>
+                    ) : (
+                      <span className="review-modal__self-review-note">Đánh giá của bạn</span>
+                    )}
+                  </div>
+
+                  {activeReportReviewId === item.id ? (
+                    <form className="review-modal__report-form" onSubmit={handleSubmitReport}>
+                      <select
+                        value={reportReason}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        disabled={reportingId === item.id}
+                      >
+                        {REPORT_REASONS.map((reason) => (
+                          <option key={reason.value} value={reason.value}>
+                            {reason.label}
+                          </option>
+                        ))}
+                      </select>
+
+                      <textarea
+                        value={reportNote}
+                        onChange={(e) => setReportNote(e.target.value)}
+                        placeholder="Mô tả thêm (tùy chọn)"
+                        maxLength={500}
+                        disabled={reportingId === item.id}
+                      />
+
+                      <div className="review-modal__report-actions">
+                        <button
+                          type="button"
+                          className="review-modal__report-cancel"
+                          onClick={closeReportForm}
+                          disabled={reportingId === item.id}
+                        >
+                          Hủy
+                        </button>
+                        <button type="submit" disabled={reportingId === item.id}>
+                          {reportingId === item.id ? 'Đang gửi...' : 'Gửi tố cáo'}
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
                 </div>
               ))
             : null}

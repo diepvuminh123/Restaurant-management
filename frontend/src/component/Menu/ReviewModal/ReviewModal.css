@@ -220,6 +220,83 @@
   line-height: 1.45;
 }
 
+.review-modal__item-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.review-modal__report-btn {
+  border: 1px solid #e5cabc;
+  background: #fff7f2;
+  color: #b45426;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.review-modal__report-btn:hover {
+  background: #ffefe7;
+}
+
+.review-modal__self-review-note {
+  color: #8b857d;
+  font-size: 12px;
+}
+
+.review-modal__report-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed #eadccf;
+  padding-top: 8px;
+}
+
+.review-modal__report-form select,
+.review-modal__report-form textarea {
+  border: 1px solid #ded0c2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+  font: inherit;
+}
+
+.review-modal__report-form textarea {
+  min-height: 68px;
+  resize: vertical;
+}
+
+.review-modal__report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.review-modal__report-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.review-modal__report-actions button[type='submit'] {
+  background: #cd5f2a;
+  color: #fff;
+}
+
+.review-modal__report-cancel {
+  background: #ece6de;
+  color: #5c564e;
+}
+
+.review-modal__report-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .review-modal__form {
   border: 1px solid #e9dfd2;
   border-radius: 12px;
