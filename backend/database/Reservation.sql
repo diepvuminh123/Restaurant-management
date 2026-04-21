@@ -30,7 +30,6 @@ CREATE INDEX IF NOT EXISTS idx_reservation_state ON reservation(reservation_stat
 -- TH2: Bàn có Reservation time >= Now() (Nhưng cần hiển thị khoảng thời gian từ now -> reservation)
 
 CREATE OR REPLACE VIEW available_table_now AS
-
 WITH next_reservation AS (
   SELECT 
     table_id,
@@ -47,16 +46,12 @@ SELECT
   t.table_id,
   t.capacity,
   nr.next_reservation_time,
-
   EXTRACT(EPOCH FROM (
     nr.next_reservation_time - NOW()
   )) / 60 AS minutes_until_next -- Tính khoảng thời gian từ now -> nearest_reservation_time
-
 FROM restaurant_table t
-
 LEFT JOIN next_reservation nr
 ON t.table_id = nr.table_id
-
 WHERE t.table_status != 'OCCUPIED';
 
 

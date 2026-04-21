@@ -164,11 +164,24 @@
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background-color 0.25s ease;
 }
 
 .submit-button:hover {
     background-color: #C19478;
+}
+
+.submit-button--ready {
+    background-color: #c2410c;
+}
+
+.submit-button--ready:hover {
+    background-color: #9a3412;
+}
+
+.submit-button:disabled {
+    cursor: wait;
+    opacity: 0.8;
 }
 
 /* Footer */

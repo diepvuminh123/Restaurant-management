@@ -15,7 +15,7 @@ import {
     roundUpMinutesToInterval,
 } from '../../utils/timeSlots';
 
-const ReservationForm = ({ user }) => {
+const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false }) => {
     const navigate = useNavigate();
     const toast = useToastContext();
     const [date, setDate] = useState('');
@@ -35,6 +35,14 @@ const ReservationForm = ({ user }) => {
     const [showCustomerForm, setShowCustomerForm] = useState(false);
 
     const todayStr = new Date().toISOString().split('T')[0];
+    const isReservationReady = Boolean(date && time && guests);
+    const isGuestFormReady = Boolean(customerName.trim() && customerPhone.trim());
+
+    // Notify parent whenever form params change (for live table-map preview)
+    useEffect(() => {
+        onParamsChange?.({ date, time, guests });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [date, time, guests]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -92,13 +100,17 @@ const ReservationForm = ({ user }) => {
             return;
         }
 
-        navigate('/table-map', { 
-            state: { 
-                dayReservation: date, 
-                timeReservation: time, 
-                numOfGuess: guests 
-            } 
-        });
+        if (onContinue) {
+            onContinue({ date, time, guests });
+        } else {
+            navigate('/table-map', { 
+                state: { 
+                    dayReservation: date, 
+                    timeReservation: time, 
+                    numOfGuess: guests 
+                } 
+            });
+        }
     };
 
     const handleCustomerFormSubmit = (e) => {
@@ -109,15 +121,19 @@ const ReservationForm = ({ user }) => {
         }
 
         // Navigate tới table-map với state
-        navigate('/table-map', { 
-            state: { 
-                dayReservation: date, 
-                timeReservation: time, 
-                numOfGuess: guests,
-                customerName,
-                customerPhone,
-            } 
-        });
+        if (onContinue) {
+            onContinue({ date, time, guests, customerName, customerPhone });
+        } else {
+            navigate('/table-map', { 
+                state: { 
+                    dayReservation: date, 
+                    timeReservation: time, 
+                    numOfGuess: guests,
+                    customerName,
+                    customerPhone,
+                } 
+            });
+        }
     };
 
     // Nếu guest chưa nhập thông tin, show form
@@ -152,7 +168,13 @@ const ReservationForm = ({ user }) => {
                         />
                     </div>
 
-                    <button type="submit" className="submit-button">Tiếp tục</button>
+                    <button
+                        type="submit"
+                        className={`submit-button ${isGuestFormReady ? 'submit-button--ready' : ''}`}
+                        disabled={submitting}
+                    >
+                        {submitting ? 'Đang xử lý...' : 'Tiếp tục'}
+                    </button>
                 </form>
             </div>
         );
@@ -218,7 +240,13 @@ const ReservationForm = ({ user }) => {
                     </div>
                 </div>
 
-                <button type="submit" className="submit-button">Đặt bàn ngay</button>
+                <button
+                    type="submit"
+                    className={`submit-button ${isReservationReady ? 'submit-button--ready' : ''}`}
+                    disabled={submitting}
+                >
+                    {submitting ? 'Đang đặt bàn...' : 'Đặt bàn ngay'}
+                </button>
             </form>
 
             <div className="booking-footer">
@@ -241,4 +269,7 @@ export default ReservationForm;
 
 ReservationForm.propTypes = {
     user: PropTypes.object,
+    onParamsChange: PropTypes.func,
+    onContinue: PropTypes.func,
+    submitting: PropTypes.bool,
 };
