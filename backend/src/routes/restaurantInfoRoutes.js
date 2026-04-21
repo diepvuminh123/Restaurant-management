@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const RestaurantInfoController = require("../controllers/restaurantInfoController");
+const { requireRole } = require("../middlewares/auth");
 const validate = require("../middlewares/validate");
 const validateParams = require("../middlewares/validateParams");
 const restaurantInfoValidation = require("../validations/restaurantInfoValidation");
@@ -86,6 +87,7 @@ router.get("/restaurant-info", RestaurantInfoController.getRestaurantInfo);
  */
 router.post(
   "/restaurant-info",
+  requireRole("admin", "system_admin"),
   validate(restaurantInfoValidation.createRestaurantInfo),
   RestaurantInfoController.createRestaurantInfo
 );
@@ -138,6 +140,7 @@ router.post(
  */
 router.put(
   "/restaurant-info/:id",
+  requireRole("admin", "system_admin"),
   validateParams(restaurantInfoValidation.restaurantInfoIdParamSchema),
   validate(restaurantInfoValidation.updateRestaurantInfo),
   RestaurantInfoController.updateRestaurantInfo

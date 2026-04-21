@@ -6,6 +6,7 @@ import { LuUtensilsCrossed } from 'react-icons/lu';
 import { IoBagHandleOutline, IoLogOutOutline } from 'react-icons/io5';
 import { HiOutlineUsers } from 'react-icons/hi2';
 import { MdOutlineRateReview } from 'react-icons/md';
+import { RiStore2Line } from 'react-icons/ri';
 import './AdminSidebar.css';
 
 const AdminSidebar = ({ onLogout, userRole }) => {
@@ -38,6 +39,12 @@ const AdminSidebar = ({ onLogout, userRole }) => {
       path: '/admin/reviews',
       icon: <MdOutlineRateReview />,
       label: 'Quản lý đánh giá',
+    });
+
+    menuItems.push({
+      path: '/admin/restaurant-info',
+      icon: <RiStore2Line />,
+      label: 'Thông tin nhà hàng',
     });
 
     menuItems.push({

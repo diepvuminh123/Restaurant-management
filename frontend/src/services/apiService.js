@@ -571,6 +571,20 @@ class ApiService {
     });
   }
 
+  static async createRestaurantInfo(payload) {
+    return this.request('/restaurant-info', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async updateRestaurantInfo(id, payload) {
+    return this.request(`/restaurant-info/${id}`, {
+      method: 'PUT',
+      body: payload,
+    });
+  }
+
   static async cancelReservation(reservationId) {
     return this.request(`/reservations/history/${reservationId}/cancel`, {
       method: 'DELETE',

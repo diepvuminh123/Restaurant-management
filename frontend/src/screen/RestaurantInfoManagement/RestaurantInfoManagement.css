@@ -1,0 +1,118 @@
+.restaurant-info-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.restaurant-info-admin__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.restaurant-info-admin__header h1 {
+  margin: 0;
+  color: #2f2d2b;
+  font-size: 28px;
+}
+
+.restaurant-info-admin__header p {
+  margin: 6px 0 0;
+  color: #716b64;
+}
+
+.restaurant-info-admin__refresh {
+  border: 1px solid #decab8;
+  background: #fff;
+  color: #5e564d;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.restaurant-info-admin__refresh:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.restaurant-info-admin__form {
+  border: 1px solid #e8e3dc;
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.restaurant-info-admin__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.restaurant-info-admin__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #544e47;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.restaurant-info-admin__form input {
+  border: 1px solid #dfd5ca;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  color: #36322f;
+  background: #fff;
+}
+
+.restaurant-info-admin__form input:disabled {
+  background: #f4f2ef;
+}
+
+.restaurant-info-admin__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  color: #8f887e;
+  font-size: 13px;
+}
+
+.restaurant-info-admin__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.restaurant-info-admin__submit {
+  border: none;
+  border-radius: 8px;
+  background: #d97944;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.restaurant-info-admin__submit:disabled {
+  background: #c7c0b8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .restaurant-info-admin__header {
+    flex-direction: column;
+  }
+
+  .restaurant-info-admin__actions {
+    justify-content: stretch;
+  }
+
+  .restaurant-info-admin__submit {
+    width: 100%;
+  }
+}
