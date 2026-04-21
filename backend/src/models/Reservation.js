@@ -15,7 +15,7 @@ class Reservation {
         t.restaurant_note,
         CASE
           WHEN t.table_status = 'OCCUPIED' THEN 'OCCUPIED'
-          WHEN t.capacity < $2 THEN 'CAPACITY'
+          WHEN t.capacity < $2 OR t.capacity > $2 + 2 THEN 'CAPACITY'
           WHEN EXISTS (
             SELECT 1
             FROM reservation r
