@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { ICONS } from '../../constants/asset/icon';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './AdminHeader.css';
 
 const AdminHeader = ({ user, onLogout }) => {
   const navigate = useNavigate();
+  const { restaurantName, restaurantSlogan } = useRestaurantInfoContext();
 
   const handleLogout = async () => {
     await onLogout();
@@ -27,8 +29,8 @@ const AdminHeader = ({ user, onLogout }) => {
           <img src={ICONS.LOGO} alt="Logo" className="admin-header__logo-img" />
         </div>
         <div className="admin-header__brand">
-          <h1 className="admin-header__brand-name">Nhà Hàng</h1>
-          <p className="admin-header__brand-subtitle">Huân Minh Quanh</p>
+          <h1 className="admin-header__brand-name">{restaurantName}</h1>
+          <p className="admin-header__brand-subtitle">{restaurantSlogan}</p>
         </div>
       </div>
 

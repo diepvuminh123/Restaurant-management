@@ -1,12 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReservationForm from '../ReservationForm/ReservationForm'; 
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 
 import './HomeReservation.css';
 import { CiStar, CiCalendar} from 'react-icons/ci'; 
 
 
 const HomeReservation = ({ user }) => {
+    const { restaurantName, restaurantSlogan } = useRestaurantInfoContext();
+
     return (
         <div className="home-quick-booking-section">
             
@@ -22,12 +25,11 @@ const HomeReservation = ({ user }) => {
                     </div>
 
                     
-                    <h1 className="restaurant-title">Nhà Hàng Huân Minh Quanh</h1>
+                    <h1 className="restaurant-title">{restaurantName}</h1>
 
                   
                     <p className="restaurant-description">
-                        Trải nghiệm ẩm thực Việt Nam đích thực với không gian 
-                        sang trọng và dịch vụ tận tâm
+                        {restaurantSlogan}
                     </p>
 
                     <div className="action-buttons">

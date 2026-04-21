@@ -3,6 +3,7 @@ import { Facebook, Instagram, Youtube, Mail, Globe } from 'lucide-react';
 import { LuUtensilsCrossed, LuPhone } from "react-icons/lu";
 import './HomeScreenFooter.css';
 import { useTranslation } from 'react-i18next';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 
 const FooterColumn = ({ title, links }) => (
     <div className="footer-col">
@@ -20,6 +21,8 @@ const FooterColumn = ({ title, links }) => (
 
 const HomeScreenFooter = () => {
     const { t } = useTranslation();
+    const { restaurantName, restaurantSlogan } = useRestaurantInfoContext();
+    const currentYear = new Date().getFullYear();
     
     // Dữ liệu cho các cột Footer
     const services = [
@@ -55,8 +58,8 @@ const HomeScreenFooter = () => {
                             <LuUtensilsCrossed size={32} className="logo-icon" />
                         </div>
                         <div>
-                            <h2 className="restaurant-name">{t('home.restaurantName')}</h2>
-                            <p className="slogan">{t('home.restaurantSlogan')}</p>
+                            <h2 className="restaurant-name">{restaurantName || t('home.restaurantName')}</h2>
+                            <p className="slogan">{restaurantSlogan || t('home.restaurantSlogan')}</p>
                         </div>
                     </div>
                     
@@ -87,7 +90,7 @@ const HomeScreenFooter = () => {
             {/* Phần Copyright và Language Selector */}
             <div className="footer-bottom">
                 <p className="copyright-text">
-                    {t('footer.copyright')}
+                    {`© ${currentYear} ${restaurantName || t('home.restaurantName')}. All rights reserved.`}
                 </p>
             </div>
         </footer>

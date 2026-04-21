@@ -1,14 +1,24 @@
 import React from 'react';
 import { Clock, Phone, MapPin, Map } from 'lucide-react';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './RestaurantInformation.css'; // Import file CSS
 
 const RestaurantInformation = () => {
-    // Dữ liệu mock
-    const isOpen = true; 
-    const currentDay = "Thứ Bảy"; 
+    const {
+        isOpenNow,
+        openingTime,
+        closingTime,
+        contactPhone,
+        addressLine,
+    } = useRestaurantInfoContext();
+    const currentDay = new Date().toLocaleDateString('vi-VN', { weekday: 'long' });
+    const normalizedPhone = contactPhone ? contactPhone.replace(/\s+/g, '') : '';
+    const mapUrl = addressLine
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLine)}`
+        : 'https://maps.google.com';
 
     // Sử dụng class CSS thuần túy đã định nghĩa trong HomeContactBar.css
-    const openStatusClass = isOpen ? 'contact-bar__status--open' : 'contact-bar__status--closed';
+    const openStatusClass = isOpenNow ? 'contact-bar__status--open' : 'contact-bar__status--closed';
 
     return (
         // section: Thanh thông tin chính
@@ -24,13 +34,13 @@ const RestaurantInformation = () => {
                         {/* 1. Trạng thái mở/đóng */}
                         <div className={`contact-bar__status ${openStatusClass}`}>
                             <span className="contact-bar__statusDot" aria-hidden="true" />
-                            {isOpen ? 'Đang mở cửa' : 'Đóng cửa'}
+                            {isOpenNow ? 'Đang mở cửa' : 'Đóng cửa'}
                         </div>
                         
                         {/* 2. Chi tiết giờ */}
                         <div className="contact-bar__time">
                             <Clock className="w-4 h-4 contact-bar__icon-color mr-1" />
-                            <span className="contact-bar__time-text">{currentDay}: 09:00 - 22:00</span>
+                            <span className="contact-bar__time-text">{currentDay}: {openingTime} - {closingTime}</span>
                         </div>
                     </div>
                     
@@ -38,20 +48,20 @@ const RestaurantInformation = () => {
                     <div className="contact-bar__info">
                         
                         {/* 1. Điện thoại */}
-                        <a href="tel:+84901234567" className="contact-bar__link">
+                        <a href={normalizedPhone ? `tel:${normalizedPhone}` : '#'} className="contact-bar__link">
                             <Phone className="w-4 h-4 mr-1" />
-                            (+84) 90 123 4567
+                            {contactPhone || 'Vui lòng cập nhật số điện thoại'}
                         </a>
                         
                         {/* 2. Địa chỉ */}
                         <div className="contact-bar__address">
                             <MapPin className="w-4 h-4 mr-1" />
-                            123 Nguyễn Huệ, Q.1, TPHCM
+                            {addressLine || 'Vui lòng cập nhật địa chỉ nhà hàng'}
                         </div>
                         
                         {/* 3. Nút Chỉ đường */}
                         <a 
-                            href="https://maps.app.goo.gl/example" 
+                            href={mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="contact-bar__button"

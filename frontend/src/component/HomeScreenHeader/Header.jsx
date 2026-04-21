@@ -36,7 +36,7 @@
                 
 //                 <div className="header__contact">
 //                     <LuPhone className="icon icon-phone" />
-//                     <span className="header__phone-number">(+84)90 123 4567</span>
+//                     <span className="header__phone-number">{t('header.phone')}</span>
 //                 </div>
 
                 

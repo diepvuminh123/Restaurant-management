@@ -1,8 +1,11 @@
 import React from 'react';
 import { IoRestaurantOutline } from 'react-icons/io5';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './RoleSelectionModal.css';
 
 const RoleSelectionModal = ({ onSelectRole, onClose }) => {
+    const { restaurantName, restaurantSlogan } = useRestaurantInfoContext();
+
     return (
         <div className="role-selection-modal-overlay">
             <div className="role-selection-modal">
@@ -12,8 +15,8 @@ const RoleSelectionModal = ({ onSelectRole, onClose }) => {
                             <IoRestaurantOutline className="header-icon" />
                         </div>
                         <div className="header-text">
-                            <h4>Nhà hàng Huân Minh Quanh</h4>
-                            <p>Hương vị truyền thống</p>
+                            <h4>{restaurantName}</h4>
+                            <p>{restaurantSlogan}</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="close-button">&times;</button>

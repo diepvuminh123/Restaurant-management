@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { FaFacebook, FaPhone } from 'react-icons/fa';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './FloatingContactButtons.css';
 
 const FloatingContactButtons = () => {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const { contactPhone } = useRestaurantInfoContext();
   
   // Contact info - customize these URLs/numbers
   const messengerUrl = 'https://m.me/your-facebook-page-id'; // Replace with your Facebook page ID
   const zaloUrl = 'https://zalo.me/your-phone-number'; // Replace with your Zalo phone number
-  const phoneNumber = '0912345678'; // Replace with your actual phone number
+  const phoneNumber = contactPhone || 'Vui lòng cập nhật số điện thoại';
 
   const handleMessenger = () => {
     window.open(messengerUrl, '_blank');

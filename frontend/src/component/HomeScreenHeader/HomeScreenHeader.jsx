@@ -6,8 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuHeaderLogo from "../Logo/Logo";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher'
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 const HomeScreenHeader = ({ user, onLogout }) => {
   const { t } = useTranslation();
+  const { contactPhone } = useRestaurantInfoContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -46,7 +48,7 @@ const HomeScreenHeader = ({ user, onLogout }) => {
       <div className="header__right-section">
         <div className="header__contact">
           <LuPhone className="icon icon-phone" />
-          <span className="header__phone-number">{t('header.phone')}</span>
+          <span className="header__phone-number">{contactPhone || t('header.phone')}</span>
         </div>
 
         <LanguageSwitcher />

@@ -17,6 +17,7 @@ import SettingScreen from './screen/SettingScreen/SettingScreen';
 import Error404 from './screen/Error404/Error404';
 import Unauthorized from './screen/Unauthorized/Unauthorized';
 import { ToastProvider, useToastContext } from './context/ToastContext';
+import { RestaurantInfoProvider } from './context/RestaurantInfoContext';
 import { STORAGE_KEYS } from './constants/storageKeys';
 
 function AuthEntry({ user, initialView, onLoginSuccess, getDefaultRoute }) {
@@ -234,9 +235,11 @@ function AppContent() {
 function App() {
   return (
     <ToastProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <RestaurantInfoProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </RestaurantInfoProvider>
     </ToastProvider>
   );
 }

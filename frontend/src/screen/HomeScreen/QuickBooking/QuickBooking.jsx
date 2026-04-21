@@ -8,6 +8,7 @@ import Restaurant1 from '../../../picture/Restaurant1.jpg';
 import Restaurant2 from '../../../picture/Restaurant2.jpg';
 import Restaurant3 from '../../../picture/Restaurant3.jpg';
 import ApiService from '../../../services/apiService';
+import { useRestaurantInfoContext } from '../../../context/RestaurantInfoContext';
 import './QuickBooking.css';
 import { CiCalendar, CiStar } from 'react-icons/ci';
 import { FiShoppingBag, FiChevronLeft, FiChevronRight, FiGift, FiClock, FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
@@ -16,6 +17,16 @@ import { useTranslation } from 'react-i18next';
 const QuickBooking = ({ user }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const {
+        restaurantName,
+        restaurantSlogan,
+        contactPhone,
+        contactEmail,
+        addressLine,
+        openingTime,
+        closingTime,
+        timeRangeLabel,
+    } = useRestaurantInfoContext();
 
     const [featuredDishes, setFeaturedDishes] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -209,7 +220,7 @@ const QuickBooking = ({ user }) => {
         },
         {
             question: 'Giờ mở cửa của bạn là bao nhiêu?',
-            answer: 'Chúng tôi mở cửa từ 11:00 đến 22:00 hàng ngày, và đến 22:30 vào cuối tuần.',
+            answer: `Chúng tôi mở cửa từ ${openingTime} đến ${closingTime} hàng ngày.`,
         },
     ];
 
@@ -227,11 +238,11 @@ const QuickBooking = ({ user }) => {
                     </div>
 
 
-                    <h1 className="restaurant-title">{t('home.restaurantName')}</h1>
+                    <h1 className="restaurant-title">{restaurantName || t('home.restaurantName')}</h1>
 
                    
                     <p className="restaurant-description">
-                        {t('home.description')}
+                        {restaurantSlogan || t('home.description')}
                     </p>
 
                     
@@ -381,9 +392,10 @@ const QuickBooking = ({ user }) => {
                     </div>
                     <div className="contact-card">
                         <h3>Thông tin liên hệ</h3>
-                        <p><FiMapPin /> 123 Nguyễn Huệ, Phường Bến Nghé, Quận 1</p>
-                        <p><FiPhone /> (+84) 90 123 4567</p>
-                        <p><FiMail /> info@minhquoa.vn</p>
+                        <p><FiMapPin /> {addressLine || 'Vui lòng cập nhật địa chỉ nhà hàng'}</p>
+                        <p><FiPhone /> {contactPhone || 'Vui lòng cập nhật số điện thoại nhà hàng'}</p>
+                        <p><FiMail /> {contactEmail || 'Vui lòng cập nhật email nhà hàng'}</p>
+                        <p><FiClock /> Giờ hoạt động: {timeRangeLabel}</p>
                     </div>
                 </div>
             </section>

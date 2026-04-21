@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ApiService from '../../services/apiService';
 import { useToastContext } from '../../context/ToastContext';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './RestaurantInfoManagement.css';
 
 const INITIAL_FORM = {
@@ -29,6 +30,7 @@ const formatDateTime = (value) => {
 
 const RestaurantInfoManagement = () => {
   const toast = useToastContext();
+  const { refreshRestaurantInfo } = useRestaurantInfoContext();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [restaurantId, setRestaurantId] = useState(null);
@@ -138,6 +140,7 @@ const RestaurantInfoManagement = () => {
         : await ApiService.updateRestaurantInfo(restaurantId, payload);
 
       applyDataToForm(response?.data || null);
+      await refreshRestaurantInfo();
       toast.success(isCreateMode ? 'Tạo thông tin nhà hàng thành công' : 'Cập nhật thông tin nhà hàng thành công');
     } catch (error) {
       toast.error(error.message || 'Không thể lưu thông tin nhà hàng');
@@ -247,28 +250,6 @@ const RestaurantInfoManagement = () => {
             placeholder="123 Đường A, Quận B, TP.HCM"
             disabled={loading || saving}
             required
-          />
-        </label>
-
-        <label>
-          URL logo
-          <input
-            type="text"
-            value={form.logo_url}
-            onChange={(event) => onChangeField('logo_url', event.target.value)}
-            placeholder="https://..."
-            disabled={loading || saving}
-          />
-        </label>
-
-        <label>
-          URL ảnh thương hiệu
-          <input
-            type="text"
-            value={form.brand_image_url}
-            onChange={(event) => onChangeField('brand_image_url', event.target.value)}
-            placeholder="https://..."
-            disabled={loading || saving}
           />
         </label>
 

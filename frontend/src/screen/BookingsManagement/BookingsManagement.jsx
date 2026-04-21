@@ -9,27 +9,26 @@ import {
 import ApiService from '../../services/apiService';
 import ReservationCreateModal from '../../component/ReservationCreateModal/ReservationCreateModal';
 import ReservationDetailModal from '../../component/ReservationDetailModal/ReservationDetailModal';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import { generateTimeSlots, getLocalMinutes, isSameLocalDate } from '../../utils/timeSlots';
 import './BookingsManagement.css';
-
-const TIME_SLOTS = generateTimeSlots({ startTime: '09:00', endTime: '22:00', intervalMinutes: 30 });
 
 const GRID_ROWS = 8;
 const SLOTS_PER_VIEW = 7;
 
 const clampNumber = (value, min, max) => Math.min(Math.max(value, min), max);
 
-const getSlotIndexByMinutes = (minutes) => {
-  if (!TIME_SLOTS.length) return 0;
-  const idx = TIME_SLOTS.findIndex((slot) => minutes >= slot.startMinutes && minutes < slot.endMinutes);
+const getSlotIndexByMinutes = (minutes, timeSlots) => {
+  if (!timeSlots.length) return 0;
+  const idx = timeSlots.findIndex((slot) => minutes >= slot.startMinutes && minutes < slot.endMinutes);
   if (idx !== -1) return idx;
 
-  if (minutes < TIME_SLOTS[0].startMinutes) return 0;
-  return TIME_SLOTS.length - 1;
+  if (minutes < timeSlots[0].startMinutes) return 0;
+  return timeSlots.length - 1;
 };
 
-const getOffsetForSlotIndex = (slotIndex) => {
-  const maxOffset = Math.max(0, TIME_SLOTS.length - SLOTS_PER_VIEW);
+const getOffsetForSlotIndex = (slotIndex, timeSlots) => {
+  const maxOffset = Math.max(0, timeSlots.length - SLOTS_PER_VIEW);
   const centered = slotIndex - Math.floor(SLOTS_PER_VIEW / 2);
   return clampNumber(centered, 0, maxOffset);
 };
@@ -70,14 +69,20 @@ const buildVNDayRange = (yyyyMmDd) => {
 };
 
 const BookingsManagement = () => {
+  const { openingTime, closingTime, restaurantName } = useRestaurantInfoContext();
+  const timeSlots = useMemo(
+    () => generateTimeSlots({ startTime: openingTime, endTime: closingTime, intervalMinutes: 30 }),
+    [openingTime, closingTime]
+  );
+
   const [selectedDate, setSelectedDate] = useState(() => formatInputDate(new Date()));
   const [activeSlotId, setActiveSlotId] = useState(() => {
-    const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
-    return TIME_SLOTS[nowIndex]?.id || TIME_SLOTS[0]?.id || '09:00';
+    const nowIndex = getSlotIndexByMinutes(getLocalMinutes(), timeSlots);
+    return timeSlots[nowIndex]?.id || timeSlots[0]?.id || openingTime;
   });
   const [slotOffset, setSlotOffset] = useState(() => {
-    const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
-    return getOffsetForSlotIndex(nowIndex);
+    const nowIndex = getSlotIndexByMinutes(getLocalMinutes(), timeSlots);
+    return getOffsetForSlotIndex(nowIndex, timeSlots);
   });
 
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -118,25 +123,48 @@ const BookingsManagement = () => {
   }, [selectedDate]);
 
   useEffect(() => {
+    if (!timeSlots.length) {
+      setActiveSlotId('');
+      setSlotOffset(0);
+      return;
+    }
+
+    setActiveSlotId((prev) => {
+      if (timeSlots.some((slot) => slot.id === prev)) return prev;
+      const nowIndex = getSlotIndexByMinutes(getLocalMinutes(), timeSlots);
+      return timeSlots[nowIndex]?.id || timeSlots[0].id;
+    });
+  }, [timeSlots]);
+
+  useEffect(() => {
     // Today: auto-focus the current time range.
-    // Other days: reset to the start of the day (09:00) so the grid doesn't stay at "now".
+    // Other days: reset to the first configured opening slot.
+    if (!timeSlots.length) return;
+
     if (isSameLocalDate(selectedDate)) {
-      const nowIndex = getSlotIndexByMinutes(getLocalMinutes());
-      const nextActive = TIME_SLOTS[nowIndex]?.id;
+      const nowIndex = getSlotIndexByMinutes(getLocalMinutes(), timeSlots);
+      const nextActive = timeSlots[nowIndex]?.id;
       if (nextActive) setActiveSlotId((prev) => (prev === nextActive ? prev : nextActive));
 
-      const nextOffset = getOffsetForSlotIndex(nowIndex);
+      const nextOffset = getOffsetForSlotIndex(nowIndex, timeSlots);
       setSlotOffset((prev) => (prev === nextOffset ? prev : nextOffset));
       return;
     }
 
-    const firstSlotId = TIME_SLOTS[0]?.id || '09:00';
+    const firstSlotId = timeSlots[0]?.id || openingTime;
     setActiveSlotId((prev) => (prev === firstSlotId ? prev : firstSlotId));
     setSlotOffset((prev) => (prev === 0 ? prev : 0));
-  }, [selectedDate]);
+  }, [selectedDate, openingTime, timeSlots]);
 
   useEffect(() => {
     let cancelled = false;
+
+    if (!activeSlotId) {
+      setAvailableTables(null);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const fetchAvailability = async () => {
       try {
@@ -172,7 +200,7 @@ const BookingsManagement = () => {
     (reservations || []).forEach((reservation) => {
       const slotId = normalizeSlotId(reservation?.reservation_time);
       if (!slotId) return;
-      if (!TIME_SLOTS.some((s) => s.id === slotId)) return;
+      if (!timeSlots.some((s) => s.id === slotId)) return;
 
       const current = rowCounterBySlot.get(slotId) || 0;
       if (current >= GRID_ROWS) return;
@@ -202,7 +230,7 @@ const BookingsManagement = () => {
     });
 
     return items;
-  }, [reservations]);
+  }, [reservations, timeSlots]);
 
   useEffect(() => {
     if (!isDetailOpen) return;
@@ -244,11 +272,11 @@ const BookingsManagement = () => {
 
   const visibleSlots = useMemo(() => {
     const end = slotOffset + SLOTS_PER_VIEW;
-    return TIME_SLOTS.slice(slotOffset, end);
-  }, [slotOffset]);
+    return timeSlots.slice(slotOffset, end);
+  }, [slotOffset, timeSlots]);
 
   const canGoPrev = slotOffset > 0;
-  const canGoNext = slotOffset + SLOTS_PER_VIEW < TIME_SLOTS.length;
+  const canGoNext = slotOffset + SLOTS_PER_VIEW < timeSlots.length;
 
   const handleCreateReservation = async ({ customer_name, customer_phone, email, date, timeSlotId, table_id, people, note }) => {
     const reservation_time = `${date}T${timeSlotId}:00.000+07:00`;
@@ -302,10 +330,10 @@ const BookingsManagement = () => {
 
       <ReservationCreateModal
         isOpen={isCreateOpen}
-        branchName="Nhà Hàng Huân Minh Quanh"
+        branchName={restaurantName}
         defaultDate={selectedDate}
         defaultTimeSlotId={activeSlotId}
-        timeSlots={TIME_SLOTS}
+        timeSlots={timeSlots}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={handleCreateReservation}
       />
@@ -316,7 +344,7 @@ const BookingsManagement = () => {
         detail={reservationDetail}
         loading={detailLoading}
         error={detailError}
-        timeSlots={TIME_SLOTS}
+        timeSlots={timeSlots}
         onClose={closeDetail}
       />
 
@@ -394,7 +422,7 @@ const BookingsManagement = () => {
         <button
           type="button"
           className="bookings-timeline__nav"
-          onClick={() => setSlotOffset((prev) => Math.min(TIME_SLOTS.length - SLOTS_PER_VIEW, prev + 1))}
+          onClick={() => setSlotOffset((prev) => Math.min(Math.max(0, timeSlots.length - SLOTS_PER_VIEW), prev + 1))}
           disabled={!canGoNext}
           aria-label="Khung giờ tiếp theo"
         >

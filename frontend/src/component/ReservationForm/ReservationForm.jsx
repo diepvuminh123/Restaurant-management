@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, use } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './ReservationForm.css';
 import { CiCalendar, CiClock2, CiUser, CiCircleCheck } from 'react-icons/ci';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import RoleSelectionModal from '../RoleSelectionModal/RoleSelectionModal';
 import { useTranslation } from 'react-i18next'; 
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import {
     generateTimeSlots,
     getLocalMinutes,
@@ -27,6 +28,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
     const timeRef = useRef(null);
     const guestRef = useRef(null);
     const {t} = useTranslation();
+    const { openingTime, closingTime } = useRestaurantInfoContext();
 
     // Auth states
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -57,7 +59,11 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
         if (!date) return [];
 
         // Keep a single source of truth for time slots across the app.
-        const slots = generateTimeSlots({ startTime: '09:00', endTime: '22:00', intervalMinutes: 30 });
+        const slots = generateTimeSlots({
+            startTime: openingTime,
+            endTime: closingTime,
+            intervalMinutes: 30,
+        });
 
         // For today, hide slots in the past (round up to next interval).
         if (isSameLocalDate(date)) {
@@ -67,7 +73,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
         }
 
         return slots.map((s) => s.id);
-    }, [date]);
+    }, [date, openingTime, closingTime]);
 
     const handleRoleSelect = (role) => {
         setShowRoleModal(false);

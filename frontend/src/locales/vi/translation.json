@@ -27,14 +27,14 @@
     "reviews": "Đánh giá",
     "aboutUs": "Về chúng tôi",
     "contact": "Liên hệ",
-    "phone": "(+84)90 123 4567",
+    "phone": "Liên hệ nhà hàng",
     "logout": "Đăng xuất",
     "profile": "Thông tin cá nhân",
     "account": "Tài khoản"
   },
   "home": {
-    "restaurantName": "Nhà Hàng Huân Minh Quanh",
-    "restaurantSlogan": "Hương vị truyền thống",
+    "restaurantName": "Nhà hàng",
+    "restaurantSlogan": "Ẩm thực đặc sắc",
     "rating": "4.8 • Hơn 500 đánh giá",
     "description": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm",
     "bookTable": "Đặt bàn",
@@ -85,7 +85,7 @@
     "terms": "Điều khoản sử dụng",
     "refund": "Chính sách hoàn tiền",
     "contact": "Liên hệ",
-    "copyright": "© 2025 Nhà Hàng Huân Minh Quanh. All rights reserved."
+    "copyright": "© 2025 Nhà hàng. All rights reserved."
   },
   "admin": {
     "dashboard": "Bảng điều khiển",

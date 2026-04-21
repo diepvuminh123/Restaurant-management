@@ -27,14 +27,14 @@
     "reviews": "Reviews",
     "aboutUs": "About Us",
     "contact": "Contact",
-    "phone": "(+84)90 123 4567",
+    "phone": "Contact restaurant",
     "logout": "Logout",
     "profile": "Profile",
     "account": "Account"
   },
   "home": {
-    "restaurantName": "Huan Minh Quanh Restaurant",
-    "restaurantSlogan": "Traditional Flavors",
+    "restaurantName": "Restaurant",
+    "restaurantSlogan": "Signature Cuisine",
     "rating": "4.8 • Over 500 reviews",
     "description": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service",
     "bookTable": "Book Table",
@@ -85,7 +85,7 @@
     "terms": "Terms of Use",
     "refund": "Refund Policy",
     "contact": "Contact",
-    "copyright": "© 2025 Huan Minh Quanh Restaurant. All rights reserved."
+    "copyright": "© 2025 Restaurant. All rights reserved."
   },
   "admin": {
     "dashboard": "Dashboard",
