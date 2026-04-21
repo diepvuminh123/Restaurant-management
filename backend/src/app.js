@@ -15,6 +15,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const userAdminRoutes = require('./routes/userAdminRoutes');
 const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const takeawayAutomationService = require('./services/takeawayAutomationService');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -75,6 +76,17 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  takeawayAutomationService.start();
 });
+// clear
+function shutdown() {
+  takeawayAutomationService.stop();
+  server.close(() => {
+    process.exit(0);
+  });
+}
+
+process.on('SIGINT', shutdown); //Ctrl + C
+process.on('SIGTERM', shutdown);

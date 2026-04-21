@@ -65,6 +65,28 @@ npm run dev
 # Production mode
 npm start
 ```
+
+### 5. Tu dong hoa don mang di va nhac nho qua email
+
+Backend co scheduler tu dong chay theo chu ky de giam thao tac tay cho nhan vien:
+
+- Tu dong huy don `PENDING` + `UNPAID` khi qua han dat coc.
+- Tu dong chuyen `CONFIRMED -> PREPARING` khi gan gio nhan mon.
+- Tu dong chuyen `CONFIRMED/PREPARING -> READY` khi den gio nhan mon.
+- Tu dong chuyen `READY -> COMPLETED` sau mot khoang grace period.
+- Moi lan he thong tu dong doi trang thai se gui email thong bao cho khach (neu co email).
+
+Bien moi truong lien quan:
+
+```env
+TAKEAWAY_AUTOMATION_ENABLED=true
+TAKEAWAY_AUTOMATION_INTERVAL_MS=60000
+TAKEAWAY_UNPAID_TIMEOUT_MINUTES=20
+TAKEAWAY_PREPARING_LEAD_MINUTES=30
+TAKEAWAY_READY_TO_COMPLETED_MINUTES=90
+```
+
+Neu can tat scheduler tren moi truong nao do, set `TAKEAWAY_AUTOMATION_ENABLED=false`.
 ## 📡 API Endpoints
 
 ### Authentication

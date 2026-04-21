@@ -602,6 +602,78 @@ class Order {
 
     return result.rows[0] || null;
   }
+
+  static async autoCancelUnpaidOrders(unpaidTimeoutMinutes) {
+    const safeTimeout = Math.max(1, Number(unpaidTimeoutMinutes) || 20);
+
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = 'CANCELED',
+           canceled_reason = 'Tự động hủy do quá hạn thanh toán cọc',
+           canceled_by = NULL,
+           canceled_at = NOW(),
+           updated_at = NOW()
+       WHERE status = 'PENDING'
+         AND payment_status = 'UNPAID'
+         AND created_at <= NOW() - make_interval(mins => $1::int)
+       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+                 pickup_time, final_amount, deposit_amount, status, payment_status`,
+      [safeTimeout]
+    );
+
+    return result.rows;
+  }
+
+  static async autoMoveToPreparing(preparingLeadMinutes) {
+    const safeLead = Math.max(1, Number(preparingLeadMinutes) || 30);
+
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = 'PREPARING',
+           updated_at = NOW()
+       WHERE status = 'CONFIRMED'
+         AND payment_status IN ('DEPOSIT_PAID', 'PAID')
+         AND pickup_time > NOW()
+         AND pickup_time <= NOW() + make_interval(mins => $1::int)
+       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+                 pickup_time, final_amount, deposit_amount, status, payment_status`,
+      [safeLead]
+    );
+
+    return result.rows;
+  }
+
+  static async autoMoveToReady() {
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = 'READY',
+           updated_at = NOW()
+       WHERE status IN ('CONFIRMED', 'PREPARING')
+         AND payment_status IN ('DEPOSIT_PAID', 'PAID')
+         AND pickup_time <= NOW()
+       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+                 pickup_time, final_amount, deposit_amount, status, payment_status`
+    );
+
+    return result.rows;
+  }
+
+  static async autoCompleteReadyOrders(readyToCompletedMinutes) {
+    const safeMinutes = Math.max(1, Number(readyToCompletedMinutes) || 90);
+
+    const result = await pool.query(
+      `UPDATE orders
+       SET status = 'COMPLETED',
+           updated_at = NOW()
+       WHERE status = 'READY'
+         AND pickup_time <= NOW() - make_interval(mins => $1::int)
+       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+                 pickup_time, final_amount, deposit_amount, status, payment_status`,
+      [safeMinutes]
+    );
+
+    return result.rows;
+  }
 }
 
 module.exports = Order;
