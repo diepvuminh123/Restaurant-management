@@ -8,6 +8,7 @@ import BookingsManagement from '../BookingsManagement/BookingsManagement';
 import UserManagement from '../UserManagement/UserManagement';
 import ReviewManagement from '../ReviewManagement/ReviewManagement';
 import RestaurantInfoManagement from '../RestaurantInfoManagement/RestaurantInfoManagement';
+import Dashboard from '../Dashboard/Dashboard';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -20,12 +21,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         
         <main className="admin-dashboard__content">
           <Routes>
-            <Route path="dashboard" element={
-              <div>
-                <h1>Dashboard Content</h1>
-                <p>Nội dung trang quản trị sẽ được thêm vào đây...</p>
-              </div>
-            } />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="bookings" element={<BookingsManagement />} />
             <Route path="takeaway" element={
               <TakeawayOrdersScreen />
