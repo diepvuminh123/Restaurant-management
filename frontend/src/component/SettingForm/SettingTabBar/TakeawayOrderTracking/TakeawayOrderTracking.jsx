@@ -117,10 +117,16 @@ const TakeawayOrderTracking = () => {
       ? STATUS_TO_PROGRESS_INDEX[selectedOrder.status]
       : -1;
 
-  const progressLineWidth =
-    currentProgressIndex >= 0
-      ? `${((currentProgressIndex + 0.5) / PROGRESS_STEPS.length) * 100 - 5}%`
-      : '0%';
+  const isProgressCompleted = currentProgressIndex === PROGRESS_STEPS.length - 1;
+  let progressLineWidth = '0%';
+
+  if (currentProgressIndex >= 0) {
+    progressLineWidth = `${((currentProgressIndex + 0.5) / PROGRESS_STEPS.length) * 100 - 5}%`;
+  }
+
+  if (isProgressCompleted) {
+    progressLineWidth = '90%';
+  }
 
   const paymentStatusLabel = selectedOrder
     ? PAYMENT_STATUS_LABEL_MAP[selectedOrder.payment_status] || selectedOrder.payment_status || 'Chưa cập nhật'
