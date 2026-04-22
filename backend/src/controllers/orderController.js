@@ -9,6 +9,13 @@ class OrderController {
 
   static async createOrder(req, res) {
     try {
+      if (req.session?.userRole === 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Tài khoản admin không được phép tạo đơn mang đi'
+        });
+      }
+
       const { userId, sessionId } = OrderController.getOrderOwner(req);
 
       const order = await OrderService.createOrder(userId, sessionId, req.body);
