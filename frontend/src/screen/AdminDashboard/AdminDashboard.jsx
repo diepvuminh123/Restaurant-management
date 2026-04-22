@@ -24,7 +24,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="bookings" element={<BookingsManagement />} />
             <Route path="takeaway" element={
-              <TakeawayOrdersScreen />
+              <TakeawayOrdersScreen userRole={user.role} />
             } />
             <Route path="menu" element={<MenuManagement user={user} />} />
             <Route path="reviews" element={
