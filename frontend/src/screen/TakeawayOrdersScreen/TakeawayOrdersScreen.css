@@ -421,8 +421,271 @@
   color: #fff;
 }
 
+.create-order-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1250;
+}
+
+.create-order-modal {
+  width: min(1080px, 94vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 12px 24px rgba(16, 24, 40, 0.2);
+}
+
+.create-order-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.create-order-modal__header h3 {
+  margin: 0;
+  color: #c9703c;
+  font-size: 24px;
+}
+
+.create-order-modal__header button {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  color: #98a2b3;
+  cursor: pointer;
+}
+
+.create-order-modal__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.create-order-menu-panel,
+.create-order-form-panel {
+  border: 1px solid #eaecf0;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.create-order-menu-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.create-order-menu-header h4 {
+  margin: 0;
+  color: #344054;
+}
+
+.create-order-menu-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.create-order-menu-search input {
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.create-order-menu-search button {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.create-order-menu-list {
+  max-height: 460px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-order-menu-item {
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.create-order-menu-item strong {
+  color: #101828;
+  font-size: 14px;
+}
+
+.create-order-menu-item p {
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 13px;
+}
+
+.create-order-quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.create-order-quantity-controls button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.create-order-quantity-controls span {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.create-order-cart-summary {
+  border: 1px solid #eaecf0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.create-order-cart-summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #475467;
+  font-size: 13px;
+}
+
+.create-order-cart-summary strong {
+  color: #2f3238;
+  font-size: 16px;
+}
+
+.create-order-cart-items {
+  border: 1px dashed #d0d5dd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  margin-bottom: 12px;
+}
+
+.create-order-cart-items p {
+  margin: 0;
+  font-size: 13px;
+  color: #475467;
+}
+
+.create-order-cart-items p + p {
+  margin-top: 6px;
+}
+
+.create-order-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.create-order-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #344054;
+}
+
+.create-order-form-grid input,
+.create-order-form-grid select {
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.create-order-note {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #344054;
+}
+
+.create-order-note textarea {
+  width: 100%;
+  margin-top: 6px;
+  min-height: 82px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.create-order-modal__actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-cancel,
+.btn-create {
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-cancel {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+}
+
+.btn-create {
+  border: none;
+  background: #c9703c;
+  color: #fff;
+}
+
+.btn-cancel:disabled,
+.btn-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 1200px) {
   .takeaway-screen__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .create-order-modal__body {
+    grid-template-columns: 1fr;
+  }
+
+  .create-order-form-grid {
     grid-template-columns: 1fr;
   }
 }
