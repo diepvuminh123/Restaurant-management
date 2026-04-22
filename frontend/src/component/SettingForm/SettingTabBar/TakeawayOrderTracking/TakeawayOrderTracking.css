@@ -308,6 +308,16 @@
   background: #d6dbe4;
 }
 
+.takeaway-progress-line::after {
+  content: '';
+  position: absolute;
+  left: 5%;
+  top: 22px;
+  width: var(--takeaway-progress-width, 0%);
+  height: 3px;
+  background: #c96f3d;
+}
+
 .takeaway-progress-step {
   position: relative;
   z-index: 1;
@@ -316,6 +326,24 @@
   align-items: center;
   gap: 8px;
   text-align: center;
+}
+
+.takeaway-progress-step::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: calc(-50% + 21px);
+  width: calc(100% - 42px);
+  height: 3px;
+  background: #d6dbe4;
+}
+
+.takeaway-progress-step:first-child::before {
+  display: none;
+}
+
+.takeaway-progress-step.has-completed-connector::before {
+  background: #c96f3d;
 }
 
 .takeaway-progress-step span {

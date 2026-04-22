@@ -117,6 +117,11 @@ const TakeawayOrderTracking = () => {
       ? STATUS_TO_PROGRESS_INDEX[selectedOrder.status]
       : -1;
 
+  const progressLineWidth =
+    currentProgressIndex >= 0
+      ? `${((currentProgressIndex + 0.5) / PROGRESS_STEPS.length) * 100 - 5}%`
+      : '0%';
+
   const paymentStatusLabel = selectedOrder
     ? PAYMENT_STATUS_LABEL_MAP[selectedOrder.payment_status] || selectedOrder.payment_status || 'Chưa cập nhật'
     : '';
@@ -366,15 +371,21 @@ const TakeawayOrderTracking = () => {
 
                 <div className="takeaway-section">
                   <h4>Tiến trình đơn hàng</h4>
-                  <div className="takeaway-progress-line">
+                  <div className="takeaway-progress-line" style={{ '--takeaway-progress-width': progressLineWidth }}>
                     {PROGRESS_STEPS.map((step, index) => {
                       const isDone = currentProgressIndex > index;
                       const isActive = currentProgressIndex === index;
                       const isPending = currentProgressIndex < index;
+                      let connectorState = '';
+
+                      if (index > 0) {
+                        connectorState = currentProgressIndex >= index ? 'has-completed-connector' : 'has-pending-connector';
+                      }
+
                       const StepIcon = step.Icon;
 
                       return (
-                        <div key={step.key} className="takeaway-progress-step">
+                        <div key={step.key} className={`takeaway-progress-step ${connectorState}`}>
                           <div
                             className={`takeaway-progress-dot ${isDone ? 'is-done' : ''} ${isActive ? 'is-active' : ''} ${isPending ? 'is-pending' : ''}`}
                           >
