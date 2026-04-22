@@ -1,6 +1,7 @@
 // SettingScreen.js (Dự kiến)
 
 import React, { useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSearchParams } from 'react-router-dom';
 import SettingTabBar from '../../component/SettingForm/SettingTabBar/SettingTabBar';
 import ReservationHistory from '../../component/SettingForm/SettingTabBar/ReservationHistory/ReservationHistory';
@@ -27,7 +28,7 @@ export default function SettingScreen({user, onProfileUpdated}) {
       case 'profile':
         return <UserInfoForm user={user} onProfileUpdated={onProfileUpdated} />;
       case 'password':
-        return <ChangePasswordForm />;
+        return <ChangePasswordForm user={user} />;
       case 'delivery':
         return <TakeawayOrderTracking />;
       case 'history':
@@ -52,3 +53,8 @@ export default function SettingScreen({user, onProfileUpdated}) {
     </div>
   );
 }
+
+SettingScreen.propTypes = {
+  user: PropTypes.object,
+  onProfileUpdated: PropTypes.func,
+};
