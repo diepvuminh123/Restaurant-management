@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,7 @@ const PAGE_SIZE = 12;
 export default function MenuScreen({ user }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState(1); 
+  const [activeTab, setActiveTab] = useState(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState(""); 
   const [statusFilter, setStatusFilter] = useState(""); 
@@ -47,6 +47,7 @@ export default function MenuScreen({ user }) {
   const [loadingSections, setLoadingSections] = useState(false);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
+  const menuRequestIdRef = useRef(0);
 
   const sectionId = activeTab; 
 
@@ -61,7 +62,7 @@ export default function MenuScreen({ user }) {
           setSections(response.data);
           // Set activeTab là section đầu tiên
           if (response.data.length > 0) {
-            setActiveTab(response.data[0].id);
+            setActiveTab((prev) => prev || response.data[0].id);
           }
         }
       } catch (err) {
@@ -76,6 +77,15 @@ export default function MenuScreen({ user }) {
 
   // Fetch menu items từ API
   useEffect(() => {
+    if (!sectionId) {
+      setMenuItems([]);
+      setTotalPages(0);
+      return;
+    }
+
+    let isCancelled = false;
+    const currentRequestId = ++menuRequestIdRef.current;
+
     const fetchMenuItems = async () => {
       try {
         setLoading(true);
@@ -150,6 +160,10 @@ export default function MenuScreen({ user }) {
 
         const response = await ApiService.getMenuItems(filters);
         
+        if (isCancelled || currentRequestId !== menuRequestIdRef.current) {
+          return;
+        }
+
         if (response.success) {
           setMenuItems(response.items || []);
           setTotalPages(response.pagination?.total_pages || 0);
@@ -157,17 +171,25 @@ export default function MenuScreen({ user }) {
           setError(response.message || t('menuScreen.loadError'));
         }
       } catch (err) {
+        if (isCancelled || currentRequestId !== menuRequestIdRef.current) {
+          return;
+        }
+
         setError(err.message || t('menuScreen.generalError'));
         console.error('Error fetching menu items:', err);
         setMenuItems([]);
       } finally {
-        setLoading(false);
+        if (!isCancelled && currentRequestId === menuRequestIdRef.current) {
+          setLoading(false);
+        }
       }
     };
 
-    if (sectionId) {
-      fetchMenuItems();
-    }
+    fetchMenuItems();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [sectionId, selectedCats, price, search, sort, statusFilter, page, t]);
 
   const toggleCat = (c) => {

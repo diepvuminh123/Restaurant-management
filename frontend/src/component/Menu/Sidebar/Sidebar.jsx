@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Sidebar.css";
 import ApiService from "../../../services/apiService";
 import Loading from "../../Loading/Loading";
@@ -8,14 +8,25 @@ export default function Sidebar({
   onToggle,
   price,
   onPrice,
-  sectionId = 1,
+  sectionId,
 }) {
   const [categories, setCategories] = useState([]);
   const [priceRange, setPriceRange] = useState({ price_min: 0, price_max: 500000 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const categoryRequestIdRef = useRef(0);
 
   useEffect(() => {
+    if (!sectionId) {
+      setCategories([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let isCancelled = false;
+    const currentRequestId = ++categoryRequestIdRef.current;
+
     const fetchCategories = async () => {
       try {
         setLoading(true);
@@ -23,6 +34,10 @@ export default function Sidebar({
         
         // Lấy danh mục từ API categories thay vì facets đã bị xóa
         const response = await ApiService.getMenuCategories(sectionId);
+
+        if (isCancelled || currentRequestId !== categoryRequestIdRef.current) {
+          return;
+        }
         
         if (response.success && response.data) {
           setCategories(response.data || []);
@@ -36,17 +51,25 @@ export default function Sidebar({
           setPriceRange({ price_min: 0, price_max: 500000 });
         }
       } catch (err) {
+        if (isCancelled || currentRequestId !== categoryRequestIdRef.current) {
+          return;
+        }
+
         setError(err.message);
         setCategories([]);
         setPriceRange({ price_min: 0, price_max: 500000 });
       } finally {
-        setLoading(false);
+        if (!isCancelled && currentRequestId === categoryRequestIdRef.current) {
+          setLoading(false);
+        }
       }
     };
 
-    if (sectionId) {
-      fetchCategories();
-    }
+    fetchCategories();
+
+    return () => {
+      isCancelled = true;
+    };
     
   }, [sectionId]); 
 
