@@ -209,6 +209,33 @@ class ReservationController {
 			});
 		}
 	}
+	static async updateReservationStatusForStaff(req, res){
+		try{
+			const reservationIdRaw = req?.params?.id;
+			const reservationId = Number(reservationIdRaw);
+			if (!Number.isFinite(reservationId)){
+				return res.status(400).json({
+					success: false,
+					message: 'reservation_id không hợp lệ',
+				})
+			}
+			const { reservation_state } = req.body;
+			const updateReservation = await ReservationService.updateReservationStatusForStaff(reservationId, reservation_state);
+			res.json({
+				success: true,
+				message: 'Cập nhật trạng thái đặt bàn thành công',
+				data: updateReservation,
+			});
+
+		} catch (error) {
+			console.log('Không thể cập nhật trạng thái đặt bàn', error);
+			res.status(error.statusCode || 500).json({
+				success: false,
+				message: error.message || 'Không thể cập nhật trạng thái đặt bàn',
+				error: error.message,
+			});
+		}
+	}
 }
 
 module.exports = ReservationController;

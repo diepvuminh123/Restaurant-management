@@ -311,6 +311,11 @@
      border: 1px solid #34d399;
 }
 
+.booking-item--on-serving {
+     background: #dbeafe;
+     border: 1px solid #60a5fa;
+}
+
 .booking-item--canceled {
      background: #ffe6e6;
      border: 1px solid #ff6b6b;
@@ -346,6 +351,10 @@
 
 .bookings-legend__dot--completed {
      background: #34d399;
+}
+
+.bookings-legend__dot--on-serving {
+     background: #60a5fa;
 }
 
 .bookings-legend__dot--canceled {

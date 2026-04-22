@@ -11,6 +11,7 @@ const {
 	createReservationBodySchema,
 	getReservationsForStaffQuerySchema,
 	createReservationForStaffSchema,
+	updateReservationStatusForStaffSchema,
 } = require('../validations/reservationValidation');
 
 // Phần booking 
@@ -60,5 +61,13 @@ router.get(
 	'/reservations/staff/viewReservationDetail/:id',
 	requireRole('admin', 'employee'),
 	ReservationController.viewReservationDetailForStaff
+)
+
+//Set trạng thái cho reservation của khách hàng
+router.put(
+	'/reservations/staff/updateReservationStatus/:id',
+	requireRole('admin', 'employee'),
+	validateBody(updateReservationStatusForStaffSchema),
+	ReservationController.updateReservationStatusForStaff
 )
 module.exports = router;

@@ -1,7 +1,14 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { IoCloseOutline } from 'react-icons/io5';
+import { IoCheckmarkOutline, IoCloseOutline, IoPlayOutline } from 'react-icons/io5';
 import './ReservationDetailModal.css';
+
+const RESERVATION_STATUS_LABELS = {
+  CONFIRM: 'Đã xác nhận',
+  ON_SERVING: 'Đang phục vụ',
+  COMPLETED: 'Hoàn tất',
+  CANCELED: 'Đã hủy',
+};
 
 const formatDisplayDate = (isoString) => {
   if (!isoString) return '--';
@@ -74,7 +81,8 @@ const ReservationDetailModal = ({
   error,
   timeSlots,
   onClose,
-  onCancelReservation,
+  onUpdateStatus,
+  updatingStatus,
 }) => {
   const dialogRef = useRef(null);
 
@@ -105,14 +113,37 @@ const ReservationDetailModal = ({
   }, [detail?.number_of_guests]);
 
   const createdAt = detail?.created_at || null;
+  const currentState = String(detail?.reservation_state || '').toUpperCase();
+
+  const nextPrimaryAction = useMemo(() => {
+    if (!reservationId || loading) return null;
+    if (currentState === 'CONFIRM') {
+      return {
+        label: 'Chuyển sang đang phục vụ',
+        value: 'ON_SERVING',
+        icon: IoPlayOutline,
+      };
+    }
+
+    if (currentState === 'ON_SERVING') {
+      return {
+        label: 'Đánh dấu hoàn tất',
+        value: 'COMPLETED',
+        icon: IoCheckmarkOutline,
+      };
+    }
+
+    return null;
+  }, [currentState, loading, reservationId]);
 
   const canCancel = useMemo(() => {
     if (!reservationId) return false;
     if (loading) return false;
-    const state = String(detail?.reservation_state || '').toUpperCase();
-    if (state === 'CANCELED' || state === 'COMPLETED') return false;
-    return typeof onCancelReservation === 'function';
-  }, [detail?.reservation_state, loading, onCancelReservation, reservationId]);
+    if (currentState !== 'CONFIRM') return false;
+    return typeof onUpdateStatus === 'function';
+  }, [currentState, loading, onUpdateStatus, reservationId]);
+
+  const canRunPrimaryAction = Boolean(nextPrimaryAction && typeof onUpdateStatus === 'function');
 
   if (!isOpen) return null;
 
@@ -168,6 +199,12 @@ const ReservationDetailModal = ({
                 readOnly
               />
             </div>
+            <div className="reservation-detail__field">
+              <div className="reservation-detail__label">Trạng thái</div>
+              <div className={`reservation-detail__status reservation-detail__status--${currentState.toLowerCase() || 'unknown'}`}>
+                {RESERVATION_STATUS_LABELS[currentState] || currentState || '--'}
+              </div>
+            </div>
 
             <div className="reservation-detail__field">
               <div className="reservation-detail__label">Số người</div>
@@ -189,19 +226,26 @@ const ReservationDetailModal = ({
             </div>
 
             <div className="reservation-detail__actions">
-              <button type="button" className="reservation-detail__save" disabled>
-                Lưu thay đổi
-              </button>
-              <button type="button" className="reservation-detail__change" disabled>
-                Thay đổi
-              </button>
+              {nextPrimaryAction ? (
+                <button
+                  type="button"
+                  className="reservation-detail__action reservation-detail__action--primary"
+                  disabled={!canRunPrimaryAction || updatingStatus}
+                  onClick={() => onUpdateStatus(reservationId, nextPrimaryAction.value)}
+                >
+                  <nextPrimaryAction.icon />
+                  <span>{updatingStatus ? 'Đang cập nhật...' : nextPrimaryAction.label}</span>
+                </button>
+              ) : null}
+
               <button
                 type="button"
-                className={canCancel ? 'reservation-detail__cancel reservation-detail__cancel--active' : 'reservation-detail__cancel'}
-                disabled={!canCancel}
-                onClick={() => onCancelReservation(reservationId)}
+                className="reservation-detail__action reservation-detail__action--danger"
+                disabled={!canCancel || updatingStatus}
+                onClick={() => onUpdateStatus(reservationId, 'CANCELED')}
               >
-                Hủy đặt chỗ
+                <IoCloseOutline />
+                <span>{updatingStatus ? 'Đang cập nhật...' : 'Hủy đặt chỗ'}</span>
               </button>
             </div>
 
@@ -236,7 +280,18 @@ ReservationDetailModal.propTypes = {
   error: PropTypes.string,
   timeSlots: PropTypes.array,
   onClose: PropTypes.func.isRequired,
-  onCancelReservation: PropTypes.func,
+  onUpdateStatus: PropTypes.func,
+  updatingStatus: PropTypes.bool,
+};
+
+ReservationDetailModal.defaultProps = {
+  reservationId: null,
+  detail: null,
+  loading: false,
+  error: '',
+  timeSlots: [],
+  onUpdateStatus: null,
+  updatingStatus: false,
 };
 
 export default ReservationDetailModal;

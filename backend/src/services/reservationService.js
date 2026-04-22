@@ -32,6 +32,19 @@ const buildRestaurantNote = ({ customerName, customerPhone, customerEmail, custo
   return parts.join(' | ').slice(0, 255) || null;
 };
 
+const STAFF_RESERVATION_STATE_TRANSITIONS = {
+  CONFIRM: ['ON_SERVING', 'CANCELED'],
+  ON_SERVING: ['COMPLETED'],
+  CANCELED: [],
+  COMPLETED: [],
+};
+
+const buildError = (message, statusCode = 400) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
 class ReservationService {
   static async normalizeReservationForStaff(reservation) {
     if (!reservation) return null;
@@ -245,6 +258,33 @@ class ReservationService {
     if (!reservation) return null;
 
     return await this.normalizeReservationForStaff(reservation);
+  }
+  static async updateReservationStatusForStaff(reservationId, reservationState) {
+    if (!reservationId) {
+      throw buildError('reservation_id không hợp lệ', 400);
+    }
+    if (!reservationState) {
+      throw buildError('reservation_state không hợp lệ', 400);
+    }
+
+    const reservation = await Reservation.getReservationDetailForStaff(reservationId);
+    if (!reservation) {
+      throw buildError('Không tìm thấy đơn đặt bàn', 404);
+    }
+
+    const currentState = String(reservation.reservation_state || '').toUpperCase();
+    const nextState = String(reservationState || '').toUpperCase();
+    const allowedNextStates = STAFF_RESERVATION_STATE_TRANSITIONS[currentState] || [];
+
+    if (!allowedNextStates.includes(nextState)) {
+      throw buildError(`Không thể chuyển trạng thái từ ${currentState} sang ${nextState}`, 409);
+    }
+
+    const updatedReservation = await Reservation.updateReservationStatusForStaff(reservationId, currentState, nextState);
+    if (!updatedReservation) {
+      throw buildError('Không thể cập nhật trạng thái đặt bàn', 409);
+    }
+    return await this.normalizeReservationForStaff(updatedReservation);
   }
 }
 

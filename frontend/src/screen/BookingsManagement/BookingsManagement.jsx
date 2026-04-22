@@ -9,6 +9,7 @@ import {
 import ApiService from '../../services/apiService';
 import ReservationCreateModal from '../../component/ReservationCreateModal/ReservationCreateModal';
 import ReservationDetailModal from '../../component/ReservationDetailModal/ReservationDetailModal';
+import { useToastContext } from '../../context/ToastContext';
 import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import { generateTimeSlots, getLocalMinutes, isSameLocalDate } from '../../utils/timeSlots';
 import './BookingsManagement.css';
@@ -50,6 +51,7 @@ const formatDisplayDate = (input) => {
 const getBookingClassName = (status) => {
   if (status === 'COMPLETED') return 'booking-item booking-item--completed';
   if (status === 'CANCELED') return 'booking-item booking-item--canceled';
+  if (status === 'ON_SERVING') return 'booking-item booking-item--on-serving';
   return 'booking-item booking-item--pending';
 };
 
@@ -70,6 +72,7 @@ const buildVNDayRange = (yyyyMmDd) => {
 
 const BookingsManagement = () => {
   const { openingTime, closingTime, restaurantName } = useRestaurantInfoContext();
+  const toast = useToastContext();
   const timeSlots = useMemo(
     () => generateTimeSlots({ startTime: openingTime, endTime: closingTime, intervalMinutes: 30 }),
     [openingTime, closingTime]
@@ -91,6 +94,7 @@ const BookingsManagement = () => {
   const [reservationDetail, setReservationDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
+  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
 
   const [reservations, setReservations] = useState([]);
   const [availableTables, setAvailableTables] = useState(null);
@@ -106,6 +110,25 @@ const BookingsManagement = () => {
 
     if (signal?.aborted) return;
     setReservations(Array.isArray(response?.data) ? response.data : []);
+  };
+
+  const loadAvailability = async (date, slotId, { signal } = {}) => {
+    if (!slotId) {
+      setAvailableTables(null);
+      return;
+    }
+
+    const response = await ApiService.getTablesAvailability({
+      date,
+      time: slotId,
+      guests: 1,
+      ignoreCapacity: true,
+    });
+
+    if (signal?.aborted) return;
+    const tables = Array.isArray(response?.data?.tables) ? response.data.tables : [];
+    const available = tables.filter((table) => table?.selectable).length;
+    setAvailableTables(available);
   };
 
   useEffect(() => {
@@ -166,19 +189,11 @@ const BookingsManagement = () => {
       };
     }
 
-    const fetchAvailability = async () => {
+    const fetchActiveAvailability = async () => {
       try {
-        const response = await ApiService.getTablesAvailability({
-          date: selectedDate,
-          time: activeSlotId,
-          guests: 1,
-          ignoreCapacity: true,
+        await loadAvailability(selectedDate, activeSlotId, {
+          signal: { aborted: cancelled },
         });
-
-        if (cancelled) return;
-        const tables = Array.isArray(response?.data?.tables) ? response.data.tables : [];
-        const available = tables.filter((table) => table?.selectable).length;
-        setAvailableTables(available);
       } catch (error) {
         if (cancelled) return;
         console.error('Fetch tables availability error:', error);
@@ -186,7 +201,7 @@ const BookingsManagement = () => {
       }
     };
 
-    fetchAvailability();
+    fetchActiveAvailability();
     return () => {
       cancelled = true;
     };
@@ -212,6 +227,7 @@ const BookingsManagement = () => {
       let status = 'PENDING';
       if (state === 'COMPLETED') status = 'COMPLETED';
       if (state === 'CANCELED') status = 'CANCELED';
+      if (state === 'ON_SERVING') status = 'ON_SERVING';
 
       const tableText = reservation?.table_id ? `Bàn ${reservation.table_id}` : `#${reservation?.reservation_id ?? '--'}`;
       const name = (reservation?.customer_name && String(reservation.customer_name).trim())
@@ -297,6 +313,8 @@ const BookingsManagement = () => {
     });
 
     await fetchReservations(date);
+    await loadAvailability(date, timeSlotId);
+    toast.success('Tạo đặt bàn thành công');
   };
 
   const openDetail = (reservationId) => {
@@ -313,6 +331,30 @@ const BookingsManagement = () => {
     setReservationDetail(null);
     setDetailLoading(false);
     setDetailError('');
+    setIsStatusUpdating(false);
+  };
+
+  const handleUpdateReservationStatus = async (reservationId, reservationState) => {
+    if (!reservationId || !reservationState || isStatusUpdating) return;
+
+    try {
+      setIsStatusUpdating(true);
+      const response = await ApiService.updateReservationStatusForStaff(reservationId, reservationState);
+      const updatedDetail = response?.data || null;
+
+      setReservationDetail(updatedDetail);
+      await Promise.all([
+        fetchReservations(selectedDate),
+        loadAvailability(selectedDate, activeSlotId),
+      ]);
+
+      toast.success('Cập nhật trạng thái đặt bàn thành công');
+    } catch (error) {
+      console.error('Update reservation status error:', error);
+      toast.error(error?.message || 'Không thể cập nhật trạng thái đặt bàn');
+    } finally {
+      setIsStatusUpdating(false);
+    }
   };
 
   return (
@@ -347,6 +389,8 @@ const BookingsManagement = () => {
         error={detailError}
         timeSlots={timeSlots}
         onClose={closeDetail}
+        onUpdateStatus={handleUpdateReservationStatus}
+        updatingStatus={isStatusUpdating}
       />
 
       <div className="bookings-page__top">
@@ -465,6 +509,10 @@ const BookingsManagement = () => {
       </div>
 
       <div className="bookings-legend" aria-label="Chú thích trạng thái">
+        <div className="bookings-legend__item">
+          <span className="bookings-legend__dot bookings-legend__dot--on-serving" aria-hidden="true" />
+          <span>Đang phục vụ</span>
+        </div>
         <div className="bookings-legend__item">
           <span className="bookings-legend__dot bookings-legend__dot--completed" aria-hidden="true" />
           <span>Hoàn tất</span>

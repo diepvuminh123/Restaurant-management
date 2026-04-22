@@ -133,6 +133,15 @@ class Reservation {
     const result = await pool.query(query, [reservationId]);
     return result.rows[0] || null;
   }
+  static async updateReservationStatusForStaff(reservationId, currentState, nextState){
+    const query = `UPDATE reservation
+    SET reservation_state = $2
+    WHERE reservation_id = $1
+    AND reservation_state = $3
+    RETURNING *`;
+    const result = await pool.query(query, [reservationId, nextState, currentState]);
+    return result.rows[0] || null;
+  }
 
 }
 

@@ -650,6 +650,16 @@ class ApiService {
       ...options,
     });
   }
+
+  /**
+   * (Admin/Employee) Cập nhật trạng thái đặt bàn
+   */
+  static async updateReservationStatusForStaff(reservationId, reservation_state) {
+    return this.request(`/reservations/staff/updateReservationStatus/${reservationId}`, {
+      method: 'PUT',
+      body: { reservation_state },
+    });
+  }
   
 }
 
