@@ -15,6 +15,7 @@ const getTablesAvailabilityQuerySchema = Joi.object({
 		'number.integer': 'guests phải là số nguyên',
 		'number.min': 'guests phải >= 1',
 	}),
+	ignoreCapacity: Joi.boolean().truthy('true').falsy('false').optional(),
 });
 
 const createReservationBodySchema = Joi.object({

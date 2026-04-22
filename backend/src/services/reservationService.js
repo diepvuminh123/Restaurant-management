@@ -70,12 +70,17 @@ class ReservationService {
     return { userId: null, sessionId };
   }
 
-  static async getTablesForSelection(reservationTime, numOfGuests) {
+  static async getTablesForSelection(reservationTime, numOfGuests, options = {}) {
     if (!reservationTime || !numOfGuests) {
       throw new Error('Cần nhập đầy đủ thời gian và số lượng khách');
     }
 
-    return await Reservation.getTablesWithAvailability(reservationTime, numOfGuests);
+    return await Reservation.getTablesWithAvailability(
+      reservationTime,
+      numOfGuests,
+      Reservation.DEFAULT_SLOT_MINUTES,
+      Boolean(options.ignoreCapacity)
+    );
   }
 
   static async createReservation(userId, sessionId, payload) {

@@ -172,6 +172,7 @@ const BookingsManagement = () => {
           date: selectedDate,
           time: activeSlotId,
           guests: 1,
+          ignoreCapacity: true,
         });
 
         if (cancelled) return;

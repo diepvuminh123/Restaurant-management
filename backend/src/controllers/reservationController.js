@@ -11,7 +11,7 @@ class ReservationController {
 
 	static async getTablesAvailability(req, res) {
 		try {
-			const { date, time, guests } = req.query;
+			const { date, time, guests, ignoreCapacity } = req.query;
 			const reservationTime = new Date(`${date}T${time}:00`);
 			if (Number.isNaN(reservationTime.getTime())) {
 				return res.status(400).json({
@@ -22,7 +22,8 @@ class ReservationController {
 
 			const tables = await ReservationService.getTablesForSelection(
 				reservationTime,
-				Number(guests)
+				Number(guests),
+				{ ignoreCapacity }
 			);
 
 			res.json({

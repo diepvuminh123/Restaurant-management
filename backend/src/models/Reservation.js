@@ -2,9 +2,9 @@ const pool = require('../config/database');
 require('dotenv').config();
 
 class Reservation {
-  static DEFAULT_SLOT_MINUTES = process.env.DEFAULT_SLOT_MINUTES || 120;
+  static DEFAULT_SLOT_MINUTES = process.env.DEFAULT_SLOT_MINUTES || 60;
 
-  static async getTablesWithAvailability(reservationTime, numOfGuests, slotMinutes = Reservation.DEFAULT_SLOT_MINUTES) {
+  static async getTablesWithAvailability(reservationTime, numOfGuests, slotMinutes = Reservation.DEFAULT_SLOT_MINUTES, ignoreCapacity = false) {
     const result = await pool.query(
       `SELECT
         t.table_id,
@@ -15,22 +15,22 @@ class Reservation {
         t.restaurant_note,
         CASE
           WHEN t.table_status = 'OCCUPIED' THEN 'OCCUPIED'
-          WHEN t.capacity < $2 OR t.capacity > $2 + 2 THEN 'CAPACITY'
+          WHEN NOT $4::boolean AND (t.capacity < $2 OR t.capacity > $2 + 2) THEN 'CAPACITY'
           WHEN EXISTS (
             SELECT 1
             FROM reservation r
             WHERE r.table_id = t.table_id
               AND r.reservation_state IN ('CONFIRM', 'ON_SERVING')
-              -- Two reservations overlap if their start times are within slotMinutes.
-              -- Use strict bounds so back-to-back slots (end == next start) are allowed.
-              AND r.reservation_time >  ($1::timestamptz - ($3::int * INTERVAL '1 minute'))
-              AND r.reservation_time <  ($1::timestamptz + ($3::int * INTERVAL '1 minute'))
+              -- A table is busy only after the reservation start time, for slotMinutes.
+              -- Future reservations do not block earlier slots.
+              AND r.reservation_time <= $1::timestamptz
+              AND (r.reservation_time + ($3::int * INTERVAL '1 minute')) > $1::timestamptz
           ) THEN 'TIME_CONFLICT'
           ELSE NULL
         END AS disabled_reason
       FROM restaurant_table t
       ORDER BY t.table_id ASC`,
-      [reservationTime, numOfGuests, slotMinutes]
+      [reservationTime, numOfGuests, slotMinutes, ignoreCapacity]
     );
 
     return result.rows.map((row) => ({

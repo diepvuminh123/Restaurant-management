@@ -529,12 +529,16 @@ class ApiService {
   /**
    * Lấy danh sách bàn + khả dụng theo thời gian/số khách
    */
-  static async getTablesAvailability({ date, time, guests }) {
+  static async getTablesAvailability({ date, time, guests, ignoreCapacity }) {
     const query = new URLSearchParams({
       date: String(date),
       time: String(time),
       guests: String(guests),
     });
+
+    if (ignoreCapacity !== undefined) {
+      query.set('ignoreCapacity', String(ignoreCapacity));
+    }
 
     return this.request(`/tables/availability?${query.toString()}`, {
       method: "GET",
