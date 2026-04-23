@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import './App.css';
 import LoginScreen from './screen/LoginScreen/LoginScreen';
 import HomeScreen from './screen/HomeScreen/HomeScreen';
+import AboutScreen from './screen/AboutScreen/AboutScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
 import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
@@ -154,6 +155,10 @@ function AppContent() {
         <Route 
           path="/home" 
           element={<HomeScreen onLogout={handleLogout} user={user} />} 
+        />
+        <Route 
+          path="/about" 
+          element={<AboutScreen onLogout={handleLogout} user={user} />} 
         />
         <Route 
           path="/menu" 
