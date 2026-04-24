@@ -27,6 +27,7 @@
     "reviews": "Đánh giá",
     "aboutUs": "Về chúng tôi",
     "contact": "Liên hệ",
+    "orderLookup": "Theo dõi đơn mang về",
     "phone": "Liên hệ nhà hàng",
     "logout": "Đăng xuất",
     "profile": "Thông tin cá nhân",
@@ -39,7 +40,108 @@
     "description": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm",
     "bookTable": "Đặt bàn",
     "takeaway": "Đặt món mang về",
-    "footerDescription": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất."
+    "footerDescription": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất.",
+    "featured": {
+      "title": "Thực đơn của chúng tôi",
+      "subtitle": "Khám phá các món ăn đặc sắc được chế biến từ nguyên liệu tươi ngon hằng ngày",
+      "notRated": "Chưa đánh giá",
+      "viewMenu": "Xem thực đơn",
+      "empty": "Không có món ăn trong danh mục này",
+      "prevItems": "Xem 3 món trước",
+      "nextItems": "Xem 3 món tiếp theo",
+      "pageStatus": "Trang {{current}} trên {{total}}"
+    },
+    "testimonials": {
+      "subtitle": "Đánh giá 4.8 trên 5",
+      "title": "Đánh giá của khách hàng",
+      "items": [
+        {
+          "role": "Yêu thích ẩm thực",
+          "text": "Món ăn nhanh chóng được phục vụ, trình bày sang trọng và hương vị cân bằng. Bầu không khí bữa tối tuyệt vời."
+        },
+        {
+          "role": "Khách hàng gia đình",
+          "text": "Nhân viên phục vụ rất tuyệt vời và sắp xếp bàn cho chúng tôi nhanh chóng. Gia đình tôi rất hài lòng."
+        },
+        {
+          "role": "Khách hàng công ty",
+          "text": "Nơi tốt để họp nhóm với mức âm thanh thoải mái và các món nướng rất ngon."
+        }
+      ]
+    },
+    "whyUs": {
+      "subtitle": "Chất lượng dịch vụ",
+      "title": "Những gì chúng tôi luôn mang lại",
+      "items": [
+        "Nguyên liệu tươi chuẩn bị hàng ngày",
+        "Hương vị Việt Nam với nét hiện đại",
+        "Không gian ấm áp với thiết kế tinh tế",
+        "Dịch vụ nhanh chóng và chuyên nghiệp"
+      ]
+    },
+    "gallery": {
+      "subtitle": "Không gian nhà hàng",
+      "images": [
+        "Khu vực ăn uống",
+        "Bếp mở",
+        "Không gian đặc biệt"
+      ]
+    },
+    "perks": {
+      "viewDetails": "Xem chi tiết",
+      "items": [
+        {
+          "title": "Ưu đãi cuối tuần",
+          "desc": "Tiết kiệm 20% cho nhóm từ 6 khách trở lên."
+        },
+        {
+          "title": "Giờ vàng",
+          "desc": "Thực đơn combo đặc biệt từ 14:00 đến 17:00 mỗi ngày."
+        },
+        {
+          "title": "Không gian riêng tư",
+          "desc": "Phòng riêng cho 8-12 khách với thực đơn tùy chỉnh."
+        }
+      ]
+    },
+    "contact": {
+      "subtitle": "Liên hệ và bản đồ",
+      "title": "Hãy ghé thăm chúng tôi hôm nay",
+      "mapDescription": "Tìm chi nhánh gần nhất chỉ trong một lần nhấp và nhận chỉ dẫn ngay lập tức.",
+      "getDirections": "Nhận chỉ dẫn",
+      "infoTitle": "Thông tin liên hệ",
+      "addressFallback": "Vui lòng cập nhật địa chỉ nhà hàng",
+      "phoneFallback": "Vui lòng cập nhật số điện thoại nhà hàng",
+      "phoneFallbackShort": "Vui lòng cập nhật số điện thoại",
+      "emailFallback": "Vui lòng cập nhật email nhà hàng",
+      "openingHours": "Giờ hoạt động: {{timeRangeLabel}}"
+    },
+    "faq": {
+      "subtitle": "Câu hỏi thường gặp",
+      "title": "Câu trả lời nhanh",
+      "items": [
+        {
+          "question": "Tôi có thể đặt bàn như thế nào?",
+          "answer": "Bạn có thể điền vào biểu mẫu đặt bàn nhanh ở đầu trang này hoặc gọi trực tiếp đến hotline của chúng tôi."
+        },
+        {
+          "question": "Bạn có hỗ trợ đặt bàn nhóm không?",
+          "answer": "Có. Chúng tôi khuyên bạn đặt bàn trước 1-2 ngày để chúng tôi có thể chuẩn bị không gian và các tùy chọn thực đơn."
+        },
+        {
+          "question": "Có chỗ đỗ xe không?",
+          "answer": "Có. Cả chỗ đỗ xe máy và ô tô đều có sẵn gần lối vào chính."
+        },
+        {
+          "question": "Giờ mở cửa của bạn là bao nhiêu?",
+          "answer": "Chúng tôi mở cửa từ {{openingTime}} đến {{closingTime}} hàng ngày."
+        }
+      ]
+    },
+    "info": {
+      "openNow": "Đang mở cửa",
+      "closedNow": "Đóng cửa"
+    }
   },
   "auth": {
     "email": "Email",
@@ -68,6 +170,206 @@
     "guests": "Số khách",
     "notes": "Ghi chú",
     "confirmReservation": "Xác nhận đặt bàn"
+  },
+  "about": {
+    "hero": {
+      "title": "Về Chúng Tôi",
+      "subtitle": "Khám phá câu chuyện và đam mê phía sau nhà hàng"
+    },
+    "story": {
+      "title": "Câu Chuyện Của Chúng Tôi",
+      "paragraph1": "Nhà hàng của chúng tôi được thành lập với niềm đam mê mang đến những trải nghiệm ẩm thực tuyệt vời cho khách hàng. Từ những ngày đầu tiên, chúng tôi cam kết sử dụng những nguyên liệu tươi mới, chất lượng cao nhất để tạo nên những món ăn ngon miệng.",
+      "paragraph2": "Với đội ngũ đầu bếp tận tâm và nhân viên phục vụ chuyên nghiệp, chúng tôi luôn nỗ lực để mang lại cho mỗi vị khách những kỷ niệm đáng nhớ qua từng bữa ăn.",
+      "imageAlt": "Nội thất nhà hàng"
+    },
+    "values": {
+      "title": "Sứ Mệnh & Tầm Nhìn",
+      "items": [
+        {
+          "title": "Sứ Mệnh",
+          "text": "Cung cấp các bữa ăn chất lượng cao với dịch vụ xuất sắc, mang lại niềm vui và sự hài lòng cho mỗi khách hàng."
+        },
+        {
+          "title": "Tầm Nhìn",
+          "text": "Trở thành nhà hàng hàng đầu được yêu thích và tin tưởng, nơi mọi người muốn quay lại."
+        },
+        {
+          "title": "Giá Trị Cốt Lõi",
+          "text": "Chất lượng, tận tâm, độc đáo và bền vững là những giá trị mà chúng tôi luôn theo đuổi."
+        }
+      ]
+    },
+    "whyUs": {
+      "title": "Tại Sao Chọn Chúng Tôi?",
+      "items": [
+        {
+          "title": "Nguyên Liệu Tươi Sạch",
+          "text": "Chúng tôi chỉ sử dụng nguyên liệu tươi mới, chất lượng cao từ những nhà cung cấp đáng tin cậy."
+        },
+        {
+          "title": "Đầu Bếp Tâm Huyết",
+          "text": "Đội ngũ đầu bếp giàu kinh nghiệm với đam mê nấu nướng và tạo ra những món ăn độc đáo."
+        },
+        {
+          "title": "Dịch Vụ Tuyệt Vời",
+          "text": "Nhân viên phục vụ chuyên nghiệp, tận tâm và luôn sẵn sàng giúp đỡ bạn."
+        },
+        {
+          "title": "Giá Cả Hợp Lý",
+          "text": "Chúng tôi cung cấp giá trị tốt nhất cho số tiền bạn bỏ ra mà không bao giờ hy sinh chất lượng."
+        },
+        {
+          "title": "Nhiều Giải Thưởng",
+          "text": "Được công nhận và đạt nhiều giải thưởng trong các cuộc thi ẩm thực danh giá."
+        },
+        {
+          "title": "Vị Trí Tiện Lợi",
+          "text": "Nằm ở vị trí trung tâm, dễ dàng tiếp cận và có đủ chỗ đậu xe."
+        }
+      ]
+    },
+    "team": {
+      "title": "Đội Ngũ Của Chúng Tôi",
+      "intro": "Đội ngũ của chúng tôi bao gồm những chuyên gia tận tâm trong lĩnh vực ẩm thực và dịch vụ khách hàng.",
+      "members": [
+        {
+          "title": "Đầu Bếp Trưởng",
+          "text": "20+ năm kinh nghiệm nấu ăn, chuyên gia trong các món ăn truyền thống Việt Nam"
+        },
+        {
+          "title": "Quản Lý Nhà Hàng",
+          "text": "Đảm bảo mọi hoạt động của nhà hàng diễn ra trôi chảy và chuyên nghiệp"
+        },
+        {
+          "title": "Chuyên Viên Phục Vụ",
+          "text": "Đội ngũ phục vụ tận tâm, luôn sẵn sàng phục vụ với nụ cười"
+        }
+      ]
+    }
+  },
+  "booking": {
+    "submitFailed": "Đặt bàn thất bại, vui lòng thử lại.",
+    "tables": {
+      "title": "Sơ đồ bàn",
+      "subtitleReady": "Chọn bàn phù hợp với yêu cầu của bạn",
+      "subtitleEmpty": "Điền thông tin bên trái để xem bàn trống",
+      "noParams": "Chưa có thông tin đặt bàn",
+      "loading": "Đang tải danh sách bàn...",
+      "empty": "Không có bàn trống cho thời gian này",
+      "loadError": "Không thể tải danh sách bàn",
+      "selectRequired": "Vui lòng chọn một bàn ở bên phải trước khi đặt.",
+      "invalidTable": "Không xác định được bàn, vui lòng thử lại.",
+      "unavailable": "Không khả dụng",
+      "seatCount": "{{count}} ghế",
+      "selectedSummary": "✓ {{id}} · {{seats}} ghế đã chọn",
+      "legend": {
+        "available": "Trống",
+        "selected": "Đã chọn",
+        "booked": "Đã đặt"
+      },
+      "disabledReasons": {
+        "occupied": "Đang có khách",
+        "reserved": "Đã được giữ",
+        "capacity": "Không đủ chỗ",
+        "timeConflict": "Trùng thời gian"
+      }
+    }
+  },
+  "reservationSuccess": {
+    "title": "Cảm ơn bạn!",
+    "message": "Cảm ơn bạn đã hoàn tất đặt bàn. Thông tin về đặt bàn {{tableId}} vào lúc {{timeReservation}} ngày {{dayReservation}} cho {{guestCount}} người đã được gửi qua mail cá nhân hoặc bạn có thể theo dõi đơn mang về ở trang cá nhân.",
+    "backHome": "Quay lại Trang chủ",
+    "footer": "Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi"
+  },
+  "tableMap": {
+    "title": "Sơ đồ nhà hàng",
+    "reservationInfoTitle": "Thông tin đặt bàn",
+    "labels": {
+      "date": "Ngày",
+      "time": "Thời gian",
+      "guests": "Số khách"
+    },
+    "instruction": "Chọn bàn khả dụng bên dưới",
+    "backToReservation": "Quay lại thông tin đặt chỗ",
+    "selectionHint": "Chọn một bàn để tiếp tục",
+    "loading": "Đang tải danh sách bàn...",
+    "selectedNotice": "{{id}} • {{seats}} ghế • Phù hợp cho {{guestCount}} người",
+    "legendAriaLabel": "Ghi chú trạng thái bàn",
+    "legend": {
+      "available": "Trống",
+      "selected": "Đã chọn",
+      "booked": "Đã đặt"
+    },
+    "available": "có sẵn",
+    "unavailable": "không khả dụng",
+    "seatCount": "{{count}} ghế",
+    "tableAriaLabel": "Bàn {{id}}, {{seats}} ghế, {{status}}",
+    "confirm": "Xác nhận bàn",
+    "submitting": "Đang đặt bàn...",
+    "footerNote": "Giữ bàn trong 10 phút",
+    "loadError": "Không thể tải danh sách bàn",
+    "selectRequired": "Bạn chưa chọn bàn.",
+    "invalidTable": "Không xác định được bàn",
+    "submitFailed": "Đặt bàn thất bại",
+    "disabledReasons": {
+      "occupied": "Đang có khách",
+      "reserved": "Đã được giữ",
+      "capacity": "Không đủ chỗ",
+      "timeConflict": "Trùng thời gian"
+    }
+  },
+  "orderLookup": {
+    "hero": {
+      "title": "Theo dõi đơn mang về",
+      "subtitle": "Không cần đăng nhập. Nhập một trong các thông tin bên dưới để xem trạng thái đơn của bạn."
+    },
+    "form": {
+      "orderCode": "Mã đơn hàng",
+      "orderCodePlaceholder": "Ví dụ: ORD-20260406-000123",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "Ví dụ: 0912345678",
+      "email": "Email",
+      "emailPlaceholder": "Ví dụ: customer@email.com",
+      "submit": "Tra cứu đơn hàng",
+      "searching": "Đang tra cứu..."
+    },
+    "validation": {
+      "required": "Vui lòng nhập mã đơn hàng hoặc số điện thoại hoặc email để tra cứu."
+    },
+    "lookupFailed": "Không thể tra cứu đơn hàng, vui lòng thử lại.",
+    "empty": "Không tìm thấy đơn phù hợp với thông tin đã nhập.",
+    "resultsTitle": "Đơn đã tìm thấy",
+    "detailTitle": "Chi tiết đơn",
+    "itemsTitle": "Món trong đơn",
+    "noteTitle": "Ghi chú",
+    "emptyNote": "(Không có ghi chú)",
+    "labels": {
+      "customer": "Khách",
+      "pickupTime": "Nhận món",
+      "orderCode": "Mã đơn",
+      "status": "Trạng thái",
+      "totalAmount": "Tổng tiền",
+      "depositAmount": "Tiền cọc"
+    },
+    "table": {
+      "item": "Món",
+      "quantity": "SL",
+      "unitPrice": "Đơn giá",
+      "lineTotal": "Thành tiền"
+    },
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "preparing": "Đang chuẩn bị",
+      "ready": "Sẵn sàng để lấy",
+      "completed": "Đã hoàn tất",
+      "canceled": "Đã hủy"
+    },
+    "pagination": {
+      "prev": "Trang trước",
+      "next": "Trang sau",
+      "showing": "Hiển thị {{start}} - {{end}} / {{total}}"
+    }
   },
   "footer": {
     "services": "Dịch vụ",
@@ -102,10 +404,24 @@
   "datePlaceholder": "mm / dd / yyyy",
   "time": "Giờ",
   "timePlaceholder": "Chọn ngày trước",
+  "selectTime": "Chọn giờ",
   "people": "Số người",
   "peoplePlaceholder": "Chọn số người",
   "submit": "Đặt bàn ngay",
-  "note": "Đặt bàn nhanh một cách nhanh chóng"
+  "submitting": "Đang đặt bàn...",
+  "note": "Đặt bàn nhanh một cách nhanh chóng",
+  "noSlots": "Hết giờ đặt hôm nay",
+  "fillAllFields": "Vui lòng nhập đầy đủ thông tin!",
+  "fillGuestInfo": "Vui lòng điền đầy đủ thông tin!",
+  "guestInfoTitle": "Thông tin khách hàng",
+  "guestInfoSubtitle": "Vui lòng nhập thông tin để tiếp tục đặt bàn",
+  "fullName": "Họ và tên",
+  "fullNamePlaceholder": "Nhập họ và tên",
+  "phone": "Số điện thoại",
+  "phonePlaceholder": "Nhập số điện thoại",
+  "processing": "Đang xử lý...",
+  "continue": "Tiếp tục",
+  "peopleCount": "{{count}} người"
 },
 "cart": {
   "title": "Giỏ hàng",

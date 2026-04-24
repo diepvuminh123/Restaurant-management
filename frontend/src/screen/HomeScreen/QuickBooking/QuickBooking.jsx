@@ -126,7 +126,7 @@ const QuickBooking = ({ user }) => {
     if (loading) {
         featuredMenuContent = (
             <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                <p>Đang tải...</p>
+                <p>{t('common.loading')}</p>
             </div>
         );
     } else if (featuredDishes.length > 0) {
@@ -142,15 +142,15 @@ const QuickBooking = ({ user }) => {
                         alt={dish.name}
                         className="dish-thumb"
                     />
-                    {dish.is_new ? <span className="featured-dish-card__tag">Mới</span> : null}
-                    {dish.is_popular ? <span className="featured-dish-card__tag">Phổ biến</span> : null}
+                    {dish.is_new ? <span className="featured-dish-card__tag">{t('menuScreen.new')}</span> : null}
+                    {dish.is_popular ? <span className="featured-dish-card__tag">{t('menuScreen.popular')}</span> : null}
                 </div>
 
                 <div className="featured-dish-card__content">
                     <div className="featured-dish-card__headline">
                         <h3>{dish.name}</h3>
                         <span className="featured-dish-card__rating">
-                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : 'Chưa đánh giá'}
+                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : t('home.featured.notRated')}
                         </span>
                     </div>
 
@@ -164,7 +164,7 @@ const QuickBooking = ({ user }) => {
                             onClick={() => navigate('/menu')}
                             style={{ width: '100%' }}
                         >
-                            <FiShoppingBag /> Xem thực đơn
+                            <FiShoppingBag /> {t('home.featured.viewMenu')}
                         </button>
                     </div>
                 </div>
@@ -173,7 +173,7 @@ const QuickBooking = ({ user }) => {
     } else {
         featuredMenuContent = (
             <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                <p>Không có món ăn trong danh mục này</p>
+                <p>{t('home.featured.empty')}</p>
             </div>
         );
     }
@@ -181,46 +181,46 @@ const QuickBooking = ({ user }) => {
     const testimonials = [
         {
             name: 'Diep Vu Minh',
-            role: 'Yêu thích ẩm thực',
+            role: t('home.testimonials.items.0.role'),
             stars: 5,
-            text: 'Món ăn nhanh chóng được phục vụ, trình bày sang trọng và hương vị cân bằng. Bầu không khí bữa tối tuyệt vời.',
+            text: t('home.testimonials.items.0.text'),
         },
         {
             name: 'Nguyen Le Minh Han',
-            role: 'Khách hàng gia đình',
+            role: t('home.testimonials.items.1.role'),
             stars: 5,
-            text: 'Nhân viên phục vụ rất tuyệt vời và sắp xếp bàn cho chúng tôi nhanh chóng. Gia đình tôi rất hài lòng.',
+            text: t('home.testimonials.items.1.text'),
         },
         {
             name: 'Ngo Quang Danh',
-            role: 'Khách hàng công ty',
+            role: t('home.testimonials.items.2.role'),
             stars: 4,
-            text: 'Nơi tốt để họp nhóm với mức âm thanh thoải mái và các món nướng rất ngon.',
+            text: t('home.testimonials.items.2.text'),
         },
     ];
 
     const perks = [
-        { icon: <FiGift />, title: 'Ưu đãi cuối tuần', desc: 'Tiết kiệm 20% cho nhóm từ 6 khách trở lên.' },
-        { icon: <FiClock />, title: 'Giờ vàng', desc: 'Thực đơn combo đặc biệt từ 14:00 đến 17:00 mỗi ngày.' },
-        { icon: <FiCalendar />, title: 'Không gian riêng tư', desc: 'Phòng riêng cho 8-12 khách với thực đơn tùy chỉnh.' },
+        { icon: <FiGift />, title: t('home.perks.items.0.title'), desc: t('home.perks.items.0.desc') },
+        { icon: <FiClock />, title: t('home.perks.items.1.title'), desc: t('home.perks.items.1.desc') },
+        { icon: <FiCalendar />, title: t('home.perks.items.2.title'), desc: t('home.perks.items.2.desc') },
     ];
 
     const faqs = [
         {
-            question: 'Tôi có thể đặt bàn như thế nào?',
-            answer: 'Bạn có thể điền vào biểu mẫu đặt bàn nhanh ở đầu trang này hoặc gọi trực tiếp đến hotline của chúng tôi.',
+            question: t('home.faq.items.0.question'),
+            answer: t('home.faq.items.0.answer'),
         },
         {
-            question: 'Bạn có hỗ trợ đặt bàn nhóm không?',
-            answer: 'Có. Chúng tôi khuyên bạn đặt bàn trước 1-2 ngày để chúng tôi có thể chuẩn bị không gian và các tùy chọn thực đơn.',
+            question: t('home.faq.items.1.question'),
+            answer: t('home.faq.items.1.answer'),
         },
         {
-            question: 'Có chỗ đỗ xe không?',
-            answer: 'Có. Cả chỗ đỗ xe máy và ô tô đều có sẵn gần lối vào chính.',
+            question: t('home.faq.items.2.question'),
+            answer: t('home.faq.items.2.answer'),
         },
         {
-            question: 'Giờ mở cửa của bạn là bao nhiêu?',
-            answer: `Chúng tôi mở cửa từ ${openingTime} đến ${closingTime} hàng ngày.`,
+            question: t('home.faq.items.3.question'),
+            answer: t('home.faq.items.3.answer', { openingTime, closingTime }),
         },
     ];
 
@@ -271,8 +271,8 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-featured-menu">
                 <div className="section-head centered">
-                    <h2>Thực đơn của chúng tôi</h2>
-                    <p className="home-featured-menu__subtitle">Khám phá các món ăn đặc sắc được chế biến từ nguyên liệu tươi ngon hằng ngày</p>
+                    <h2>{t('home.featured.title')}</h2>
+                    <p className="home-featured-menu__subtitle">{t('home.featured.subtitle')}</p>
                 </div>
 
                 <div className="home-featured-menu__carousel">
@@ -282,7 +282,7 @@ const QuickBooking = ({ user }) => {
                             type="button"
                             onClick={goPrevPage}
                             disabled={pageIndex === 0}
-                            aria-label="Xem 3 món trước"
+                            aria-label={t('home.featured.prevItems')}
                         >
                             <FiChevronLeft />
                         </button>
@@ -302,7 +302,7 @@ const QuickBooking = ({ user }) => {
                             type="button"
                             onClick={goNextPage}
                             disabled={pageIndex >= totalPages - 1}
-                            aria-label="Xem 3 món tiếp theo"
+                            aria-label={t('home.featured.nextItems')}
                         >
                             <FiChevronRight />
                         </button>
@@ -310,7 +310,7 @@ const QuickBooking = ({ user }) => {
                 </div>
 
                 {sortedFeaturedDishes.length > PAGE_SIZE ? (
-                    <div className="home-featured-menu__status" aria-label={`Trang ${pageIndex + 1} trên ${totalPages}`}>
+                    <div className="home-featured-menu__status" aria-label={t('home.featured.pageStatus', { current: pageIndex + 1, total: totalPages })}>
                         <div className="home-featured-menu__status-bar" aria-hidden="true">
                             <span
                                 className="home-featured-menu__status-fill"
@@ -324,8 +324,8 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-testimonials">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Đánh giá 4.8 trên 5</p>
-                    <h2>Đánh giá của khách hàng</h2>
+                    <p className="section-subtitle">{t('home.testimonials.subtitle')}</p>
+                    <h2>{t('home.testimonials.title')}</h2>
                 </div>
                 <div className="testimonial-grid">
                     {testimonials.map((item) => (
@@ -343,25 +343,25 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-why-us">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Chất lượng dịch vụ</p>
-                    <h2>Những gì chúng tôi luôn mang lại</h2>
+                    <p className="section-subtitle">{t('home.whyUs.subtitle')}</p>
+                    <h2>{t('home.whyUs.title')}</h2>
                 </div>
                 <div className="why-grid">
-                    <div className="why-item"><FiCheckCircle /> Nguyên liệu tươi chuẩn bị hàng ngày</div>
-                    <div className="why-item"><FiCheckCircle /> Hương vị Việt Nam với nét hiện đại</div>
-                    <div className="why-item"><FiCheckCircle /> Không gian ấm áp với thiết kế tinh tế</div>
-                    <div className="why-item"><FiCheckCircle /> Dịch vụ nhanh chóng và chuyên nghiệp</div>
+                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.0')}</div>
+                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.1')}</div>
+                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.2')}</div>
+                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.3')}</div>
                 </div>
             </section>
 
             <section className="home-section home-gallery">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Không gian nhà hàng</p>
+                    <p className="section-subtitle">{t('home.gallery.subtitle')}</p>
                 </div>
                 <div className="gallery-grid">
-                    <img src={Restaurant1} alt="Khu vực ăn uống" />
-                    <img src={Restaurant2} alt="Bếp mở" />
-                    <img src={Restaurant3} alt="Không gian đặc biệt" />
+                    <img src={Restaurant1} alt={t('home.gallery.images.0')} />
+                    <img src={Restaurant2} alt={t('home.gallery.images.1')} />
+                    <img src={Restaurant3} alt={t('home.gallery.images.2')} />
                 </div>
             </section>
 
@@ -372,7 +372,7 @@ const QuickBooking = ({ user }) => {
                             <div className="perk-icon">{perk.icon}</div>
                             <h3>{perk.title}</h3>
                             <p>{perk.desc}</p>
-                            <button className="mini-btn" onClick={() => navigate('/menu')}>Xem chi tiết</button>
+                            <button className="mini-btn" onClick={() => navigate('/menu')}>{t('home.perks.viewDetails')}</button>
                         </article>
                     ))}
                 </div>
@@ -380,30 +380,30 @@ const QuickBooking = ({ user }) => {
 
             <section className="home-section home-contact-map">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Liên hệ và bản đồ</p>
-                    <h2>Hãy ghé thăm chúng tôi hôm nay</h2>
+                    <p className="section-subtitle">{t('home.contact.subtitle')}</p>
+                    <h2>{t('home.contact.title')}</h2>
                 </div>
                 <div className="contact-map-grid">
                     <div className="map-card">
                         <div className="map-pin"><FiMapPin /></div>
                         <h3>Google Maps</h3>
-                        <p>Tìm chi nhánh gần nhất chỉ trong một lần nhấp và nhận chỉ dẫn ngay lập tức.</p>
-                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">Nhận chỉ dẫn</a>
+                        <p>{t('home.contact.mapDescription')}</p>
+                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">{t('home.contact.getDirections')}</a>
                     </div>
                     <div className="contact-card">
-                        <h3>Thông tin liên hệ</h3>
-                        <p><FiMapPin /> {addressLine || 'Vui lòng cập nhật địa chỉ nhà hàng'}</p>
-                        <p><FiPhone /> {contactPhone || 'Vui lòng cập nhật số điện thoại nhà hàng'}</p>
-                        <p><FiMail /> {contactEmail || 'Vui lòng cập nhật email nhà hàng'}</p>
-                        <p><FiClock /> Giờ hoạt động: {timeRangeLabel}</p>
+                        <h3>{t('home.contact.infoTitle')}</h3>
+                        <p><FiMapPin /> {addressLine || t('home.contact.addressFallback')}</p>
+                        <p><FiPhone /> {contactPhone || t('home.contact.phoneFallback')}</p>
+                        <p><FiMail /> {contactEmail || t('home.contact.emailFallback')}</p>
+                        <p><FiClock /> {t('home.contact.openingHours', { timeRangeLabel })}</p>
                     </div>
                 </div>
             </section>
 
             <section className="home-section home-faq">
                 <div className="section-head centered">
-                    <p className="section-subtitle">Câu hỏi thường gặp</p>
-                    <h2>Câu trả lời nhanh</h2>
+                    <p className="section-subtitle">{t('home.faq.subtitle')}</p>
+                    <h2>{t('home.faq.title')}</h2>
                 </div>
                 <div className="faq-list">
                     {faqs.map((faq) => (

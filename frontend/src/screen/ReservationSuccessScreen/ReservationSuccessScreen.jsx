@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MdCheckCircle } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 import './ReservationSuccessScreen.css';
 
 const ReservationSuccessScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { selectedTable, dayReservation, timeReservation, guestCount } = location.state || {};
 
   useEffect(() => {
@@ -26,23 +28,25 @@ const ReservationSuccessScreen = () => {
           <MdCheckCircle />
         </div>
 
-        <h2 className="success-title">Cảm ơn bạn!</h2>
+        <h2 className="success-title">{t('reservationSuccess.title')}</h2>
 
         <div className="success-message">
           <p>
-            Cảm ơn bạn đã hoàn tất đặt bàn. Thông tin về đặt bàn {selectedTable?.id} vào lúc{' '}
-            <strong>{timeReservation}</strong> ngày <strong>{dayReservation}</strong> cho{' '}
-            <strong>{guestCount} người</strong> đã được gửi qua mail cá nhân hoặc bạn có thể theo dõi
-            đơn mang về ở trang cá nhân.
+            {t('reservationSuccess.message', {
+              tableId: selectedTable?.id,
+              timeReservation,
+              dayReservation,
+              guestCount,
+            })}
           </p>
         </div>
 
         <button className="back-home-btn" onClick={handleBackHome}>
-          Quay lại Trang chủ
+          {t('reservationSuccess.backHome')}
         </button>
       </div>
 
-      <p className="footer-message">Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi</p>
+      <p className="footer-message">{t('reservationSuccess.footer')}</p>
     </div>
   );
 };

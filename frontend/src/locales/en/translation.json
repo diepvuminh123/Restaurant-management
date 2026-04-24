@@ -27,6 +27,7 @@
     "reviews": "Reviews",
     "aboutUs": "About Us",
     "contact": "Contact",
+    "orderLookup": "Track takeaway order",
     "phone": "Contact restaurant",
     "logout": "Logout",
     "profile": "Profile",
@@ -39,7 +40,108 @@
     "description": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service",
     "bookTable": "Book Table",
     "takeaway": "Order Takeaway",
-    "footerDescription": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service. We are committed to bringing you the highest quality dishes."
+    "footerDescription": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service. We are committed to bringing you the highest quality dishes.",
+    "featured": {
+      "title": "Our Menu",
+      "subtitle": "Discover signature dishes crafted daily from fresh ingredients",
+      "notRated": "Not rated yet",
+      "viewMenu": "View menu",
+      "empty": "No dishes are available in this category",
+      "prevItems": "View previous 3 dishes",
+      "nextItems": "View next 3 dishes",
+      "pageStatus": "Page {{current}} of {{total}}"
+    },
+    "testimonials": {
+      "subtitle": "Rated 4.8 out of 5",
+      "title": "What Our Guests Say",
+      "items": [
+        {
+          "role": "Food enthusiast",
+          "text": "The dishes were served quickly, plated beautifully, and balanced in flavor. The dinner atmosphere was excellent."
+        },
+        {
+          "role": "Family guest",
+          "text": "The staff were wonderful and arranged our table very quickly. My family was very satisfied."
+        },
+        {
+          "role": "Corporate guest",
+          "text": "A great place for team meetups with a comfortable sound level and very tasty grilled dishes."
+        }
+      ]
+    },
+    "whyUs": {
+      "subtitle": "Service quality",
+      "title": "What We Always Deliver",
+      "items": [
+        "Fresh ingredients prepared daily",
+        "Vietnamese flavors with a modern touch",
+        "A warm atmosphere with refined design",
+        "Fast and professional service"
+      ]
+    },
+    "gallery": {
+      "subtitle": "Restaurant spaces",
+      "images": [
+        "Dining area",
+        "Open kitchen",
+        "Special ambiance"
+      ]
+    },
+    "perks": {
+      "viewDetails": "View details",
+      "items": [
+        {
+          "title": "Weekend offers",
+          "desc": "Save 20% for groups of 6 guests or more."
+        },
+        {
+          "title": "Happy hours",
+          "desc": "Special combo menu from 14:00 to 17:00 every day."
+        },
+        {
+          "title": "Private space",
+          "desc": "Private room for 8-12 guests with a customized menu."
+        }
+      ]
+    },
+    "contact": {
+      "subtitle": "Contact and map",
+      "title": "Visit Us Today",
+      "mapDescription": "Find the nearest branch in one click and get directions instantly.",
+      "getDirections": "Get directions",
+      "infoTitle": "Contact information",
+      "addressFallback": "Please update the restaurant address",
+      "phoneFallback": "Please update the restaurant phone number",
+      "phoneFallbackShort": "Please update the phone number",
+      "emailFallback": "Please update the restaurant email",
+      "openingHours": "Opening hours: {{timeRangeLabel}}"
+    },
+    "faq": {
+      "subtitle": "Frequently asked questions",
+      "title": "Quick answers",
+      "items": [
+        {
+          "question": "How can I reserve a table?",
+          "answer": "You can fill out the quick reservation form at the top of this page or call our hotline directly."
+        },
+        {
+          "question": "Do you support group reservations?",
+          "answer": "Yes. We recommend booking 1-2 days in advance so we can prepare the space and menu options."
+        },
+        {
+          "question": "Is parking available?",
+          "answer": "Yes. Both motorbike and car parking are available near the main entrance."
+        },
+        {
+          "question": "What are your opening hours?",
+          "answer": "We are open daily from {{openingTime}} to {{closingTime}}."
+        }
+      ]
+    },
+    "info": {
+      "openNow": "Open now",
+      "closedNow": "Closed"
+    }
   },
   "auth": {
     "email": "Email",
@@ -68,6 +170,206 @@
     "guests": "Number of Guests",
     "notes": "Notes",
     "confirmReservation": "Confirm Reservation"
+  },
+  "about": {
+    "hero": {
+      "title": "About Us",
+      "subtitle": "Discover the story and passion behind our restaurant"
+    },
+    "story": {
+      "title": "Our Story",
+      "paragraph1": "Our restaurant was founded with a passion for bringing memorable dining experiences to every guest. From the very beginning, we committed to using the freshest, highest-quality ingredients to create delicious dishes.",
+      "paragraph2": "With a dedicated team of chefs and professional service staff, we always strive to give every guest lasting memories through each meal.",
+      "imageAlt": "Restaurant interior"
+    },
+    "values": {
+      "title": "Mission & Vision",
+      "items": [
+        {
+          "title": "Mission",
+          "text": "Deliver high-quality meals with excellent service, bringing joy and satisfaction to every customer."
+        },
+        {
+          "title": "Vision",
+          "text": "Become a leading restaurant that people love and trust, a place they always want to return to."
+        },
+        {
+          "title": "Core Values",
+          "text": "Quality, dedication, originality, and sustainability are the values we always pursue."
+        }
+      ]
+    },
+    "whyUs": {
+      "title": "Why Choose Us?",
+      "items": [
+        {
+          "title": "Fresh Ingredients",
+          "text": "We only use fresh, high-quality ingredients from trusted suppliers."
+        },
+        {
+          "title": "Passionate Chefs",
+          "text": "Our experienced chefs are passionate about cooking and creating unique dishes."
+        },
+        {
+          "title": "Excellent Service",
+          "text": "Our professional and dedicated staff are always ready to help you."
+        },
+        {
+          "title": "Reasonable Prices",
+          "text": "We provide the best value for your money without ever compromising on quality."
+        },
+        {
+          "title": "Award Winning",
+          "text": "Recognized with many prestigious culinary awards and honors."
+        },
+        {
+          "title": "Convenient Location",
+          "text": "Located centrally, easy to reach, and with sufficient parking available."
+        }
+      ]
+    },
+    "team": {
+      "title": "Our Team",
+      "intro": "Our team includes dedicated professionals in culinary arts and customer service.",
+      "members": [
+        {
+          "title": "Head Chef",
+          "text": "20+ years of cooking experience, specializing in traditional Vietnamese cuisine"
+        },
+        {
+          "title": "Restaurant Manager",
+          "text": "Ensures every restaurant operation runs smoothly and professionally"
+        },
+        {
+          "title": "Service Specialist",
+          "text": "A caring service team always ready to serve you with a smile"
+        }
+      ]
+    }
+  },
+  "booking": {
+    "submitFailed": "Reservation failed, please try again.",
+    "tables": {
+      "title": "Table layout",
+      "subtitleReady": "Choose the table that best matches your request",
+      "subtitleEmpty": "Fill in the form on the left to view available tables",
+      "noParams": "No reservation information yet",
+      "loading": "Loading table list...",
+      "empty": "No available tables for this time slot",
+      "loadError": "Unable to load the table list",
+      "selectRequired": "Please choose a table on the right before booking.",
+      "invalidTable": "Unable to identify the table, please try again.",
+      "unavailable": "Unavailable",
+      "seatCount": "{{count}} seats",
+      "selectedSummary": "✓ {{id}} · {{seats}} seats selected",
+      "legend": {
+        "available": "Available",
+        "selected": "Selected",
+        "booked": "Booked"
+      },
+      "disabledReasons": {
+        "occupied": "Occupied",
+        "reserved": "Reserved",
+        "capacity": "Insufficient capacity",
+        "timeConflict": "Time conflict"
+      }
+    }
+  },
+  "reservationSuccess": {
+    "title": "Thank you!",
+    "message": "Thank you for completing your reservation. The reservation details for table {{tableId}} at {{timeReservation}} on {{dayReservation}} for {{guestCount}} guests have been sent to your email, or you can track your takeaway order from your profile.",
+    "backHome": "Back to Home",
+    "footer": "Thank you for trusting and using our service"
+  },
+  "tableMap": {
+    "title": "Restaurant layout",
+    "reservationInfoTitle": "Reservation information",
+    "labels": {
+      "date": "Date",
+      "time": "Time",
+      "guests": "Guests"
+    },
+    "instruction": "Choose an available table below",
+    "backToReservation": "Back to reservation details",
+    "selectionHint": "Select a table to continue",
+    "loading": "Loading table list...",
+    "selectedNotice": "{{id}} • {{seats}} seats • Suitable for {{guestCount}} guests",
+    "legendAriaLabel": "Table status legend",
+    "legend": {
+      "available": "Available",
+      "selected": "Selected",
+      "booked": "Booked"
+    },
+    "available": "available",
+    "unavailable": "unavailable",
+    "seatCount": "{{count}} seats",
+    "tableAriaLabel": "Table {{id}}, {{seats}} seats, {{status}}",
+    "confirm": "Confirm table",
+    "submitting": "Submitting reservation...",
+    "footerNote": "Table is held for 10 minutes",
+    "loadError": "Unable to load the table list",
+    "selectRequired": "You have not selected a table.",
+    "invalidTable": "Unable to identify the table",
+    "submitFailed": "Reservation failed",
+    "disabledReasons": {
+      "occupied": "Occupied",
+      "reserved": "Reserved",
+      "capacity": "Insufficient capacity",
+      "timeConflict": "Time conflict"
+    }
+  },
+  "orderLookup": {
+    "hero": {
+      "title": "Track takeaway order",
+      "subtitle": "No login required. Enter one of the details below to check your order status."
+    },
+    "form": {
+      "orderCode": "Order code",
+      "orderCodePlaceholder": "Example: ORD-20260406-000123",
+      "phone": "Phone number",
+      "phonePlaceholder": "Example: 0912345678",
+      "email": "Email",
+      "emailPlaceholder": "Example: customer@email.com",
+      "submit": "Search order",
+      "searching": "Searching..."
+    },
+    "validation": {
+      "required": "Please enter an order code, phone number, or email to search."
+    },
+    "lookupFailed": "Unable to look up the order, please try again.",
+    "empty": "No orders matched the information you entered.",
+    "resultsTitle": "Found orders",
+    "detailTitle": "Order details",
+    "itemsTitle": "Items in order",
+    "noteTitle": "Notes",
+    "emptyNote": "(No notes)",
+    "labels": {
+      "customer": "Customer",
+      "pickupTime": "Pickup time",
+      "orderCode": "Order code",
+      "status": "Status",
+      "totalAmount": "Total amount",
+      "depositAmount": "Deposit amount"
+    },
+    "table": {
+      "item": "Item",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "lineTotal": "Line total"
+    },
+    "status": {
+      "pending": "Pending confirmation",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready for pickup",
+      "completed": "Completed",
+      "canceled": "Canceled"
+    },
+    "pagination": {
+      "prev": "Previous page",
+      "next": "Next page",
+      "showing": "Showing {{start}} - {{end}} / {{total}}"
+    }
   },
   "footer": {
     "services": "Services",
@@ -102,10 +404,24 @@
   "datePlaceholder": "mm / dd / yyyy",
   "time": "Time",
   "timePlaceholder": "Select date first",
+    "selectTime": "Select time",
   "people": "Number of People",
   "peoplePlaceholder": "Select number of people",
   "submit": "Reserve Now",
-  "note": "Make a quick reservation easily"
+    "submitting": "Reserving...",
+    "note": "Make a quick reservation easily",
+    "noSlots": "No reservation slots left for today",
+    "fillAllFields": "Please fill in all required information!",
+    "fillGuestInfo": "Please complete guest information!",
+    "guestInfoTitle": "Guest information",
+    "guestInfoSubtitle": "Please enter your details to continue the reservation",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Enter your full name",
+    "phone": "Phone number",
+    "phonePlaceholder": "Enter your phone number",
+    "processing": "Processing...",
+    "continue": "Continue",
+    "peopleCount": "{{count}} people"
 },
 "cart": {
   "title": "Shopping Cart",

@@ -5,14 +5,15 @@ import BookingScreenHeader from './BookingScreenHeader';
 import { useToastContext } from '../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import ApiService from '../../services/apiService';
+import { useTranslation } from 'react-i18next';
 import './BookingScreen.css';
 
-const getDisabledReasonLabel = (reason) => {
+const getDisabledReasonLabel = (reason, t) => {
   const m = {
-    OCCUPIED: 'Đang có khách',
-    RESERVED: 'Đã được giữ',
-    CAPACITY: 'Không đủ chỗ',
-    TIME_CONFLICT: 'Trùng thời gian',
+    OCCUPIED: t('booking.tables.disabledReasons.occupied'),
+    RESERVED: t('booking.tables.disabledReasons.reserved'),
+    CAPACITY: t('booking.tables.disabledReasons.capacity'),
+    TIME_CONFLICT: t('booking.tables.disabledReasons.timeConflict'),
   };
   return m[reason] || null;
 };
@@ -40,6 +41,7 @@ const keepSelection = (prev, mapped) => {
 const BookingScreen = ({ user }) => {
   const toast = useToastContext();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [formParams, setFormParams] = useState({ date: '', time: '', guests: 0 });
   const [tables, setTables] = useState([]);
@@ -69,7 +71,7 @@ const BookingScreen = ({ user }) => {
         if (!cancelled) {
           setTables([]);
           setSelectedTable(null);
-          toast.error(err?.message || 'Không thể tải danh sách bàn');
+          toast.error(err?.message || t('booking.tables.loadError'));
         }
       } finally {
         if (!cancelled) setLoadingTables(false);
@@ -82,12 +84,12 @@ const BookingScreen = ({ user }) => {
 
   const handleFormContinue = async (data) => {
     if (!selectedTable) {
-      toast.warning('Vui lòng chọn một bàn ở bên phải trước khi đặt.');
+      toast.warning(t('booking.tables.selectRequired'));
       return;
     }
     const tableId = Number(selectedTable.table_id);
     if (!Number.isFinite(tableId)) {
-      toast.error('Không xác định được bàn, vui lòng thử lại.');
+      toast.error(t('booking.tables.invalidTable'));
       return;
     }
     setSubmitting(true);
@@ -109,7 +111,7 @@ const BookingScreen = ({ user }) => {
         },
       });
     } catch (err) {
-      toast.error(err?.message || 'Đặt bàn thất bại, vui lòng thử lại.');
+      toast.error(err?.message || t('booking.submitFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -136,26 +138,26 @@ const BookingScreen = ({ user }) => {
           {/* Phải: Sơ đồ bàn */}
           <div className="booking-split-layout__map">
             <div className="inline-map-panel">
-              <h3 className="inline-map-panel__title">Sơ đồ bàn</h3>
+              <h3 className="inline-map-panel__title">{t('booking.tables.title')}</h3>
               <p className="inline-map-panel__sub">
                 {hasParams
-                  ? 'Chọn bàn phù hợp với yêu cầu của bạn'
-                  : 'Điền thông tin bên trái để xem bàn trống'}
+                  ? t('booking.tables.subtitleReady')
+                  : t('booking.tables.subtitleEmpty')}
               </p>
 
               {!hasParams && (
                 <div className="inline-map-panel__placeholder">
                   <span className="inline-map-panel__icon">🪑</span>
-                  <p>Chưa có thông tin đặt bàn</p>
+                  <p>{t('booking.tables.noParams')}</p>
                 </div>
               )}
 
               {hasParams && loadingTables && (
-                <div className="inline-map-panel__status">Đang tải danh sách bàn...</div>
+                <div className="inline-map-panel__status">{t('booking.tables.loading')}</div>
               )}
 
               {hasParams && !loadingTables && tables.length === 0 && (
-                <div className="inline-map-panel__status">Không có bàn trống cho thời gian này</div>
+                <div className="inline-map-panel__status">{t('booking.tables.empty')}</div>
               )}
 
               {hasParams && !loadingTables && tables.length > 0 && (
@@ -172,11 +174,11 @@ const BookingScreen = ({ user }) => {
                       title={
                         table.status === 'available'
                           ? undefined
-                          : (getDisabledReasonLabel(table.disabled_reason) || 'Không khả dụng')
+                          : (getDisabledReasonLabel(table.disabled_reason, t) || t('booking.tables.unavailable'))
                       }
                     >
                       <span className="booking-table-box__id">{table.id}</span>
-                      <span className="booking-table-box__seats">{table.seats} ghế</span>
+                      <span className="booking-table-box__seats">{t('booking.tables.seatCount', { count: table.seats })}</span>
                     </button>
                   ))}
                 </div>
@@ -184,14 +186,14 @@ const BookingScreen = ({ user }) => {
 
               {selectedTable && (
                 <div className="inline-map-panel__selection">
-                  ✓ {selectedTable.id} &middot; {selectedTable.seats} ghế đã chọn
+                  {t('booking.tables.selectedSummary', { id: selectedTable.id, seats: selectedTable.seats })}
                 </div>
               )}
 
               <div className="inline-map-panel__legend">
-                <span><span className="bdot available" /> Trống</span>
-                <span><span className="bdot selected" /> Đã chọn</span>
-                <span><span className="bdot booked" /> Đã đặt</span>
+                <span><span className="bdot available" /> {t('booking.tables.legend.available')}</span>
+                <span><span className="bdot selected" /> {t('booking.tables.legend.selected')}</span>
+                <span><span className="bdot booked" /> {t('booking.tables.legend.booked')}</span>
               </div>
             </div>
           </div>

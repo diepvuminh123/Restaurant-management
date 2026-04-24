@@ -1,9 +1,11 @@
 import React from 'react';
 import { Clock, Phone, MapPin, Map } from 'lucide-react';
 import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
+import { useTranslation } from 'react-i18next';
 import './RestaurantInformation.css'; // Import file CSS
 
 const RestaurantInformation = () => {
+    const { t, i18n } = useTranslation();
     const {
         isOpenNow,
         openingTime,
@@ -11,7 +13,7 @@ const RestaurantInformation = () => {
         contactPhone,
         addressLine,
     } = useRestaurantInfoContext();
-    const currentDay = new Date().toLocaleDateString('vi-VN', { weekday: 'long' });
+    const currentDay = new Date().toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'vi-VN', { weekday: 'long' });
     const normalizedPhone = contactPhone ? contactPhone.replace(/\s+/g, '') : '';
     const mapUrl = addressLine
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLine)}`
@@ -34,7 +36,7 @@ const RestaurantInformation = () => {
                         {/* 1. Trạng thái mở/đóng */}
                         <div className={`contact-bar__status ${openStatusClass}`}>
                             <span className="contact-bar__statusDot" aria-hidden="true" />
-                            {isOpenNow ? 'Đang mở cửa' : 'Đóng cửa'}
+                            {isOpenNow ? t('home.info.openNow') : t('home.info.closedNow')}
                         </div>
                         
                         {/* 2. Chi tiết giờ */}
@@ -50,13 +52,13 @@ const RestaurantInformation = () => {
                         {/* 1. Điện thoại */}
                         <a href={normalizedPhone ? `tel:${normalizedPhone}` : '#'} className="contact-bar__link">
                             <Phone className="w-4 h-4 mr-1" />
-                            {contactPhone || 'Vui lòng cập nhật số điện thoại'}
+                            {contactPhone || t('home.contact.phoneFallbackShort')}
                         </a>
                         
                         {/* 2. Địa chỉ */}
                         <div className="contact-bar__address">
                             <MapPin className="w-4 h-4 mr-1" />
-                            {addressLine || 'Vui lòng cập nhật địa chỉ nhà hàng'}
+                            {addressLine || t('home.contact.addressFallback')}
                         </div>
                         
                         {/* 3. Nút Chỉ đường */}
@@ -67,7 +69,7 @@ const RestaurantInformation = () => {
                             className="contact-bar__button"
                         >
                             <Map className="w-4 h-4 mr-2" />
-                            Chỉ đường
+                            {t('home.contact.getDirections')}
                         </a>
                     </div>
                 </div>

@@ -4,15 +4,16 @@ import { IoSearchOutline } from "react-icons/io5";
 import ApiService from "../../services/apiService";
 import "./GuestOrderLookupScreen.css";
 import BackButton from "../../component/BackButton/BackButton";
+import { useTranslation } from 'react-i18next';
 
-const STATUS_LABEL_MAP = {
-  PENDING: "Chờ xác nhận",
-  CONFIRMED: "Đã xác nhận",
-  PREPARING: "Đang chuẩn bị",
-  READY: "Sẵn sàng để lấy",
-  COMPLETED: "Đã hoàn tất",
-  CANCELED: "Đã hủy",
-};
+const getStatusLabelMap = (t) => ({
+  PENDING: t('orderLookup.status.pending'),
+  CONFIRMED: t('orderLookup.status.confirmed'),
+  PREPARING: t('orderLookup.status.preparing'),
+  READY: t('orderLookup.status.ready'),
+  COMPLETED: t('orderLookup.status.completed'),
+  CANCELED: t('orderLookup.status.canceled'),
+});
 
 const STATUS_BADGE_MAP = {
   PENDING: "status-pending",
@@ -25,14 +26,14 @@ const STATUS_BADGE_MAP = {
 
 const NOTE_PAYMENT_TAG_REGEX = /^\[PAYMENT_METHOD:[^\]]+\]\s*/;
 
-const formatCurrency = (amount) => Number(amount || 0).toLocaleString("vi-VN");
+const formatCurrency = (amount, locale) => Number(amount || 0).toLocaleString(locale);
 
-const formatDateTime = (value) => {
+const formatDateTime = (value, locale) => {
   if (!value) return "--";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "--";
 
-  return date.toLocaleString("vi-VN", {
+  return date.toLocaleString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     day: "2-digit",
@@ -42,6 +43,9 @@ const formatDateTime = (value) => {
 };
 
 const GuestOrderLookupScreen = () => {
+  const { t, i18n } = useTranslation();
+  const statusLabelMap = getStatusLabelMap(t);
+  const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const [searchParams] = useSearchParams();
   const PAGE_LIMIT = 10;
 
@@ -102,7 +106,7 @@ const GuestOrderLookupScreen = () => {
       }));
       setOffset(0);
       setErrorText(
-        "Vui lòng nhập mã đơn hàng hoặc số điện thoại hoặc email để tra cứu.",
+        t('orderLookup.validation.required'),
       );
       return;
     }
@@ -133,7 +137,7 @@ const GuestOrderLookupScreen = () => {
       }));
       setOffset(0);
       setErrorText(
-        error.message || "Không thể tra cứu đơn hàng, vui lòng thử lại.",
+        error.message || t('orderLookup.lookupFailed'),
       );
     } finally {
       setLoading(false);
@@ -180,45 +184,44 @@ const GuestOrderLookupScreen = () => {
       </div>
 
       <div className="guest-order-lookup__hero">
-        <h1>Theo dõi đơn mang về</h1>
+        <h1>{t('orderLookup.hero.title')}</h1>
         <p>
-          Không cần đăng nhập. Nhập một trong các thông tin bên dưới để xem
-          trạng thái đơn của bạn.
+          {t('orderLookup.hero.subtitle')}
         </p>
       </div>
 
       <form className="lookup-form" onSubmit={onSearch}>
         <div className="lookup-form__row">
-          <label htmlFor="lookup-order-code">Mã đơn hàng</label>
+          <label htmlFor="lookup-order-code">{t('orderLookup.form.orderCode')}</label>
           <input
             id="lookup-order-code"
             type="text"
             value={filters.order_code}
             onChange={(e) => onFieldChange("order_code", e.target.value)}
-            placeholder="Ví dụ: ORD-20260406-000123"
+            placeholder={t('orderLookup.form.orderCodePlaceholder')}
           />
         </div>
 
         <div className="lookup-form__row lookup-form__row--split">
           <div>
-            <label htmlFor="lookup-phone">Số điện thoại</label>
+            <label htmlFor="lookup-phone">{t('orderLookup.form.phone')}</label>
             <input
               id="lookup-phone"
               type="text"
               value={filters.customer_phone}
               onChange={(e) => onFieldChange("customer_phone", e.target.value)}
-              placeholder="Ví dụ: 0912345678"
+              placeholder={t('orderLookup.form.phonePlaceholder')}
             />
           </div>
 
           <div>
-            <label htmlFor="lookup-email">Email</label>
+            <label htmlFor="lookup-email">{t('orderLookup.form.email')}</label>
             <input
               id="lookup-email"
               type="email"
               value={filters.customer_email}
               onChange={(e) => onFieldChange("customer_email", e.target.value)}
-              placeholder="Ví dụ: customer@email.com"
+              placeholder={t('orderLookup.form.emailPlaceholder')}
             />
           </div>
         </div>
@@ -229,7 +232,7 @@ const GuestOrderLookupScreen = () => {
           disabled={loading}
         >
           <IoSearchOutline />
-          {loading ? "Đang tra cứu..." : "Tra cứu đơn hàng"}
+          {loading ? t('orderLookup.form.searching') : t('orderLookup.form.submit')}
         </button>
       </form>
 
@@ -237,14 +240,14 @@ const GuestOrderLookupScreen = () => {
 
       {hasSearched && !loading && orders.length === 0 && !errorText && (
         <p className="lookup-empty">
-          Không tìm thấy đơn phù hợp với thông tin đã nhập.
+          {t('orderLookup.empty')}
         </p>
       )}
 
       {orders.length > 0 && (
         <div className="lookup-result-layout">
           <section className="lookup-order-list">
-            <h2>Đơn đã tìm thấy</h2>
+            <h2>{t('orderLookup.resultsTitle')}</h2>
             {orders.map((order) => (
               <button
                 key={order.id}
@@ -257,11 +260,11 @@ const GuestOrderLookupScreen = () => {
                   <span
                     className={`lookup-status ${STATUS_BADGE_MAP[order.status] || "status-pending"}`}
                   >
-                    {STATUS_LABEL_MAP[order.status] || order.status}
+                    {statusLabelMap[order.status] || order.status}
                   </span>
                 </div>
-                <p>Khách: {order.customer_name}</p>
-                <p>Nhận món: {formatDateTime(order.pickup_time)}</p>
+                <p>{t('orderLookup.labels.customer')}: {order.customer_name}</p>
+                <p>{t('orderLookup.labels.pickupTime')}: {formatDateTime(order.pickup_time, locale)}</p>
               </button>
             ))}
           </section>
@@ -269,39 +272,39 @@ const GuestOrderLookupScreen = () => {
           <section className="lookup-order-detail">
             {selectedOrder && (
               <>
-                <h2>Chi tiết đơn</h2>
+                <h2>{t('orderLookup.detailTitle')}</h2>
 
                 <div className="detail-grid">
-                  <span>Mã đơn:</span>
+                  <span>{t('orderLookup.labels.orderCode')}:</span>
                   <strong>{selectedOrder.order_code}</strong>
 
-                  <span>Trạng thái:</span>
+                  <span>{t('orderLookup.labels.status')}:</span>
                   <strong>
-                    {STATUS_LABEL_MAP[selectedOrder.status] ||
+                    {statusLabelMap[selectedOrder.status] ||
                       selectedOrder.status}
                   </strong>
 
-                  <span>Thời gian nhận:</span>
-                  <strong>{formatDateTime(selectedOrder.pickup_time)}</strong>
+                  <span>{t('orderLookup.labels.pickupTime')}:</span>
+                  <strong>{formatDateTime(selectedOrder.pickup_time, locale)}</strong>
 
-                  <span>Tổng tiền:</span>
-                  <strong>{formatCurrency(selectedOrder.final_amount)}đ</strong>
+                  <span>{t('orderLookup.labels.totalAmount')}:</span>
+                  <strong>{formatCurrency(selectedOrder.final_amount, locale)}đ</strong>
 
-                  <span>Tiền cọc:</span>
+                  <span>{t('orderLookup.labels.depositAmount')}:</span>
                   <strong>
-                    {formatCurrency(selectedOrder.deposit_amount)}đ
+                    {formatCurrency(selectedOrder.deposit_amount, locale)}đ
                   </strong>
                 </div>
 
                 <div className="detail-items">
-                  <h3>Món trong đơn</h3>
+                  <h3>{t('orderLookup.itemsTitle')}</h3>
                   <table>
                     <thead>
                       <tr>
-                        <th>Món</th>
-                        <th>SL</th>
-                        <th>Đơn giá</th>
-                        <th>Thành tiền</th>
+                        <th>{t('orderLookup.table.item')}</th>
+                        <th>{t('orderLookup.table.quantity')}</th>
+                        <th>{t('orderLookup.table.unitPrice')}</th>
+                        <th>{t('orderLookup.table.lineTotal')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -309,8 +312,8 @@ const GuestOrderLookupScreen = () => {
                         <tr key={item.id}>
                           <td>{item.item_name}</td>
                           <td>{item.quantity}</td>
-                          <td>{formatCurrency(item.unit_price)}đ</td>
-                          <td>{formatCurrency(item.line_total)}đ</td>
+                          <td>{formatCurrency(item.unit_price, locale)}đ</td>
+                          <td>{formatCurrency(item.line_total, locale)}đ</td>
                         </tr>
                       ))}
                     </tbody>
@@ -319,10 +322,10 @@ const GuestOrderLookupScreen = () => {
 
                 {selectedOrder.note && (
                   <div className="detail-note">
-                    <h3>Ghi chú</h3>
+                    <h3>{t('orderLookup.noteTitle')}</h3>
                     <p>
                       {selectedOrder.note.replace(NOTE_PAYMENT_TAG_REGEX, "") ||
-                        "(Không có ghi chú)"}
+                        t('orderLookup.emptyNote')}
                     </p>
                   </div>
                 )}
@@ -340,11 +343,15 @@ const GuestOrderLookupScreen = () => {
             onClick={onPrevPage}
             disabled={offset <= 0 || loading}
           >
-            Trang trước
+            {t('orderLookup.pagination.prev')}
           </button>
 
           <span className="lookup-pagination__meta">
-            Hiển thị {pagination.total === 0 ? 0 : offset + 1} - {Math.min(offset + orders.length, pagination.total)} / {pagination.total}
+            {t('orderLookup.pagination.showing', {
+              start: pagination.total === 0 ? 0 : offset + 1,
+              end: Math.min(offset + orders.length, pagination.total),
+              total: pagination.total,
+            })}
           </span>
 
           <button
@@ -353,7 +360,7 @@ const GuestOrderLookupScreen = () => {
             onClick={onNextPage}
             disabled={!pagination.hasNext || loading}
           >
-            Trang sau
+            {t('orderLookup.pagination.next')}
           </button>
         </div>
       )}

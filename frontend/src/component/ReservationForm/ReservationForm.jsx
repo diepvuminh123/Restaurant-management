@@ -96,7 +96,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!date || !time || !guests) {
-            toast.warning("Vui lòng nhập đầy đủ thông tin!");
+            toast.warning(t('reservationQuick.fillAllFields'));
             return;
         }
 
@@ -122,7 +122,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
     const handleCustomerFormSubmit = (e) => {
         e.preventDefault();
         if (!customerName || !customerPhone) {
-            toast.warning('Vui lòng điền đầy đủ thông tin!');
+            toast.warning(t('reservationQuick.fillGuestInfo'));
             return;
         }
 
@@ -147,29 +147,29 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
         return (
             <div className="quick-booking-container">
                 <div className="booking-header">
-                    <h3>Thông tin khách hàng</h3>
-                    <p>Vui lòng nhập thông tin để tiếp tục đặt bàn</p>
+                    <h3>{t('reservationQuick.guestInfoTitle')}</h3>
+                    <p>{t('reservationQuick.guestInfoSubtitle')}</p>
                 </div>
 
                 <form className="booking-form" onSubmit={handleCustomerFormSubmit}>
                     <div className="form-group">
-                        <label>Họ và tên <span className="required">*</span></label>
+                        <label>{t('reservationQuick.fullName')} <span className="required">*</span></label>
                         <input
                             type="text"
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
-                            placeholder="Nhập họ và tên"
+                            placeholder={t('reservationQuick.fullNamePlaceholder')}
                             className="form-input"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label>Số điện thoại <span className="required">*</span></label>
+                        <label>{t('reservationQuick.phone')} <span className="required">*</span></label>
                         <input
                             type="tel"
                             value={customerPhone}
                             onChange={(e) => setCustomerPhone(e.target.value)}
-                            placeholder="Nhập số điện thoại"
+                            placeholder={t('reservationQuick.phonePlaceholder')}
                             className="form-input"
                         />
                     </div>
@@ -179,7 +179,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
                         className={`submit-button ${isGuestFormReady ? 'submit-button--ready' : ''}`}
                         disabled={submitting}
                     >
-                        {submitting ? 'Đang xử lý...' : 'Tiếp tục'}
+                        {submitting ? t('reservationQuick.processing') : t('reservationQuick.continue')}
                     </button>
                 </form>
             </div>
@@ -196,7 +196,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
             <form className="booking-form" onSubmit={handleSubmit}>
                 {/* Ngày */}
                 <div className="form-group">
-                    <label><CiCalendar className="form-icon" /> Ngày</label>
+                    <label><CiCalendar className="form-icon" /> {t('reservationQuick.date')}</label>
                     <input 
                         type="date" 
                         min={todayStr} 
@@ -208,10 +208,10 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
 
                 {/* Giờ - Custom Dropdown */}
                 <div className="form-group" ref={timeRef}>
-                    <label><CiClock2 className="form-icon" /> Giờ</label>
+                    <label><CiClock2 className="form-icon" /> {t('reservationQuick.time')}</label>
                     <div className={`custom-select ${!date ? 'disabled' : ''}`} onClick={() => date && setIsTimeOpen(!isTimeOpen)}>
                         <div className="select-trigger">
-                            <span>{time || (date ? "Chọn giờ" : "Chọn ngày trước")}</span>
+                            <span>{time || (date ? t('reservationQuick.selectTime') : t('reservationQuick.timePlaceholder'))}</span>
                             <IoChevronDownOutline className={`arrow ${isTimeOpen ? 'active' : ''}`} />
                         </div>
                         {isTimeOpen && (
@@ -221,7 +221,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
                                         <li key={t} onClick={() => { setTime(t); setIsTimeOpen(false); }}>{t}</li>
                                     ))
                                 ) : (
-                                    <li className="no-data">Hết giờ đặt hôm nay</li>
+                                    <li className="no-data">{t('reservationQuick.noSlots')}</li>
                                 )}
                             </ul>
                         )}
@@ -230,16 +230,16 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
 
                 {/* Số người - Custom Dropdown */}
                 <div className="form-group" ref={guestRef}>
-                    <label><CiUser className="form-icon" /> Số người</label>
+                    <label><CiUser className="form-icon" /> {t('reservationQuick.people')}</label>
                     <div className="custom-select" onClick={() => setIsGuestOpen(!isGuestOpen)}>
                         <div className="select-trigger">
-                            <span>{guests ? `${guests} người` : "Chọn số người"}</span>
+                            <span>{guests ? t('reservationQuick.peopleCount', { count: guests }) : t('reservationQuick.peoplePlaceholder')}</span>
                             <IoChevronDownOutline className={`arrow ${isGuestOpen ? 'active' : ''}`} />
                         </div>
                         {isGuestOpen && (
                             <ul className="custom-dropdown">
                                 {[...Array(10).keys()].map(i => (
-                                    <li key={i+1} onClick={() => { setGuests(i+1); setIsGuestOpen(false); }}>{i+1} người</li>
+                                    <li key={i+1} onClick={() => { setGuests(i+1); setIsGuestOpen(false); }}>{t('reservationQuick.peopleCount', { count: i + 1 })}</li>
                                 ))}
                             </ul>
                         )}
@@ -251,13 +251,13 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
                     className={`submit-button ${isReservationReady ? 'submit-button--ready' : ''}`}
                     disabled={submitting}
                 >
-                    {submitting ? 'Đang đặt bàn...' : 'Đặt bàn ngay'}
+                    {submitting ? t('reservationQuick.submitting') : t('reservationQuick.submit')}
                 </button>
             </form>
 
             <div className="booking-footer">
                 <CiCircleCheck className="footer-icon" />
-                <span>Đặt bàn nhanh một cách nhanh chóng</span>
+                <span>{t('reservationQuick.note')}</span>
             </div>
 
             {/* Role Selection Modal */}

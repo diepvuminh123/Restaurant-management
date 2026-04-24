@@ -5,18 +5,19 @@ import { FiClock } from "react-icons/fi";
 import { IoPeopleSharp } from "react-icons/io5";
 import { useToastContext } from '../../context/ToastContext';
 import ApiService from '../../services/apiService';
+import { useTranslation } from 'react-i18next';
 import './TableMapScreen.css';
 
-const getDisabledReasonLabel = (reason) => {
+const getDisabledReasonLabel = (reason, t) => {
   switch (reason) {
     case 'OCCUPIED':
-      return 'Đang có khách';
+      return t('tableMap.disabledReasons.occupied');
     case 'RESERVED':
-      return 'Đã được giữ';
+      return t('tableMap.disabledReasons.reserved');
     case 'CAPACITY':
-      return 'Không đủ chỗ';
+      return t('tableMap.disabledReasons.capacity');
     case 'TIME_CONFLICT':
-      return 'Trùng thời gian';
+      return t('tableMap.disabledReasons.timeConflict');
     default:
       return null;
   }
@@ -52,6 +53,7 @@ const TableMapScreen = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToastContext();
+  const { t } = useTranslation();
   const { 
     dayReservation = "Chưa chọn", 
     timeReservation = "Chưa chọn", 
@@ -106,7 +108,7 @@ const TableMapScreen = () => {
         if (!cancelled) {
           setTables([]);
           setSelectedTable(null);
-          toast.error(err?.message || 'Không thể tải danh sách bàn');
+          toast.error(err?.message || t('tableMap.loadError'));
         }
       } finally {
         if (!cancelled) setLoadingTables(false);
@@ -121,14 +123,14 @@ const TableMapScreen = () => {
 
   const handleConfirm = async () => {
     if (!selectedTable) {
-      toast.warning('Bạn chưa chọn bàn.');
+      toast.warning(t('tableMap.selectRequired'));
       return;
     }
 
     const reservation_time = `${dayReservation}T${timeReservation}:00`;
     const table_id = Number(selectedTable.table_id);
     if (!Number.isFinite(table_id)) {
-      toast.error('Không xác định được bàn');
+      toast.error(t('tableMap.invalidTable'));
       return;
     }
 
@@ -153,19 +155,19 @@ const TableMapScreen = () => {
         },
       });
     } catch (err) {
-      toast.error(err?.message || 'Đặt bàn thất bại');
+      toast.error(err?.message || t('tableMap.submitFailed'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  let selectionBlock = <div className="selection-hint">Chọn một bàn để tiếp tục</div>;
+  let selectionBlock = <div className="selection-hint">{t('tableMap.selectionHint')}</div>;
   if (loadingTables) {
-    selectionBlock = <div className="selection-hint">Đang tải danh sách bàn...</div>;
+    selectionBlock = <div className="selection-hint">{t('tableMap.loading')}</div>;
   } else if (selectedTable) {
     selectionBlock = (
       <output className="selection-notice" aria-live="polite">
-        {selectedTable.id} • {selectedTable.seats} ghế • Phù hợp cho {guestCount} người
+        {t('tableMap.selectedNotice', { id: selectedTable.id, seats: selectedTable.seats, guestCount })}
       </output>
     );
   }
@@ -175,7 +177,7 @@ const TableMapScreen = () => {
       {/* 1. Thông tin đặt bàn */}
       <div className="reservation-card">
         <div className="reservation-card__header">
-          <h3>Thông tin đặt bàn</h3>
+          <h3>{t('tableMap.reservationInfoTitle')}</h3>
         </div>
         <div className="info-grid">
           <div className="info-item">
@@ -183,7 +185,7 @@ const TableMapScreen = () => {
               <CiCalendar className="icon" />
             </span>
             <div>
-              <p className="label">Ngày</p>
+              <p className="label">{t('tableMap.labels.date')}</p>
               <p className="value">{dayReservation}</p>
             </div>
           </div>
@@ -192,7 +194,7 @@ const TableMapScreen = () => {
               <FiClock className="icon" />
             </span>
             <div>
-              <p className="label">Thời gian</p>
+              <p className="label">{t('tableMap.labels.time')}</p>
               <p className="value">{timeReservation}</p>
             </div>
           </div>
@@ -201,26 +203,26 @@ const TableMapScreen = () => {
               <IoPeopleSharp className="icon" />
             </span>
             <div>
-              <p className="label">Số khách</p>
+              <p className="label">{t('tableMap.labels.guests')}</p>
               <p className="value">{guestCount}</p>
             </div>
           </div>
         </div>
         <div className="reservation-instructions">
-        <p className="instruction">Chọn bàn khả dụng bên dưới</p>
+        <p className="instruction">{t('tableMap.instruction')}</p>
         <button
             type="button"
             className="back-to-reservation"
             onClick={() => navigate(-1)}
           >
-            Quay lại thông tin đặt chỗ
+            {t('tableMap.backToReservation')}
           </button>
         </div>
       </div>
 
       {/* 2. Sơ đồ nhà hàng */}
       <div className="map-card">
-        <h3>Sơ đồ nhà hàng</h3>
+        <h3>{t('tableMap.title')}</h3>
 
         <div className="table-grid">
           {tables.map((table) => (
@@ -231,10 +233,14 @@ const TableMapScreen = () => {
               onClick={() => setSelectedTable((prev) => (prev?.id === table.id ? null : table))}
               disabled={table.status !== 'available'}
               aria-pressed={selectedTable?.id === table.id}
-              aria-label={`Bàn ${table.id}, ${table.seats} ghế, ${table.status === 'available' ? 'có sẵn' : (getDisabledReasonLabel(table.disabled_reason) || 'không khả dụng')}`}
+              aria-label={t('tableMap.tableAriaLabel', {
+                id: table.id,
+                seats: table.seats,
+                status: table.status === 'available' ? t('tableMap.available') : (getDisabledReasonLabel(table.disabled_reason, t) || t('tableMap.unavailable')),
+              })}
             >
               <span className="id">{table.id}</span>
-              <span className="seats">{table.seats} ghế</span>
+              <span className="seats">{t('tableMap.seatCount', { count: table.seats })}</span>
             </button>
           ))}
         </div>
@@ -243,17 +249,17 @@ const TableMapScreen = () => {
         {selectionBlock}
 
         {/* 4. Legend (Ghi chú màu) */}
-        <div className="legend" aria-label="Ghi chú trạng thái bàn">
-          <span><span className="dot available" /> Available</span>
-          <span><span className="dot selected" /> Selected</span>
-          <span><span className="dot booked" /> Booked</span>
+        <div className="legend" aria-label={t('tableMap.legendAriaLabel')}>
+          <span><span className="dot available" /> {t('tableMap.legend.available')}</span>
+          <span><span className="dot selected" /> {t('tableMap.legend.selected')}</span>
+          <span><span className="dot booked" /> {t('tableMap.legend.booked')}</span>
         </div>
       </div>
 
       <button className="confirm-btn" onClick={handleConfirm} disabled={!selectedTable || submitting}>
-        {submitting ? 'Đang đặt bàn...' : 'Xác nhận bàn'}
+        {submitting ? t('tableMap.submitting') : t('tableMap.confirm')}
       </button>
-      <p className="footer-note">Giữ bàn trong 10 phút</p>
+      <p className="footer-note">{t('tableMap.footerNote')}</p>
     </div>
   );
 };

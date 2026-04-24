@@ -39,10 +39,10 @@ const HomeScreenHeader = ({ user, onLogout }) => {
 
       <nav className="header__nav">
         <Link to="/menu">{t('header.menu')}</Link>
-        {!user && <Link to="/order-lookup">Theo dõi đơn mang về </Link> }
+        {!user && <Link to="/order-lookup">{t('header.orderLookup')}</Link> }
          <Link to="/booking">{t('header.reservation')}</Link>
         <Link to="/about">{t('header.aboutUs')}</Link>
-        <Link to="/home">{t('header.contact')}</Link>
+        {/* <Link to="/home">{t('header.contact')}</Link> */}
       </nav>
 
       <div className="header__right-section">
