@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   IoCheckmarkCircleOutline,
   IoCubeOutline,
@@ -63,6 +63,8 @@ const STATUS_TO_PROGRESS_INDEX = {
   COMPLETED: 3,
 };
 
+const POLLING_INTERVAL_MS = 20000;
+
 const formatCurrency = (amount) => Number(amount || 0).toLocaleString('vi-VN');
 
 const formatDateTime = (value) => {
@@ -89,6 +91,87 @@ const FILTER_OPTIONS = [
   { value: 'CANCELED', label: 'Đã hủy' },
 ];
 
+const getTakeawayStatusContent = (order) => {
+  if (!order) {
+    return {
+      title: 'Trạng thái đơn hàng',
+      message: 'Không có dữ liệu trạng thái đơn hàng.',
+    };
+  }
+
+  const pickupTimeText = formatDateTime(order.pickup_time);
+  const canceledReason = (order.canceled_reason || '').trim();
+  const normalizedCanceledReason = canceledReason.toLowerCase();
+
+  switch (order.status) {
+    case 'PENDING':
+      return {
+        title: `Thời gian dự kiến đến lấy: ${pickupTimeText}`,
+        message:
+          order.payment_status === 'UNPAID'
+            ? 'Đơn hàng đang chờ xác nhận và xác nhận cọc từ nhà hàng.'
+            : 'Đơn hàng đang chờ nhà hàng xác nhận.',
+      };
+    case 'CONFIRMED':
+      return {
+        title: `Thời gian dự kiến đến lấy: ${pickupTimeText}`,
+        message: 'Nhà hàng đã xác nhận đơn. Bếp sẽ bắt đầu chuẩn bị theo lịch nhận món của bạn.',
+      };
+    case 'PREPARING':
+      return {
+        title: `Thời gian dự kiến đến lấy: ${pickupTimeText}`,
+        message: 'Nhà hàng đang chuẩn bị món ăn của bạn.',
+      };
+    case 'READY':
+      return {
+        title: `Đơn đã sẵn sàng để lấy từ ${pickupTimeText}`,
+        message: 'Bạn có thể đến nhà hàng để nhận món.',
+      };
+    case 'COMPLETED':
+      return {
+        title: 'Đơn hàng đã hoàn tất',
+        message: 'Đơn hàng đã được hoàn tất. Cảm ơn bạn đã đặt món tại nhà hàng.',
+      };
+    case 'CANCELED': {
+      let message = 'Đơn hàng đã bị hủy test01.';
+      console.log(normalizedCanceledReason, "normalizedCanceledReason")
+
+      if (normalizedCanceledReason.includes('khách hủy')) {
+        message = 'Bạn đã hủy đơn hàng này.';
+      } else if (
+        // normalizedCanceledReason.includes('quá hạn') ||
+        // normalizedCanceledReason.includes('thanh toán cọc')
+        normalizedCanceledReason.includes('Tự động hủy do quá hạn thanh toán cọc')
+      ) {
+        message = 'Đơn hàng đã bị hủy do quá thời gian cọc.';
+      } else if (order.canceled_by) {
+        message = 'Đơn hàng đã được hủy theo yêu cầu.';
+      }
+
+      if (canceledReason) {
+        message = `${message} Lý do: ${canceledReason}.`;
+      }
+
+      return {
+        title: 'Đơn hàng đã bị hủy',
+        message,
+      };
+    }
+    default:
+      return {
+        title: 'Trạng thái đơn hàng',
+        message: 'Trạng thái đơn hàng đã được cập nhật.',
+      };
+  }
+};
+
+const buildStatusChangeMessage = (order, previousStatus) => {
+  const orderCode = order.order_code || `#${order.id}`;
+  const previousLabel = STATUS_LABEL_MAP[previousStatus] || previousStatus;
+  const nextLabel = STATUS_LABEL_MAP[order.status] || order.status;
+  return `Đơn ${orderCode} đã chuyển trạng thái từ "${previousLabel}" sang "${nextLabel}".`;
+};
+
 const TakeawayOrderTracking = () => {
   const { confirmState, showConfirm } = useConfirm();
   const [loading, setLoading] = useState(true);
@@ -106,11 +189,16 @@ const TakeawayOrderTracking = () => {
   });
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const previousStatusesRef = useRef(new Map());
+  const isFirstLoadRef = useRef(true);
+  const isMountedRef = useRef(true);
 
   const selectedOrder = useMemo(
     () => orders.find((order) => order.id === selectedOrderId) || null,
     [orders, selectedOrderId]
   );
+
+  const statusContent = useMemo(() => getTakeawayStatusContent(selectedOrder), [selectedOrder]);
 
   const currentProgressIndex =
     selectedOrder?.status && STATUS_TO_PROGRESS_INDEX[selectedOrder.status] !== undefined
@@ -141,10 +229,10 @@ const TakeawayOrderTracking = () => {
     : 'Không có dữ liệu món';
 
   useEffect(() => {
-    let alive = true;
-
-    const load = async () => {
-      setLoading(true);
+    const load = async ({ silent = false } = {}) => {
+      if (!silent) {
+        setLoading(true);
+      }
       setErrorText('');
 
       try {
@@ -154,7 +242,8 @@ const TakeawayOrderTracking = () => {
           limit: 10,
         });
 
-        if (!alive) return;
+        if (!isMountedRef.current) return;
+
         const nextOrders = Array.isArray(response?.data) ? response.data : [];
         const nextPagination = response?.pagination || {
           page,
@@ -163,11 +252,36 @@ const TakeawayOrderTracking = () => {
           total_pages: 1,
         };
 
+        if (!isFirstLoadRef.current) {
+          const changedOrder = nextOrders.find((order) => {
+            const previousStatus = previousStatusesRef.current.get(order.id);
+            return previousStatus && previousStatus !== order.status;
+          });
+
+          if (changedOrder) {
+            const previousStatus = previousStatusesRef.current.get(changedOrder.id);
+            setActionText(buildStatusChangeMessage(changedOrder, previousStatus));
+          }
+        }
+
+        previousStatusesRef.current = new Map(nextOrders.map((order) => [order.id, order.status]));
+        isFirstLoadRef.current = false;
+
         setOrders(nextOrders);
         setPagination(nextPagination);
-        setSelectedOrderId(nextOrders.length > 0 ? nextOrders[0].id : null);
+        setSelectedOrderId((currentId) => {
+          if (nextOrders.length === 0) {
+            return null;
+          }
+
+          if (currentId && nextOrders.some((order) => order.id === currentId)) {
+            return currentId;
+          }
+
+          return nextOrders[0].id;
+        });
       } catch (error) {
-        if (!alive) return;
+        if (!isMountedRef.current) return;
         setOrders([]);
         setSelectedOrderId(null);
         setPagination({
@@ -178,18 +292,29 @@ const TakeawayOrderTracking = () => {
         });
         setErrorText(error.message || 'Không thể tải danh sách đơn mang về');
       } finally {
-        if (alive) {
+        if (isMountedRef.current && !silent) {
           setLoading(false);
         }
       }
     };
 
     load();
+    const intervalId = window.setInterval(() => {
+      load({ silent: true });
+    }, POLLING_INTERVAL_MS);
 
     return () => {
-      alive = false;
+      window.clearInterval(intervalId);
     };
   }, [statusFilter, page]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -439,9 +564,9 @@ const TakeawayOrderTracking = () => {
 
                 <div className="takeaway-section takeaway-section--soft">
                   <h4>
-                    <IoTimeOutline /> Thời gian dự kiến đến lấy: {formatDateTime(selectedOrder.pickup_time)}
+                    <IoTimeOutline /> {statusContent.title}
                   </h4>
-                  <p>Nhà hàng đang chuẩn bị món ăn của bạn.</p>
+                  <p>{statusContent.message}</p>
                 </div>
 
                 <div className="takeaway-section">

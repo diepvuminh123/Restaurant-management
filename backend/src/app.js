@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const session = require('express-session');
 const swaggerUi = require('swagger-ui-express');
 
@@ -15,10 +15,10 @@ const orderRoutes = require('./routes/orderRoutes');
 const userAdminRoutes = require('./routes/userAdminRoutes');
 const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
-const takeawayAutomationService = require('./services/takeawayAutomationService');
+
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+
 
 // Middleware
 app.use(express.json());
@@ -76,17 +76,6 @@ app.use((req, res) => {
   });
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  takeawayAutomationService.start();
-});
-// clear
-function shutdown() {
-  takeawayAutomationService.stop();
-  server.close(() => {
-    process.exit(0);
-  });
-}
 
-process.on('SIGINT', shutdown); //Ctrl + C
-process.on('SIGTERM', shutdown);
+
+module.exports = app;

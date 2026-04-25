@@ -476,6 +476,9 @@ class Order {
          o.final_amount,
          o.deposit_amount,
          o.note,
+         o.canceled_reason,
+         o.canceled_at,
+         o.canceled_by,
          o.created_at,
          o.updated_at,
          COALESCE(
