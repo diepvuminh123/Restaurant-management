@@ -23,7 +23,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'vi', // Ngôn ngữ mặc định là tiếng Việt
-    lng: 'vi', // Ngôn ngữ khởi đầu
+    // lng: 'vi', // Vô hiệu hóa 'lng' để LanguageDetector tự động phát hiện ngôn ngữ đã lưu
     debug: false, // Bật debug mode khi phát triển (có thể chuyển thành true nếu cần)
     
     interpolation: {
