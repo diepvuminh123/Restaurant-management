@@ -85,6 +85,19 @@ class MenuService {
       throw new Error("Giá phải lớn hơn 0");
     }
 
+    // Validation Rule 1/3: Kiểm tra giới hạn số món Phổ Biến
+    if (data.is_popular === true && existingItem.is_popular !== true) {
+      const totalItems = await Menu.countAllItems();
+      const popularItems = await Menu.countPopularItems();
+      const maxAllowed = Math.floor(totalItems / 3);
+
+      if (popularItems >= maxAllowed) {
+        throw new Error(
+          `Đã đạt giới hạn số món Phổ Biến (${popularItems}/${maxAllowed} slot). Vui lòng bỏ chọn một món khác trước.`
+        );
+      }
+    }
+
     await Menu.updateMenuItem(id, data);
   }
 

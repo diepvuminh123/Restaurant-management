@@ -90,9 +90,13 @@ class Menu {
       params.push(is_popular);
     }
 
+    // is_new: Dynamic - Tự tính từ created_at trong vòng 14 ngày
     if (is_new !== undefined) {
-      whereConditions.push(`mi.is_new = $${idx++}`);
-      params.push(is_new);
+      if (is_new === true) {
+        whereConditions.push(`mi.created_at >= NOW() - INTERVAL '14 days'`);
+      } else {
+        whereConditions.push(`mi.created_at < NOW() - INTERVAL '14 days'`);
+      }
     }
 
     if (is_soldout !== undefined) {
@@ -162,7 +166,10 @@ class Menu {
                 mi.rating_count,
                 mi.is_popular,
                 mi.available,
-                mi.is_new,
+                -- Dynamic: is_new tự tính từ ngày tạo (trong vòng 14 ngày)
+                CASE WHEN mi.created_at >= NOW() - INTERVAL '14 days'
+                     THEN true ELSE false
+                END AS is_new,
                 mi.is_soldout,
                 mi.prep_time,
                 mi.notes,
@@ -239,7 +246,10 @@ class Menu {
                 mi.rating_count,
                 mi.available,
                 mi.is_popular,
-                mi.is_new,
+                -- Dynamic: is_new tự tính từ ngày tạo (trong vòng 14 ngày)
+                CASE WHEN mi.created_at >= NOW() - INTERVAL '14 days'
+                     THEN true ELSE false
+                END AS is_new,
                 mi.is_soldout,
                 mi.prep_time,
                 mi.notes,
@@ -300,7 +310,7 @@ class Menu {
       description_short = null,
       available = true,
       is_popular = false,
-      is_new = false,
+      // is_new đã bỏ - giờ được tính động, không lưu thủ công
       is_soldout = false,
       prep_time = null,
       notes = null,
@@ -311,8 +321,8 @@ class Menu {
 
       const insertQuery = `
                 INSERT INTO menu_items 
-                    (name, price, sale_price, description_short, description_full, images, section_id, available, is_popular, is_new, is_soldout, prep_time, notes)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    (name, price, sale_price, description_short, description_full, images, section_id, available, is_popular, is_soldout, prep_time, notes)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                 RETURNING id
             `;
       let imagesJson = null;
@@ -330,7 +340,6 @@ class Menu {
         section_id,
         available,
         is_popular,
-        is_new,
         is_soldout,
         prep_time,
         notes,
@@ -369,7 +378,7 @@ class Menu {
       category_ids,
       available,
       is_popular,
-      is_new,
+      // is_new đã bỏ - giờ được tính động, không cho phép cập nhật thủ công
       is_soldout,
       prep_time,
       notes,
@@ -421,10 +430,6 @@ class Menu {
       if (is_popular !== undefined) {
         updateFields.push(`is_popular = $${idx++}`);
         updateParams.push(is_popular);
-      }
-      if (is_new !== undefined) {
-        updateFields.push(`is_new = $${idx++}`);
-        updateParams.push(is_new);
       }
       if (is_soldout !== undefined) {
         updateFields.push(`is_soldout = $${idx++}`);
@@ -670,6 +675,24 @@ class Menu {
       [id]
     );
     return result.rowCount > 0;
+  }
+
+  /**
+   * Đếm tổng số món ăn (dùng cho validation rule 1/3)
+   */
+  static async countAllItems() {
+    const result = await pool.query("SELECT COUNT(*) as total FROM menu_items");
+    return parseInt(result.rows[0].total, 10);
+  }
+
+  /**
+   * Đếm số món đang là "Phổ Biến" (dùng cho validation rule 1/3)
+   */
+  static async countPopularItems() {
+    const result = await pool.query(
+      "SELECT COUNT(*) as total FROM menu_items WHERE is_popular = true"
+    );
+    return parseInt(result.rows[0].total, 10);
   }
 }
 
