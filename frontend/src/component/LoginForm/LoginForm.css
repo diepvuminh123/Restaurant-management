@@ -25,37 +25,6 @@
   color: #333;
 }
 
-.formSubtitle {
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 24px;
-}
-
-.formContainer {
-  text-align: left;
-}
-
-.label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.required {
-  color: #e03d2e;
-}
-
-.input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  margin-bottom: 16px;
-  font-size: 14px;
-}
 
 
 .input:focus {
