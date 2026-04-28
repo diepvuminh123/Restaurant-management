@@ -70,12 +70,7 @@ const AdminSidebar = ({ onLogout, userRole }) => {
           </NavLink>
         ))}
 
-        <button className="admin-sidebar__item admin-sidebar__logout" onClick={onLogout}>
-          <span className="admin-sidebar__icon">
-            <IoLogOutOutline />
-          </span>
-          <span className="admin-sidebar__label">Đăng xuất</span>
-        </button>
+        
       </nav>
     </aside>
   );

@@ -5,12 +5,14 @@
   --tt-muted: #667085;
   --tt-primary: #c96f3d;
   --tt-primary-soft: #f8ece4;
-  --tt-info-bg: #eaf3ff;
+  --tt-baninfo-bg: #eaf3ff;
   --tt-info-border: #c8dcfa;
   background: var(--tt-bg);
   border-radius: 14px;
   border: 1px solid var(--tt-border);
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 .takeaway-tracking__hero h2 {
@@ -71,16 +73,20 @@
 
 .takeaway-tracking__layout {
   margin-top: 16px;
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
   gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 .takeaway-tracking__list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 520px;
+  flex: 0 0 280px;
+  width: 280px;
+  box-sizing: border-box;
   overflow-y: auto;
 }
 
@@ -92,6 +98,7 @@
   background: #fff;
   padding: 12px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .takeaway-tracking__card:hover {
@@ -200,25 +207,34 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .takeaway-detail-card {
   border: 1px solid #dbe1ea;
   border-radius: 14px;
   background: #fff;
-  padding: 18px;
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .takeaway-detail-card h3 {
   margin: 0 0 14px;
   color: var(--tt-text);
-  font-size: 30px;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .takeaway-detail-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .takeaway-detail-grid div {
