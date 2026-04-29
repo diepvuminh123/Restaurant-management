@@ -1,5 +1,4 @@
-# Báo cáo API Integration Test - Chặng 1: Auth & UserAdmin
-
+# Báo cáo API Integration Test
 Tài liệu này trình bày các kịch bản kiểm thử tích hợp API (API Integration Test) cho 2 module **Xác thực (Auth)** và **Quản trị Người dùng (UserAdmin)**. Các test sử dụng thư viện **Supertest** để mô phỏng client gửi request HTTP thật vào Express App, đồng thời **Mock Service Layer** để cô lập hoàn toàn khỏi Database.
 
 Tổng số kịch bản đã test: **29 Test Cases (Đạt tỷ lệ Pass 100%)**
