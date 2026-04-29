@@ -28,6 +28,11 @@ const HomeScreenHeader = ({ user, onLogout }) => {
     setIsDropdownOpen(false);
   }
 
+  const handleAdminPage = () => {
+    navigate('/admin');
+    setIsDropdownOpen(false);
+  }
+
 
  
 
@@ -80,6 +85,14 @@ const HomeScreenHeader = ({ user, onLogout }) => {
                   >
                    {t('header.profile')}
                   </button>
+                  {(user.role === 'admin' || user.role === 'employee') && (
+                    <button
+                      className="dropdown__logout-btn"
+                      onClick={handleAdminPage}
+                    >
+                      Trang admin
+                    </button>
+                  )}
                   
                   
                   

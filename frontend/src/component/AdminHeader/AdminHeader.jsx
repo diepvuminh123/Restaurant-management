@@ -15,6 +15,10 @@ const AdminHeader = ({ user, onLogout }) => {
     navigate('/login');
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   // Xác định role display
   const getRoleDisplay = () => {
     if (user.role === 'admin') return 'Admin';
@@ -24,7 +28,7 @@ const AdminHeader = ({ user, onLogout }) => {
 
   return (
     <header className="admin-header">
-      <div className="admin-header__left">
+      <div className="admin-header__left" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
         <div className="admin-header__logo">
           <img src={ICONS.LOGO} alt="Logo" className="admin-header__logo-img" />
         </div>

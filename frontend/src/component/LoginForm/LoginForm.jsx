@@ -130,13 +130,6 @@ export default function LoginForm({
           Đăng ký tài khoản
         </span>
       </div>
-
-      <div className="orRole">ĐĂNG NHẬP VỚI VAI TRÒ KHÁC</div>
-
-      <div className="roleButtons">
-        <button className="roleButton">Nhân viên</button>
-        <button className="roleButton">Quản trị viên</button>
-      </div>
     </div>
   );
 }
