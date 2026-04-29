@@ -7,7 +7,7 @@ module.exports = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/models/**/*.js',
-    'src/controllers/**/*.js'
+    'src/controllers/**/*.js',
+    'src/services/**/*.js'
   ],
 };
