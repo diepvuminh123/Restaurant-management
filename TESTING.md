@@ -44,17 +44,81 @@ npm install
 
 ## 2. Kiểm thử End-to-End (E2E) với Playwright
 
-Thay vì viết Unit Test chi tiết cho giao diện Frontend, dự án áp dụng chiến lược sử dụng **Playwright Codegen** để kiểm thử các luồng người dùng (User Flows) quan trọng từ đầu đến cuối một cách nhanh chóng và hiệu quả.
+Dự án sử dụng **Playwright** để kiểm thử các luồng người dùng (User Flows) quan trọng từ đầu đến cuối. Playwright tự động mở trình duyệt thực (Chromium), thực hiện các thao tác click, điền form như một người dùng thật để đảm bảo tích hợp giữa Frontend và Backend hoạt động trơn tru.
 
-- Playwright sẽ tự động mở trình duyệt thực, thực hiện các thao tác click, điền form như một người dùng thật để đảm bảo tích hợp giữa Frontend và Backend hoạt động trơn tru.
-- *(Chi tiết về thư mục chứa kịch bản Playwright và lệnh khởi chạy cụ thể sẽ được cập nhật khi các script E2E hoàn thiện).*
+### Cấu trúc thư mục E2E
+
+```
+Restaurant-management/
+├── e2e/
+│   └── tests/
+│       ├── login.spec.js           # Test luồng đăng nhập
+│       ├── booking.spec.js         # Test luồng đặt bàn (khách vãng lai)
+│       └── takeaway-order.spec.js  # Test luồng đặt món mang về
+├── playwright.config.js            # Cấu hình Playwright
+```
+
+### Yêu cầu trước khi test E2E
+
+1. **Cài đặt Playwright** (chỉ cần lần đầu):
+   ```bash
+   npm install
+   npx playwright install chromium
+   ```
+
+2. **Khởi động Backend + Frontend** trước khi chạy test:
+   ```bash
+   # Terminal 1: Backend (port 5001)
+   cd backend && npm run dev
+
+   # Terminal 2: Frontend (port 3000)
+   cd frontend && npm run dev
+   ```
+   Hoặc chạy đồng thời:
+   ```bash
+   npm run dev
+   ```
+
+3. **Đảm bảo database** có dữ liệu: menu items, bàn, tài khoản user.
+
+### 3 Kịch bản E2E đã triển khai
+
+| # | File | Luồng kiểm thử | Mô tả |
+|---|------|----------------|-------|
+| 1 | `login.spec.js` | Đăng nhập | Hiển thị form, đăng nhập thành công → redirect, đăng nhập thất bại → hiện lỗi |
+| 2 | `booking.spec.js` | Đặt bàn (Guest) | Chọn ngày/giờ/số người → chọn bàn → chọn vai trò khách → nhập thông tin → trang thành công |
+| 3 | `takeaway-order.spec.js` | Đặt món mang về | Xem menu → click "Đặt mang về" → checkout → điền form → xác nhận sang bước cọc |
+
+### Các lệnh kiểm thử E2E
+
+- **Chạy toàn bộ E2E (headless):**
+  ```bash
+  npm run test:e2e
+  ```
+
+- **Chạy E2E với trình duyệt hiển thị (để demo/quay màn hình):**
+  ```bash
+  npm run test:e2e:headed
+  ```
+
+- **Xem báo cáo HTML:**
+  ```bash
+  npm run test:e2e:report
+  ```
+  *Báo cáo được tạo tại thư mục `playwright-report/`.*
+
+- **Chạy 1 file test cụ thể:**
+  ```bash
+  npx playwright test e2e/tests/login.spec.js
+  npx playwright test e2e/tests/booking.spec.js
+  npx playwright test e2e/tests/takeaway-order.spec.js
+  ```
 
 ---
 
 ## 3. Tổng kết Chiến lược Kiểm thử hiện tại
 
-- **Đã làm:** 
+- **Đã hoàn thành:** 
   - Unit Test và API Integration Test (Jest + Supertest) với độ phủ cao cho các Service quan trọng của Backend.
   - Phân tích Code Coverage báo cáo tình trạng kiểm thử Backend.
-- **Đang / Sẽ làm:** 
-  - Hoàn thiện luồng kiểm thử E2E sử dụng Playwright Codegen để tiết kiệm thời gian so với viết Unit Test cho từng thành phần Frontend.
+  - Kiểm thử E2E 3 luồng nghiệp vụ chính (Đăng nhập, Đặt bàn, Đặt món) sử dụng Playwright.

@@ -6,4 +6,6 @@ dist/
 .vercel
 ./vscode/settings.json
 coverage/
-backend/coverage/
+backend/coverage/
+playwright-report/
+test-results/
