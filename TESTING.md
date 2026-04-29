@@ -14,7 +14,7 @@ Backend sử dụng **Jest** làm framework kiểm thử chính và **Supertest*
 cd backend
 npm install
 ```
-*Lưu ý: Thiết lập file `.env` chứa các biến môi trường cấu hình Database hoặc Mock Database.*
+*Lưu ý: Nhóm dùng Mock Database.*
 
 ### Các lệnh kiểm thử Backend
 
