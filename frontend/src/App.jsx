@@ -7,6 +7,7 @@ import HomeScreen from './screen/HomeScreen/HomeScreen';
 import AboutScreen from './screen/AboutScreen/AboutScreen';
 import MenuScreen from './screen/MenuScreen/MenuScreen';
 import AdminDashboard from './screen/AdminDashboard/AdminDashboard';
+import EmployeeDashboard from './screen/EmployeeDashboard/EmployeeDashboard';
 import CheckoutScreen from './screen/CheckoutScreen/CheckoutScreen';
 import GuestOrderLookupScreen from './screen/GuestOrderLookupScreen/GuestOrderLookupScreen';
 import TableMapScreen from './screen/TableMapScreen/TableMapScreen';
@@ -89,8 +90,11 @@ function AppContent() {
 
   // Helper function để xác định default route dựa trên role
   const getDefaultRoute = (userRole) => {
-    if (userRole === 'admin' || userRole === 'employee') {
+    if (userRole === 'admin') {
       return '/admin/dashboard';
+    }
+    if (userRole === 'employee') {
+      return '/employee/dashboard';
     }
     return '/home';
   };
@@ -192,12 +196,25 @@ function AppContent() {
           element={<ReservationSuccessScreen />}
         />
 
-        {/* Admin/Employee routes */}
+        {/* Admin routes */}
         <Route 
           path="/admin/*" 
           element={
-            user && (user.role === 'admin' || user.role === 'employee') ? 
+            user && user.role === 'admin' ? 
             <AdminDashboard user={user} onLogout={handleLogout} /> : 
+            user && user.role === 'employee' ? <Navigate to="/employee/dashboard" replace /> :
+            user ? <Unauthorized /> :
+            <Navigate to="/login" replace />
+          } 
+        />
+
+        {/* Employee routes */}
+        <Route 
+          path="/employee/*" 
+          element={
+            user && user.role === 'employee' ? 
+            <EmployeeDashboard user={user} onLogout={handleLogout} /> : 
+            user && user.role === 'admin' ? <Navigate to="/admin/dashboard" replace /> :
             user ? <Unauthorized /> :
             <Navigate to="/login" replace />
           } 

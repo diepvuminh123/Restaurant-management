@@ -9,46 +9,52 @@ import { MdOutlineRateReview } from 'react-icons/md';
 import { RiStore2Line } from 'react-icons/ri';
 import './AdminSidebar.css';
 
-const AdminSidebar = ({ onLogout, userRole }) => {
+const AdminSidebar = ({ onLogout, userRole, basePath }) => {
+  const resolvedBasePath = basePath || (userRole === 'employee' ? '/employee' : '/admin');
   const menuItems = [
     {
-      path: '/admin/dashboard',
+      path: `${resolvedBasePath}/dashboard`,
       icon: <AiOutlineHome />,
       label: 'Trang chủ',
     },
-    {
-      path: '/admin/bookings',
+  ];
+
+  if (userRole === 'employee') {
+    menuItems.push({
+      path: `${resolvedBasePath}/bookings`,
       icon: <BsCalendar3 />,
       label: 'Đặt bàn (tại nhà hàng)',
-    },
-    {
-      path: '/admin/takeaway',
+    });
+
+    menuItems.push({
+      path: `${resolvedBasePath}/takeaway`,
       icon: <IoBagHandleOutline />,
       label: 'Đặt món mang đi',
-    },
-    {
-      path: '/admin/menu',
-      icon: <LuUtensilsCrossed />,
-      label: 'Trạng thái món ăn',
-    },
-  ];
+    });
+  }
+
+  menuItems.push({
+    path: `${resolvedBasePath}/menu`,
+    icon: <LuUtensilsCrossed />,
+    label: 'Trạng thái món ăn',
+  });
 
   // Chỉ admin mới thấy menu Quản lý người dùng
   if (userRole === 'admin') {
     menuItems.push({
-      path: '/admin/reviews',
+      path: `${resolvedBasePath}/reviews`,
       icon: <MdOutlineRateReview />,
       label: 'Quản lý đánh giá',
     });
 
     menuItems.push({
-      path: '/admin/restaurant-info',
+      path: `${resolvedBasePath}/restaurant-info`,
       icon: <RiStore2Line />,
       label: 'Thông tin nhà hàng',
     });
 
     menuItems.push({
-      path: '/admin/users',
+      path: `${resolvedBasePath}/users`,
       icon: <HiOutlineUsers />,
       label: 'Quản lý người dùng',
     });

@@ -3,8 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminHeader from '../../component/AdminHeader/AdminHeader';
 import AdminSidebar from '../../component/AdminSidebar/AdminSidebar';
 import MenuManagement from '../MenuManagement/MenuManagement';
-import TakeawayOrdersScreen from '../TakeawayOrdersScreen/TakeawayOrdersScreen';
-import BookingsManagement from '../BookingsManagement/BookingsManagement';
 import UserManagement from '../UserManagement/UserManagement';
 import ReviewManagement from '../ReviewManagement/ReviewManagement';
 import RestaurantInfoManagement from '../RestaurantInfoManagement/RestaurantInfoManagement';
@@ -17,15 +15,11 @@ const AdminDashboard = ({ user, onLogout }) => {
       <AdminHeader user={user} onLogout={onLogout} />
       
       <div className="admin-dashboard__body">
-        <AdminSidebar onLogout={onLogout} userRole={user.role} />
+        <AdminSidebar onLogout={onLogout} userRole={user.role} basePath="/admin" />
         
         <main className="admin-dashboard__content">
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="bookings" element={<BookingsManagement />} />
-            <Route path="takeaway" element={
-              <TakeawayOrdersScreen userRole={user.role} />
-            } />
             <Route path="menu" element={<MenuManagement user={user} />} />
             <Route path="reviews" element={
               user.role === 'admin' ? (
