@@ -53,7 +53,13 @@ const CheckoutScreen = () => {
   const depositAmount = finalAmount * 0.5;
 
   const handleBackToMenu = () => {
-    navigate('/menu');
+    if (currentStep === 2) {
+      setCurrentStep(1);
+    } else if (currentStep === 3) {
+      navigate('/menu', { replace: true });
+    } else {
+      navigate(-1);
+    }
   };
 
   const handlePaymentMethodChange = (method) => {
@@ -107,6 +113,21 @@ const CheckoutScreen = () => {
     // Validate customer info
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.pickupDate || !customerInfo.pickupTime) {
       error('Vui lòng điền đầy đủ thông tin bắt buộc và thời gian nhận món.');
+      return;
+    }
+
+    const pickupTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}:00`);
+    if (Number.isNaN(pickupTime.getTime())) {
+      error('Thời gian nhận món không hợp lệ.');
+      return;
+    }
+
+    const minLeadTimeMinutes = 120; // 2 hours
+    const now = Date.now();
+    const minPickupTime = now + minLeadTimeMinutes * 60 * 1000;
+
+    if (pickupTime.getTime() < minPickupTime) {
+      error(`Thời gian nhận món phải sau ít nhất 2 tiếng kể từ bây giờ để nhà hàng kịp chuẩn bị.`);
       return;
     }
 

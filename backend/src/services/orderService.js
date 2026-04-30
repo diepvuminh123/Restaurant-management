@@ -40,8 +40,12 @@ class OrderService {
       throw error;
     }
 
-    if (pickupDate.getTime() < Date.now()) {
-      const error = new Error('Thời gian nhận món phải lớn hơn thời gian hiện tại');
+    const minLeadTimeMinutes = 120; // 2 hours
+    const now = Date.now();
+    const minPickupTime = now + minLeadTimeMinutes * 60 * 1000;
+
+    if (pickupDate.getTime() < minPickupTime) {
+      const error = new Error('Thời gian nhận món phải sau ít nhất 2 tiếng kể từ bây giờ để nhà hàng kịp chuẩn bị.');
       error.statusCode = 400;
       throw error;
     }
