@@ -15,7 +15,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const userAdminRoutes = require('./routes/userAdminRoutes');
 const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
-
+const promotionRoutes = require('./routes/promotionRoutes');
 
 const app = express();
 
@@ -56,6 +56,7 @@ app.use('/api', orderRoutes);
 app.use('/api', userAdminRoutes);
 app.use('/api', restaurantInfoRoutes);
 app.use('/api', reviewRoutes);
+app.use('/api', promotionRoutes);
 
 
 // Error Handler

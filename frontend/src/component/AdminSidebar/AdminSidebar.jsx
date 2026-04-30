@@ -5,7 +5,7 @@ import { BsCalendar3 } from 'react-icons/bs';
 import { LuUtensilsCrossed } from 'react-icons/lu';
 import { IoBagHandleOutline, IoLogOutOutline } from 'react-icons/io5';
 import { HiOutlineUsers } from 'react-icons/hi2';
-import { MdOutlineRateReview } from 'react-icons/md';
+import { MdOutlineRateReview, MdLocalOffer } from 'react-icons/md';
 import { RiStore2Line } from 'react-icons/ri';
 import './AdminSidebar.css';
 
@@ -57,6 +57,12 @@ const AdminSidebar = ({ onLogout, userRole, basePath }) => {
       path: `${resolvedBasePath}/users`,
       icon: <HiOutlineUsers />,
       label: 'Quản lý người dùng',
+    });
+
+    menuItems.push({
+      path: `${resolvedBasePath}/promotions`,
+      icon: <MdLocalOffer />,
+      label: 'Quản lý khuyến mãi',
     });
   }
 

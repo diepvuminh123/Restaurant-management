@@ -615,6 +615,141 @@
   font-style: italic;
 }
 
+/* Promotion Styles */
+.promotion-section {
+  padding: 16px 0;
+  border-top: 1px dashed #e5e5e5;
+  margin-bottom: 16px;
+}
+
+.promotion-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.promo-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.promo-input-group input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.promo-input-group input:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.btn-apply-promo {
+  padding: 0 16px;
+  background: #fff;
+  color: #10b981;
+  border: 1.5px solid #10b981;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-apply-promo:hover:not(:disabled) {
+  background: #f0fdf4;
+}
+
+.btn-apply-promo:disabled {
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.applied-promo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 8px;
+}
+
+.promo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.promo-code {
+  font-size: 14px;
+  font-weight: 700;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.promo-desc {
+  font-size: 12px;
+  color: #666;
+}
+
+.btn-remove-promo {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-remove-promo:hover {
+  text-decoration: underline;
+}
+
+.order-discount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px dashed #e5e5e5;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.order-final-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 2px solid #e5e5e5;
+  margin-bottom: 20px;
+}
+
+.discount-row {
+  color: #10b981;
+}
+
+.discount-row .summary-value {
+  color: #10b981;
+}
+
+.final-row {
+  border-top: 1px solid #e5e5e5;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .checkout-container {

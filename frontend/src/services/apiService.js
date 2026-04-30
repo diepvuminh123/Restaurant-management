@@ -660,6 +660,15 @@ class ApiService {
       body: { reservation_state },
     });
   }
+
+  // ============= PROMOTION API =============
+
+  static async validatePromotion(code, cartTotal) {
+    return this.request('/promotions/validate', {
+      method: 'POST',
+      body: { code, cart_total: cartTotal },
+    });
+  }
   
 }
 

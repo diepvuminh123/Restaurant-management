@@ -41,10 +41,16 @@ const CheckoutScreen = () => {
     notes: ''
   });
 
-  const totalAmount = cartTotalAmount;
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromotion, setAppliedPromotion] = useState(null);
+  const [promoLoading, setPromoLoading] = useState(false);
 
-  // Tính số tiền cọc (50% tổng đơn)
-  const depositAmount = totalAmount * 0.5;
+  const totalAmount = cartTotalAmount;
+  const discountAmount = appliedPromotion?.discountAmount || 0;
+  const finalAmount = totalAmount - discountAmount;
+
+  // Tính số tiền cọc (50% tổng đơn sau giảm giá)
+  const depositAmount = finalAmount * 0.5;
 
   const handleBackToMenu = () => {
     navigate('/menu');
@@ -60,6 +66,32 @@ const CheckoutScreen = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      error('Vui lòng nhập mã khuyến mãi');
+      return;
+    }
+
+    setPromoLoading(true);
+    try {
+      const result = await ApiService.validatePromotion(promoCode.trim(), totalAmount);
+      if (result.success) {
+        setAppliedPromotion(result.data);
+        success(`Áp dụng mã ${result.data.promotion.code} thành công!`);
+      }
+    } catch (err) {
+      error(err.message || 'Mã khuyến mãi không hợp lệ');
+      setAppliedPromotion(null);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromotion(null);
+    setPromoCode('');
   };
 
   const handleConfirmOrder = async () => {
@@ -119,6 +151,7 @@ const CheckoutScreen = () => {
           pickup_time: pickupTime.toISOString(),
           note: customerInfo.notes || '',
           payment_method: selectedPaymentMethod,
+          promotion_code: appliedPromotion?.promotion?.code || null
         });
 
         if (response.success) {
@@ -298,6 +331,47 @@ const CheckoutScreen = () => {
                     <span className="total-amount">{totalAmount.toLocaleString('vi-VN')}đ</span>
                   </div>
 
+                  <div className="promotion-section">
+                    <h4>Mã khuyến mãi</h4>
+                    {appliedPromotion ? (
+                      <div className="applied-promo">
+                        <div className="promo-info">
+                          <span className="promo-code"><IoCheckmarkCircle /> {appliedPromotion.promotion.code}</span>
+                          <span className="promo-desc">{appliedPromotion.promotion.description}</span>
+                        </div>
+                        <button className="btn-remove-promo" onClick={handleRemovePromo}>Xóa</button>
+                      </div>
+                    ) : (
+                      <div className="promo-input-group">
+                        <input
+                          type="text"
+                          placeholder="Nhập mã giảm giá..."
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                        />
+                        <button 
+                          className="btn-apply-promo" 
+                          onClick={handleApplyPromo}
+                          disabled={promoLoading || !promoCode.trim()}
+                        >
+                          {promoLoading ? 'Đang kiểm tra...' : 'Áp dụng'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {appliedPromotion && (
+                    <div className="order-discount">
+                      <span>Giảm giá</span>
+                      <span className="discount-amount">- {discountAmount.toLocaleString('vi-VN')}đ</span>
+                    </div>
+                  )}
+
+                  <div className="order-final-total">
+                    <span>Tổng cộng</span>
+                    <span className="final-amount">{finalAmount.toLocaleString('vi-VN')}đ</span>
+                  </div>
+
                   <button className="btn-confirm-order" onClick={handleConfirmOrder}>
                     Xác nhận đặt đơn
                   </button>
@@ -327,8 +401,18 @@ const CheckoutScreen = () => {
                   <span className="summary-value">{customerInfo.email}</span>
                 </div>
                 <div className="summary-row">
-                  <span>Tổng đơn hàng:</span>
+                  <span>Tạm tính:</span>
                   <span className="summary-value">{totalAmount.toLocaleString('vi-VN')}đ</span>
+                </div>
+                {appliedPromotion && (
+                  <div className="summary-row discount-row">
+                    <span>Giảm giá ({appliedPromotion.promotion.code}):</span>
+                    <span className="summary-value">- {discountAmount.toLocaleString('vi-VN')}đ</span>
+                  </div>
+                )}
+                <div className="summary-row final-row">
+                  <span>Tổng đơn hàng:</span>
+                  <span className="summary-value">{finalAmount.toLocaleString('vi-VN')}đ</span>
                 </div>
                 <div className="summary-row highlight">
                   <span>Số tiền cần cọc (50%):</span>

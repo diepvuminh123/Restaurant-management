@@ -1,4 +1,5 @@
 const pool = require('../config/database');
+const Promotion = require('./Promotion');
 
 class Order {
   static formatOrderCode(order) {
@@ -19,7 +20,8 @@ class Order {
     customerEmail,
     pickupTime,
     note = null,
-    paymentStatus = 'UNPAID'
+    paymentStatus = 'UNPAID',
+    promotionCode = null
   }) {
     const client = await pool.connect();
 
@@ -98,7 +100,50 @@ class Order {
         0
       );
 
-      const discountAmount = 0;
+      let discountAmount = 0;
+      let appliedPromotionId = null;
+      let appliedPromotionCode = null;
+
+      if (promotionCode) {
+        // Lock promotion row to prevent race conditions on usage_limit
+        const promoResult = await client.query(
+          `SELECT * FROM promotions WHERE UPPER(code) = UPPER($1) FOR UPDATE`,
+          [promotionCode]
+        );
+        const promo = promoResult.rows[0];
+
+        if (!promo) {
+          const error = new Error('Mã khuyến mãi không tồn tại');
+          error.statusCode = 404;
+          throw error;
+        }
+        if (!promo.is_active) {
+          const error = new Error('Mã khuyến mãi này không hoạt động');
+          error.statusCode = 400;
+          throw error;
+        }
+        const nowTime = new Date();
+        if (nowTime < new Date(promo.start_date) || nowTime > new Date(promo.end_date)) {
+          const error = new Error('Mã khuyến mãi này không trong thời gian sử dụng');
+          error.statusCode = 400;
+          throw error;
+        }
+        if (Number(totalAmount) < Number(promo.min_order_value)) {
+          const error = new Error(`Đơn hàng cần tối thiểu ${Number(promo.min_order_value).toLocaleString('vi-VN')}đ để áp dụng mã này`);
+          error.statusCode = 400;
+          throw error;
+        }
+        if (promo.usage_limit !== null && promo.used_count >= promo.usage_limit) {
+          const error = new Error('Mã khuyến mãi này đã hết lượt sử dụng');
+          error.statusCode = 410;
+          throw error;
+        }
+
+        discountAmount = Promotion.calculateDiscount(promo, totalAmount);
+        appliedPromotionId = promo.id;
+        appliedPromotionCode = promo.code;
+      }
+
       const finalAmount = totalAmount - discountAmount;
       const depositAmount = Number((finalAmount * 0.5).toFixed(2));
 
@@ -130,10 +175,12 @@ class Order {
            customer_email,
            pickup_time,
            note,
+           promotion_id,
+           promotion_code,
            created_at,
            updated_at
          ) VALUES (
-           $1, $2, $3, $4, $5, 'PENDING', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+           $1, $2, $3, $4, $5, 'PENDING', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
          )
          RETURNING *`,
         [
@@ -152,6 +199,8 @@ class Order {
           customerEmail,
           pickupTime,
           note,
+          appliedPromotionId,
+          appliedPromotionCode,
           now,
           now
         ]
@@ -191,6 +240,13 @@ class Order {
          WHERE id = $1`,
         [cart.id]
       );
+
+      if (appliedPromotionId) {
+        await client.query(
+          `UPDATE promotions SET used_count = used_count + 1 WHERE id = $1`,
+          [appliedPromotionId]
+        );
+      }
 
       await client.query('COMMIT');
 

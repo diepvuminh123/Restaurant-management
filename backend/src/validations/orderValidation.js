@@ -36,7 +36,9 @@ const createOrderSchema = Joi.object({
     .messages({
       'any.only': 'Phương thức thanh toán không hợp lệ',
       'any.required': 'payment_method là bắt buộc'
-    })
+    }),
+    
+  promotion_code: Joi.string().trim().max(50).uppercase().allow('', null).optional()
 });
 
 const orderIdParamSchema = Joi.object({

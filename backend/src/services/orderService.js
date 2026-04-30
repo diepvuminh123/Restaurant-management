@@ -61,7 +61,8 @@ class OrderService {
       customerEmail: payload.customer_email,
       pickupTime: pickupDate.toISOString(),
       note: combinedNote,
-      paymentStatus
+      paymentStatus,
+      promotionCode: payload.promotion_code?.trim().toUpperCase() || null
     });
   }
 
