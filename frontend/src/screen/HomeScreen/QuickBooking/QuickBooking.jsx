@@ -29,6 +29,7 @@ const QuickBooking = ({ user }) => {
     } = useRestaurantInfoContext();
 
     const [featuredDishes, setFeaturedDishes] = useState([]);
+    const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const PAGE_SIZE = 3;
@@ -39,7 +40,19 @@ const QuickBooking = ({ user }) => {
     // Fetch menu items (sorted by rating)
     useEffect(() => {
         fetchFeaturedDishes();
+        fetchFaqs();
     }, []);
+
+    const fetchFaqs = async () => {
+        try {
+            const data = await ApiService.getActiveFaqs();
+            if (Array.isArray(data)) {
+                setFaqs(data);
+            }
+        } catch (error) {
+            console.error('Error fetching FAQs:', error);
+        }
+    };
 
     const fetchFeaturedDishes = async () => {
         try {
@@ -203,25 +216,6 @@ const QuickBooking = ({ user }) => {
         { icon: <FiGift />, title: t('home.perks.items.0.title'), desc: t('home.perks.items.0.desc') },
         { icon: <FiClock />, title: t('home.perks.items.1.title'), desc: t('home.perks.items.1.desc') },
         { icon: <FiCalendar />, title: t('home.perks.items.2.title'), desc: t('home.perks.items.2.desc') },
-    ];
-
-    const faqs = [
-        {
-            question: t('home.faq.items.0.question'),
-            answer: t('home.faq.items.0.answer'),
-        },
-        {
-            question: t('home.faq.items.1.question'),
-            answer: t('home.faq.items.1.answer'),
-        },
-        {
-            question: t('home.faq.items.2.question'),
-            answer: t('home.faq.items.2.answer'),
-        },
-        {
-            question: t('home.faq.items.3.question'),
-            answer: t('home.faq.items.3.answer', { openingTime, closingTime }),
-        },
     ];
 
     return (
@@ -400,20 +394,22 @@ const QuickBooking = ({ user }) => {
                 </div>
             </section>
 
-            <section className="home-section home-faq">
-                <div className="section-head centered">
-                    <p className="section-subtitle">{t('home.faq.subtitle')}</p>
-                    <h2>{t('home.faq.title')}</h2>
-                </div>
-                <div className="faq-list">
-                    {faqs.map((faq) => (
-                        <details className="faq-item" key={faq.question}>
-                            <summary>{faq.question}</summary>
-                            <p>{faq.answer}</p>
-                        </details>
-                    ))}
-                </div>
-            </section>
+            {faqs.length > 0 && (
+                <section className="home-section home-faq">
+                    <div className="section-head centered">
+                        <p className="section-subtitle">{t('home.faq.subtitle')}</p>
+                        <h2>{t('home.faq.title')}</h2>
+                    </div>
+                    <div className="faq-list">
+                        {faqs.map((faq) => (
+                            <details className="faq-item" key={faq.id}>
+                                <summary>{faq.question}</summary>
+                                <p>{faq.answer}</p>
+                            </details>
+                        ))}
+                    </div>
+                </section>
+            )}
 
         </div>
     );

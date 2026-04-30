@@ -669,6 +669,47 @@ class ApiService {
       body: { code, cart_total: cartTotal },
     });
   }
+
+  // ============= FAQ API =============
+
+  static async getActiveFaqs() {
+    return this.request('/faqs', {
+      method: 'GET',
+    });
+  }
+
+  static async getAllFaqs() {
+    return this.request('/faqs/admin', {
+      method: 'GET',
+    });
+  }
+
+  static async createFaq(payload) {
+    return this.request('/faqs', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async updateFaq(id, payload) {
+    return this.request(`/faqs/${id}`, {
+      method: 'PUT',
+      body: payload,
+    });
+  }
+
+  static async deleteFaq(id) {
+    return this.request(`/faqs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  static async updateFaqOrder(items) {
+    return this.request('/faqs/order', {
+      method: 'PUT',
+      body: { items },
+    });
+  }
   
 }
 

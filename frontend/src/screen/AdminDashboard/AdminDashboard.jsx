@@ -7,6 +7,7 @@ import UserManagement from '../UserManagement/UserManagement';
 import ReviewManagement from '../ReviewManagement/ReviewManagement';
 import RestaurantInfoManagement from '../RestaurantInfoManagement/RestaurantInfoManagement';
 import PromotionManagement from '../PromotionManagement/PromotionManagement';
+import FAQManagement from './FAQManagement/FAQManagement';
 import Dashboard from '../Dashboard/Dashboard';
 import './AdminDashboard.css';
 
@@ -46,6 +47,13 @@ const AdminDashboard = ({ user, onLogout }) => {
             <Route path="promotions" element={
               user.role === 'admin' ? (
                 <PromotionManagement />
+              ) : (
+                <Navigate to="/admin/dashboard" replace />
+              )
+            } />
+            <Route path="faqs" element={
+              user.role === 'admin' ? (
+                <FAQManagement />
               ) : (
                 <Navigate to="/admin/dashboard" replace />
               )
