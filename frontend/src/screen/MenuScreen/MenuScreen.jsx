@@ -239,8 +239,16 @@ export default function MenuScreen({ user }) {
       // Thêm món vào giỏ hàng trước
       await addToCart(dish, 1, null);
       
-      // Chuyển đến checkout (cart sẽ được load từ API ở checkout page)
-      navigate('/checkout');
+      // Chuyển đến checkout với thông tin đã điền sẵn
+      navigate('/checkout', {
+        state: {
+          customerInfo: {
+            name: user?.fullName || user?.username || '',
+            email: user?.email || '',
+            phone: user?.phone || ''
+          }
+        }
+      });
     }
   };
 

@@ -32,15 +32,16 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
 
   const navigateToCheckout = () => {
     onClose?.();
+    const user = getLoggedInUser();
 
     navigate('/checkout', {
       state: {
         cartItems: cartItems,
         totalAmount: subTotal,
         customerInfo: {
-          name: '',
-          email: '',
-          phone: ''
+          name: user?.fullName || user?.username || '',
+          email: user?.email || '',
+          phone: user?.phone || ''
         }
       }
     });

@@ -7,6 +7,7 @@ import { useCart } from '../../hooks/useCart';
 import ApiService from '../../services/apiService';
 import ToastContainer from '../../component/Toast/ToastContainer';
 import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
 import './CheckoutScreen.css';
 
 const CheckoutScreen = () => {
@@ -24,14 +25,17 @@ const CheckoutScreen = () => {
     loading: cartLoading
   } = useCart();
   
+  const storedUser = sessionStorage.getItem(STORAGE_KEYS.USER);
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
   const [currentStep, setCurrentStep] = useState(1); // 1: Chọn món, 2: Cọc, 3: Gửi bill
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('zalopay');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
-    name: initialCustomerInfo.name || '',
-    email: initialCustomerInfo.email || '',
-    phone: initialCustomerInfo.phone || '',
+    name: initialCustomerInfo.name || user?.fullName || user?.username || '',
+    email: initialCustomerInfo.email || user?.email || '',
+    phone: initialCustomerInfo.phone || user?.phone || '',
     pickupTime: '',
     pickupDate: '',
     notes: ''
