@@ -2,11 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { IoLogOutOutline } from 'react-icons/io5';
+import { FiMenu, FiX } from 'react-icons/fi';
 import { ICONS } from '../../constants/asset/icon';
 import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import './AdminHeader.css';
 
-const AdminHeader = ({ user, onLogout }) => {
+const AdminHeader = ({ user, onLogout, isSidebarOpen = false, onMenuToggle }) => {
   const navigate = useNavigate();
   const { restaurantName, restaurantSlogan } = useRestaurantInfoContext();
 
@@ -28,6 +29,16 @@ const AdminHeader = ({ user, onLogout }) => {
 
   return (
     <header className="admin-header">
+      <button
+        type="button"
+        className="admin-header__menu-toggle"
+        onClick={onMenuToggle}
+        aria-label={isSidebarOpen ? 'Close admin navigation' : 'Open admin navigation'}
+        aria-expanded={isSidebarOpen}
+      >
+        {isSidebarOpen ? <FiX /> : <FiMenu />}
+      </button>
+
       <div className="admin-header__left" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
         <div className="admin-header__logo">
           <img src={ICONS.LOGO} alt="Logo" className="admin-header__logo-img" />

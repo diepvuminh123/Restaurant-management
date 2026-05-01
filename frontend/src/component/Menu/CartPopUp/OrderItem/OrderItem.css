@@ -112,3 +112,36 @@
 .remove-item-button:hover {
     color: #ff4d4d; 
 }
+
+@media (max-width: 640px) {
+  .order-item-detail {
+    gap: 12px;
+  }
+
+  .item-info-group {
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .item-thumbnail {
+    width: 58px;
+    height: 58px;
+  }
+
+  .item-text-group,
+  .name-and-remove-group {
+    min-width: 0;
+  }
+
+  .item-name-popup {
+    max-width: none;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .item-subtotal-price {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}

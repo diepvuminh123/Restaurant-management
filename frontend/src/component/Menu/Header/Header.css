@@ -43,6 +43,9 @@
   display: flex;
   justify-content: center;
   gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .tabs-loading {
@@ -75,6 +78,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .tracking-link {
@@ -100,6 +104,7 @@
   border-radius: 10px;
   padding: 8px 10px;
   gap: 6px;
+  min-width: 0;
 }
 .search-box input {
   border: none;
@@ -147,4 +152,65 @@
         transform: scale(1) rotate(0deg); /* Trở về trạng thái bình thường */
         opacity: 1;
     }
+}
+
+@media (max-width: 1100px) {
+  .menu-header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .menu-header__tabs,
+  .menu-header__right {
+    justify-content: flex-start;
+  }
+
+  .menu-header__right {
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1 1 240px;
+  }
+}
+
+@media (max-width: 640px) {
+  .menu-header {
+    padding: 12px;
+  }
+
+  .menu-header__left {
+    min-width: 0;
+  }
+
+  .menu-header__tabs {
+    gap: 6px;
+    padding-bottom: 2px;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    padding: 8px 12px;
+  }
+
+  .menu-header__right {
+    gap: 8px;
+  }
+
+  .tracking-link,
+  .search-box,
+  .cart-btn {
+    width: 100%;
+  }
+
+  .cart-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+  }
 }

@@ -235,4 +235,14 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .user-management__pagination {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .user-table__actions {
+    flex-wrap: wrap;
+  }
 }

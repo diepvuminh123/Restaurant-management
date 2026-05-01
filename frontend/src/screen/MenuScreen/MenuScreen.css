@@ -1,16 +1,19 @@
 .menu-page {
   background: #fafafa;
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .menu-content {
   display: flex;
   gap: 18px;
   padding: 18px;
+  align-items: flex-start;
 }
 
 .menu-main {
   flex: 1;
+  min-width: 0;
 }
 
 .dish-grid {
@@ -114,5 +117,46 @@
   background: #e36a2d;
   color: white;
   border-color: #e36a2d;
+}
+
+@media (max-width: 1100px) {
+  .menu-content {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .dish-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-content {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .dish-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-content {
+    padding: 12px;
+  }
+
+  .status-filter-bar {
+    gap: 8px;
+  }
+
+  .status-filter-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 

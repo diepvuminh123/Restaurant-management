@@ -79,3 +79,30 @@
     color: #fff; 
     font-weight: 600;
 }
+
+@media (max-width: 992px) {
+    .Setting-tab-bar {
+        width: 100%;
+    }
+
+    .settingList {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+}
+
+@media (max-width: 640px) {
+    .Setting-tab-bar {
+        padding: 16px;
+    }
+
+    .AccountInfo {
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+    }
+
+    .settingList {
+        grid-template-columns: 1fr;
+    }
+}

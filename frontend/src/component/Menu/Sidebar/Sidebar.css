@@ -1,5 +1,6 @@
 .sidebar {
   width: 240px;
+  flex: 0 0 240px;
 }
 
 .sidebar-card {
@@ -80,5 +81,17 @@
 .sidebar-price-input[type=number] {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .sidebar-card {
+    position: static;
+    top: auto;
+  }
 }
 

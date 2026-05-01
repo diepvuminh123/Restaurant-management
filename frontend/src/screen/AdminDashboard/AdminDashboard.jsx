@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminHeader from '../../component/AdminHeader/AdminHeader';
 import AdminSidebar from '../../component/AdminSidebar/AdminSidebar';
@@ -12,12 +12,26 @@ import Dashboard from '../Dashboard/Dashboard';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div className="admin-dashboard">
-      <AdminHeader user={user} onLogout={onLogout} />
+      <AdminHeader
+        user={user}
+        onLogout={onLogout}
+        isSidebarOpen={isSidebarOpen}
+        onMenuToggle={() => setIsSidebarOpen((open) => !open)}
+      />
       
       <div className="admin-dashboard__body">
-        <AdminSidebar onLogout={onLogout} userRole={user.role} basePath="/admin" />
+        <AdminSidebar
+          onLogout={onLogout}
+          userRole={user.role}
+          user={user}
+          basePath="/admin"
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
         
         <main className="admin-dashboard__content">
           <Routes>

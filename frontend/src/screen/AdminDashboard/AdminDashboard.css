@@ -8,12 +8,14 @@
 .admin-dashboard__body {
   display: flex;
   flex: 1;
+  min-width: 0;
 }
 
 .admin-dashboard__content {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  min-width: 0;
 }
 
 .admin-dashboard__content h1 {
@@ -26,4 +28,20 @@
 .admin-dashboard__content p {
   font-size: 16px;
   color: #666;
+}
+
+@media (max-width: 1024px) {
+  .admin-dashboard__body {
+    flex-direction: column;
+  }
+
+  .admin-dashboard__content {
+    padding: 18px 16px 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-dashboard__content {
+    padding: 14px 12px 20px;
+  }
 }

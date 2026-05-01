@@ -24,11 +24,13 @@
     gap: 50px; 
     width: 100%; 
     align-items: flex-start;
+    min-width: 0;
 }
 
 .setting-content-area {
     flex-grow: 1; 
     max-width: 800px;
+    min-width: 0;
 }
 
 .setting-content-card, .user-info-form-card {
@@ -50,5 +52,20 @@
     
     .setting-tab-bar {
         width: 100% !important; 
+    }
+}
+
+@media (max-width: 640px) {
+    .setting-screen {
+        padding: 20px 12px;
+    }
+
+    .back-btn-container {
+        margin-bottom: 16px;
+    }
+
+    .setting-content-card,
+    .user-info-form-card {
+        padding: 20px 16px;
     }
 }

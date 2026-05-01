@@ -185,3 +185,19 @@
   color: #6a635a;
   font-size: 14px;
 }
+
+@media (max-width: 768px) {
+  .review-admin__filters {
+    flex-direction: column;
+  }
+
+  .review-admin__filters label,
+  .review-admin__filters select {
+    width: 100%;
+  }
+
+  .review-admin__pagination {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}

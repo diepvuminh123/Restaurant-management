@@ -431,7 +431,7 @@ const BookingsManagement = () => {
       <div className="bookings-timeline" aria-label="Chọn khung giờ">
         <button
           type="button"
-          className="bookings-timeline__nav"
+          className="bookings-timeline__nav bookings-timeline__nav--prev"
           onClick={() => setSlotOffset((prev) => Math.max(0, prev - 1))}
           disabled={!canGoPrev}
           aria-label="Khung giờ trước"
@@ -466,7 +466,7 @@ const BookingsManagement = () => {
 
         <button
           type="button"
-          className="bookings-timeline__nav"
+          className="bookings-timeline__nav bookings-timeline__nav--next"
           onClick={() => setSlotOffset((prev) => Math.min(Math.max(0, timeSlots.length - SLOTS_PER_VIEW), prev + 1))}
           disabled={!canGoNext}
           aria-label="Khung giờ tiếp theo"

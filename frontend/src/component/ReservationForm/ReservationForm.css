@@ -4,9 +4,10 @@
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     padding: 30px;
-    width: 350px;
+    width: min(350px, 100%);
     margin: 20px auto;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
 }
 
 /* Header */
@@ -213,4 +214,21 @@
     text-align: center;
     padding: 15px !important;
     font-style: italic;
+}
+
+@media (max-width: 480px) {
+    .quick-booking-container {
+        padding: 22px 16px;
+        margin: 12px auto;
+    }
+
+    .booking-header h3 {
+        font-size: 1.25em;
+    }
+
+    .form-input,
+    .select-trigger {
+        font-size: 0.95em;
+        padding: 11px 12px;
+    }
 }
