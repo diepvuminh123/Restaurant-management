@@ -36,3 +36,9 @@
 .back-button__text {
   white-space: nowrap;
 }
+
+@media (max-width: 640px) {
+  .back-button {
+    display: none;
+  }
+}
