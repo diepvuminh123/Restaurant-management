@@ -31,16 +31,37 @@ const QuickBooking = ({ user }) => {
     const [featuredDishes, setFeaturedDishes] = useState([]);
     const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isCompactFeaturedLayout, setIsCompactFeaturedLayout] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth <= 640 : false
+    );
 
     const PAGE_SIZE = 3;
     const [pageIndex, setPageIndex] = useState(0);
     const [slideDirection, setSlideDirection] = useState('next');
     const touchStartXRef = useRef(null);
+    const featuredGridRef = useRef(null);
+    const dragStateRef = useRef({
+        isDragging: false,
+        pointerType: null,
+        startX: 0,
+        startScrollLeft: 0,
+    });
 
     // Fetch menu items (sorted by rating)
     useEffect(() => {
         fetchFeaturedDishes();
         fetchFaqs();
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsCompactFeaturedLayout(window.innerWidth <= 640);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const fetchFaqs = async () => {
@@ -100,6 +121,8 @@ const QuickBooking = ({ user }) => {
         return sortedFeaturedDishes.slice(start, start + PAGE_SIZE);
     }, [pageIndex, sortedFeaturedDishes]);
 
+    const featuredDishesToRender = isCompactFeaturedLayout ? sortedFeaturedDishes : pagedDishes;
+
     const changePage = (direction) => {
         setPageIndex((prev) => {
             const nextIndex = direction === 'prev'
@@ -134,6 +157,44 @@ const QuickBooking = ({ user }) => {
         if (deltaX >= threshold) goPrevPage();
     };
 
+    const handleFeaturedPointerDown = (event) => {
+        if (!isCompactFeaturedLayout || !featuredGridRef.current) return;
+        if (event.pointerType !== 'mouse') return;
+
+        dragStateRef.current = {
+            isDragging: true,
+            pointerType: event.pointerType,
+            startX: event.clientX,
+            startScrollLeft: featuredGridRef.current.scrollLeft,
+        };
+
+        featuredGridRef.current.setPointerCapture?.(event.pointerId);
+    };
+
+    const handleFeaturedPointerMove = (event) => {
+        if (
+            !isCompactFeaturedLayout ||
+            !featuredGridRef.current ||
+            !dragStateRef.current.isDragging ||
+            dragStateRef.current.pointerType !== 'mouse'
+        ) return;
+
+        const deltaX = event.clientX - dragStateRef.current.startX;
+        featuredGridRef.current.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
+    };
+
+    const handleFeaturedPointerUp = (event) => {
+        if (!isCompactFeaturedLayout || !featuredGridRef.current) return;
+
+        dragStateRef.current = {
+            isDragging: false,
+            pointerType: null,
+            startX: 0,
+            startScrollLeft: 0,
+        };
+        featuredGridRef.current.releasePointerCapture?.(event.pointerId);
+    };
+
     let featuredMenuContent;
 
     if (loading) {
@@ -143,7 +204,7 @@ const QuickBooking = ({ user }) => {
             </div>
         );
     } else if (featuredDishes.length > 0) {
-        featuredMenuContent = pagedDishes.map((dish, index) => (
+        featuredMenuContent = featuredDishesToRender.map((dish, index) => (
             <article
                 className="featured-dish-card"
                 key={dish.id || dish.name}
@@ -270,7 +331,7 @@ const QuickBooking = ({ user }) => {
                 </div>
 
                 <div className="home-featured-menu__carousel">
-                    {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
                         <button
                             className="home-featured-menu__nav home-featured-menu__nav--prev"
                             type="button"
@@ -283,14 +344,20 @@ const QuickBooking = ({ user }) => {
                     ) : null}
 
                     <div
-                        className={`featured-grid featured-grid--animated featured-grid--${slideDirection}`}
-                        onTouchStart={onTouchStart}
-                        onTouchEnd={onTouchEnd}
+                        ref={featuredGridRef}
+                        className={`featured-grid ${isCompactFeaturedLayout ? 'featured-grid--mobile' : `featured-grid--animated featured-grid--${slideDirection}`}`}
+                        onTouchStart={isCompactFeaturedLayout ? undefined : onTouchStart}
+                        onTouchEnd={isCompactFeaturedLayout ? undefined : onTouchEnd}
+                        onPointerDown={isCompactFeaturedLayout ? handleFeaturedPointerDown : undefined}
+                        onPointerMove={isCompactFeaturedLayout ? handleFeaturedPointerMove : undefined}
+                        onPointerUp={isCompactFeaturedLayout ? handleFeaturedPointerUp : undefined}
+                        onPointerCancel={isCompactFeaturedLayout ? handleFeaturedPointerUp : undefined}
+                        onPointerLeave={isCompactFeaturedLayout ? handleFeaturedPointerUp : undefined}
                     >
                         {featuredMenuContent}
                     </div>
 
-                    {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
                         <button
                             className="home-featured-menu__nav home-featured-menu__nav--next"
                             type="button"
@@ -303,7 +370,7 @@ const QuickBooking = ({ user }) => {
                     ) : null}
                 </div>
 
-                {sortedFeaturedDishes.length > PAGE_SIZE ? (
+                {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
                     <div className="home-featured-menu__status" aria-label={t('home.featured.pageStatus', { current: pageIndex + 1, total: totalPages })}>
                         <div className="home-featured-menu__status-bar" aria-hidden="true">
                             <span

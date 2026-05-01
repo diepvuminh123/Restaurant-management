@@ -820,28 +820,41 @@
 
     .home-featured-menu__carousel {
         grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .home-featured-menu__nav,
+    .home-featured-menu__status {
+        display: none;
+    }
+
+    .home-featured-menu .featured-grid--mobile {
+        display: flex;
         gap: 14px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+        cursor: grab;
     }
 
-    .home-featured-menu .featured-grid {
-        grid-row: 2;
-        grid-column: 1;
+    .home-featured-menu .featured-grid--mobile::-webkit-scrollbar {
+        display: none;
     }
 
-    .home-featured-menu__nav {
-        position: static;
+    .home-featured-menu .featured-grid--mobile:active {
+        cursor: grabbing;
     }
 
-    .home-featured-menu__nav--prev {
-        grid-row: 1;
-        grid-column: 1;
-        justify-self: start;
-    }
-
-    .home-featured-menu__nav--next {
-        grid-row: 1;
-        grid-column: 1;
-        justify-self: end;
+    .home-featured-menu .featured-grid--mobile .featured-dish-card {
+        flex: 0 0 82vw;
+        scroll-snap-align: start;
+        opacity: 1;
+        transform: none;
+        animation: none;
+        will-change: auto;
     }
 
     .featured-dish-card__actions {
