@@ -12,6 +12,7 @@
   border: 1px solid var(--tt-border);
   padding: 20px;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box; 
 }
 
@@ -210,6 +211,7 @@
   flex: 1;
   min-width: 0;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -219,7 +221,9 @@
   background: #fff;
   padding: 24px;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .takeaway-detail-card h3 {
@@ -241,6 +245,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .takeaway-detail-grid span {
@@ -251,6 +256,8 @@
 .takeaway-detail-grid strong {
   color: #2a3441;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .takeaway-pickup-location {
@@ -262,6 +269,7 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .takeaway-pickup-location svg {
@@ -279,6 +287,8 @@
 .takeaway-pickup-location strong {
   color: #2a3441;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .takeaway-section {
@@ -286,6 +296,10 @@
   border-radius: 12px;
   background: #fff;
   padding: 14px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .takeaway-section h4 {
@@ -300,6 +314,8 @@
   margin: 10px 0 0;
   color: #4d5767;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .takeaway-section--soft {
@@ -466,11 +482,17 @@
   display: flex;
   gap: 8px;
   align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .takeaway-hint p {
   margin: 0;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .takeaway-items {
@@ -478,6 +500,9 @@
   border-radius: 12px;
   background: #fff;
   padding: 14px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .takeaway-items h4 {
@@ -495,14 +520,18 @@
   padding: 8px;
   border-bottom: 1px solid #e5e9ef;
   text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 @media (max-width: 900px) {
   .takeaway-tracking__layout {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .takeaway-tracking__list {
+    flex: 1 1 auto;
+    width: 100%;
     max-height: none;
   }
 
@@ -521,5 +550,173 @@
 
   .takeaway-progress-line::before {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .takeaway-tracking {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .takeaway-tracking__hero h2 {
+    font-size: 20px;
+  }
+
+  .takeaway-tracking__hero p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .takeaway-tracking__filters {
+    gap: 6px;
+  }
+
+  .takeaway-tracking__filters select {
+    padding: 9px 10px;
+    font-size: 14px;
+  }
+
+  .takeaway-tracking__layout {
+    gap: 12px;
+  }
+
+  .takeaway-tracking__list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin: 0 -2px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .takeaway-tracking__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .takeaway-tracking__card {
+    flex: 0 0 250px;
+    min-height: 108px;
+    padding: 10px;
+    scroll-snap-align: start;
+  }
+
+  .takeaway-tracking__card p {
+    font-size: 13px;
+  }
+
+  .takeaway-tracking__status {
+    font-size: 11px;
+    padding: 4px 7px;
+  }
+
+  .takeaway-tracking__pagination {
+    width: 100%;
+    margin-top: 0;
+    padding: 8px;
+  }
+
+  .takeaway-tracking__card-line,
+  .takeaway-actions-row,
+  .takeaway-tracking__pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .takeaway-actions-row > * {
+    width: 100%;
+  }
+
+  .takeaway-tracking__pagination button,
+  .takeaway-primary-btn,
+  .takeaway-danger-btn {
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .takeaway-detail-card {
+    padding: 16px 14px;
+  }
+
+  .takeaway-detail-card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .takeaway-detail-grid {
+    gap: 10px;
+  }
+
+  .takeaway-detail-grid span,
+  .takeaway-detail-grid strong,
+  .takeaway-section p,
+  .takeaway-hint p {
+    font-size: 13px;
+  }
+
+  .takeaway-pickup-location {
+    padding: 10px;
+  }
+
+  .takeaway-pickup-location > div {
+    min-width: 0;
+  }
+
+  .takeaway-progress-line {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    margin-top: 10px;
+  }
+
+  .takeaway-progress-step::before,
+  .takeaway-progress-line::after {
+    display: none;
+  }
+
+  .takeaway-progress-step {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .takeaway-progress-step span {
+    font-size: 13px;
+  }
+
+  .takeaway-progress-dot {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .takeaway-section,
+  .takeaway-items {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .takeaway-section h4,
+  .takeaway-items h4 {
+    font-size: 15px;
+  }
+
+  .takeaway-items {
+    overflow-x: auto;
+  }
+
+  .takeaway-items table {
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .takeaway-items th,
+  .takeaway-items td {
+    font-size: 12px;
+    padding: 7px 6px;
   }
 }

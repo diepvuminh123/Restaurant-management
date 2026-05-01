@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './SettingTabBar.css'
-const SettingTabBar = ({ user, handleTabChange, initialTab = 'password' }) => {
+const SettingTabBar = ({ user, handleTabChange, initialTab = 'password', isOpen = false, onClose }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
@@ -17,7 +17,15 @@ const SettingTabBar = ({ user, handleTabChange, initialTab = 'password' }) => {
   };
 
   return (
-    <div className="Setting-tab-bar">
+    <>
+      <button
+        type="button"
+        className={`setting-tab-bar__backdrop ${isOpen ? 'setting-tab-bar__backdrop--open' : ''}`}
+        aria-label="Close profile navigation"
+        onClick={onClose}
+      />
+
+    <div className={`Setting-tab-bar ${isOpen ? 'Setting-tab-bar--open' : ''}`}>
       <div className="AccountInfo">
         {/* Giả sử user.avatar là một URL hoặc một ký tự */}
         <span className="userAvatar">{user?.avatar || user?.username?.charAt(0) || 'U'}</span>
@@ -59,6 +67,7 @@ const SettingTabBar = ({ user, handleTabChange, initialTab = 'password' }) => {
         
       </div>
     </div>
+    </>
   );
 };
 
