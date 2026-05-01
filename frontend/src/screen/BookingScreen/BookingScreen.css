@@ -55,9 +55,11 @@
 }
 
 .inline-map-panel__icon {
-  font-size: 3rem;
-  display: block;
+  width: 3.2rem;
+  height: 3.2rem;
+  display: inline-block;
   margin-bottom: 12px;
+  color: #8a5a45;
 }
 
 .inline-map-panel__placeholder p {

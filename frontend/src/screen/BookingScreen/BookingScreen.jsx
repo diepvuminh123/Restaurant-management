@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import ApiService from '../../services/apiService';
 import { useTranslation } from 'react-i18next';
+import { PiArmchair } from 'react-icons/pi';
 import './BookingScreen.css';
 
 const getDisabledReasonLabel = (reason, t) => {
@@ -147,7 +148,7 @@ const BookingScreen = ({ user }) => {
 
               {!hasParams && (
                 <div className="inline-map-panel__placeholder">
-                  <span className="inline-map-panel__icon">🪑</span>
+                  <PiArmchair className="inline-map-panel__icon" aria-hidden="true" />
                   <p>{t('booking.tables.noParams')}</p>
                 </div>
               )}

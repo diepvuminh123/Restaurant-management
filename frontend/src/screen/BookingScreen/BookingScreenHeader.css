@@ -44,6 +44,72 @@
 
 @media (max-width: 720px) {
   .booking-screen-header {
-    padding: 14px 18px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 12px;
+    align-items: center;
+  }
+
+  .booking-screen-header__brand {
+    min-width: 0;
+    justify-self: start;
+  }
+
+  .booking-screen-header .header__left-section {
+    padding: 0;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .booking-screen-header .header__logo-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .booking-screen-header .header__restaurant-info {
+    min-width: 0;
+  }
+
+  .booking-screen-header .header__restaurant-name {
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+
+  .booking-screen-header .header__tagline {
+    font-size: 0.7rem;
+    line-height: 1.15;
+  }
+
+  .booking-screen-header__title {
+    display: none;
+  }
+
+  .booking-screen-header__spacer {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .booking-screen-header {
+    padding: 10px;
+  }
+
+  .booking-screen-header .header__left-section {
+    gap: 8px;
+  }
+
+  .booking-screen-header .header__logo-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+  }
+
+  .booking-screen-header .header__restaurant-name {
+    font-size: 0.9rem;
+  }
+
+  .booking-screen-header .header__tagline {
+    font-size: 0.64rem;
   }
 }
