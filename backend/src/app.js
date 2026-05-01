@@ -17,6 +17,7 @@ const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const promotionRoutes = require('./routes/promotionRoutes');
 const faqRoutes = require('./routes/faqRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use('/api', restaurantInfoRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', promotionRoutes);
 app.use('/api/faqs', faqRoutes);
+app.use('/api/stats', statsRoutes);
 
 
 // Error Handler

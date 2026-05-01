@@ -16,55 +16,36 @@ const Dashboard = () => {
     });
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchDashboardData();
-    }, []);
+    const [timeRange, setTimeRange] = useState('month');
 
-    const fetchDashboardData = async () => {
+    useEffect(() => {
+        fetchDashboardData(timeRange);
+    }, [timeRange]);
+
+    const fetchDashboardData = async (range) => {
         try {
             setLoading(true);
+            const response = await ApiService.getDashboardStats(range);
             
-            // Mock data - thay thế bằng API calls thực tế
-            const mockData = {
-                totalOrders: 1255,
-                totalCustomers: 487,
-                totalRevenue: 45320000,
-                topDishes: [
-                    { id: 1, name: 'Cơm tấm sườn nướng', sold: 342, price: 65000 },
-                    { id: 2, name: 'Phở gà', sold: 298, price: 75000 },
-                    { id: 3, name: 'Bánh mì thịt nướng', sold: 287, price: 35000 },
-                    { id: 4, name: 'Cà phê đen đá', sold: 265, price: 20000 },
-                    { id: 5, name: 'Bún chả hà nội', sold: 241, price: 55000 }
-                ],
-                ordersOverview: [
-                    { day: 'Thứ 2', orders: 145 },
-                    { day: 'Thứ 3', orders: 158 },
-                    { day: 'Thứ 4', orders: 172 },
-                    { day: 'Thứ 5', orders: 189 },
-                    { day: 'Thứ 6', orders: 205 },
-                    { day: 'Thứ 7', orders: 198 },
-                    { day: 'CN', orders: 165 }
-                ],
-                topCategories: [
-                    { name: 'Món chính', value: 35 },
-                    { name: 'Thức uống', value: 25 },
-                    { name: 'Tráng miệng', value: 20 },
-                    { name: 'Khác', value: 20 }
-                ],
-                orderStatuses: [
-                    { name: 'Chờ xác nhận', count: 45, percentage: 20 },
-                    { name: 'Đang chuẩn bị', count: 135, percentage: 60 },
-                    { name: 'Đã sẵn sàng', count: 30, percentage: 13 },
-                    { name: 'Đã hoàn thành', count: 5, percentage: 7 }
-                ]
-            };
-
-            setDashboardData(mockData);
+            if (response.success) {
+                console.log('Dashboard Data Received:', response.data);
+                setDashboardData(response.data);
+            }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
+            // Fallback or error handling can go here
         } finally {
             setLoading(false);
         }
+    };
+
+    const formatRevenue = (amount) => {
+        if (amount >= 1000000) {
+            return `₫${(amount / 1000000).toFixed(1)}M`;
+        } else if (amount >= 1000) {
+            return `₫${(amount / 1000).toFixed(0)}k`;
+        }
+        return `₫${amount.toLocaleString()}`;
     };
 
     const COLORS = ['#D06F35', '#2D2D2D', '#F4A460', '#D3D3D3'];
@@ -113,7 +94,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                         <p className="stat-label">Tổng doanh thu</p>
-                        <h3>₫{(dashboardData.totalRevenue / 1000000).toFixed(0)}M</h3>
+                        <h3>{formatRevenue(dashboardData.totalRevenue)}</h3>
                         <span className="stat-change positive">
                             <FiTrendingUp /> 2.36%
                         </span>
@@ -128,10 +109,11 @@ const Dashboard = () => {
                         <p className="chart-label">Những món bán chạy nhất</p>
                         <h3>Top 5 Món ăn</h3>
                     </div>
-                    <select className="time-filter">
-                        <option>Tháng này</option>
-                        <option>Tuần này</option>
-                        <option>Hôm nay</option>
+                    <select className="time-filter" value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+                        <option value="month">Tháng này</option>
+                        <option value="week">Tuần này</option>
+                        <option value="today">Hôm nay</option>
+                        <option value="all">Tất cả</option>
                     </select>
                 </div>
                 
@@ -157,8 +139,11 @@ const Dashboard = () => {
                 <div className="chart-section">
                     <h3>Tổng quan đơn hàng</h3>
                     <div className="time-filter-wrapper">
-                        <select className="time-filter">
-                            <option>Tuần này</option>
+                        <select className="time-filter" value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+                            <option value="month">Tháng này</option>
+                            <option value="week">Tuần này</option>
+                            <option value="today">Hôm nay</option>
+                            <option value="all">Tất cả</option>
                         </select>
                     </div>
                     
@@ -177,8 +162,11 @@ const Dashboard = () => {
                     <div className="chart-section">
                         <div className="chart-header">
                             <h3>Danh mục hàng đầu</h3>
-                            <select className="time-filter">
-                                <option>Tháng này</option>
+                            <select className="time-filter" value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+                                <option value="month">Tháng này</option>
+                                <option value="week">Tuần này</option>
+                                <option value="today">Hôm nay</option>
+                                <option value="all">Tất cả</option>
                             </select>
                         </div>
                         

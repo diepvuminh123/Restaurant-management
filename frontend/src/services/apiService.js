@@ -710,6 +710,14 @@ class ApiService {
       body: { items },
     });
   }
+
+  // ============= STATS API =============
+
+  static async getDashboardStats(timeRange = 'month') {
+    return this.request(`/stats/dashboard?timeRange=${timeRange}`, {
+      method: 'GET',
+    });
+  }
   
 }
 
