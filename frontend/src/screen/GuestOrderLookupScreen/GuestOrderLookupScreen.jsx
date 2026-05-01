@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { IoSearchOutline } from "react-icons/io5";
 import ApiService from "../../services/apiService";
+import useOrderSSE from "../../hooks/useOrderSSE";
 import "./GuestOrderLookupScreen.css";
 import BackButton from "../../component/BackButton/BackButton";
 import { useTranslation } from 'react-i18next';
@@ -67,6 +68,16 @@ const GuestOrderLookupScreen = () => {
     offset: 0,
     total: 0,
     hasNext: false,
+  });
+
+  // SSE Real-time updates
+  useOrderSSE({
+    onStatusUpdate: (data) => {
+      // Cập nhật đơn hàng trong danh sách nếu khớp ID
+      setOrders(prevOrders => 
+        prevOrders.map(order => order.id === data.id ? { ...order, ...data } : order)
+      );
+    }
   });
 
   const selectedOrder = useMemo(

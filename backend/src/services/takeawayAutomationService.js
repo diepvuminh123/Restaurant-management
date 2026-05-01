@@ -1,6 +1,7 @@
 const pool = require('../config/database');
 const Order = require('../models/Order');
 const { sendTakeawayAutomationEmail } = require('../takeawayMailer');
+const sseService = require('./sseService');
 
 const ADVISORY_LOCK_KEY = 420042;
 // Chuẩn hóa dữ liệu 
@@ -109,6 +110,13 @@ class TakeawayAutomationService {
     if (!Array.isArray(orders) || orders.length === 0) {
       return;
     }
+
+    // Thông báo qua SSE cho từng đơn hàng
+    orders.forEach(order => {
+
+      sseService.notifyCustomer(order.user_id, order.session_id, 'ORDER_STATUS_UPDATED', order);
+      sseService.notifyStaff('ORDER_STATUS_UPDATED', order);
+    });
 
     const mailJobs = orders
       .filter((order) => order.customer_email)

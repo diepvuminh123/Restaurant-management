@@ -4,6 +4,7 @@ import ApiService from '../../services/apiService';
 import { useToastContext } from '../../context/ToastContext';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useCart } from '../../hooks/useCart';
+import useOrderSSE from '../../hooks/useOrderSSE';
 import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import './TakeawayOrdersScreen.css';
 
@@ -144,6 +145,26 @@ const TakeawayOrdersScreen = ({ userRole }) => {
       note: '',
       payment_method: 'zalopay',
     };
+  });
+  
+  // SSE Real-time updates
+  useOrderSSE({
+    onNewOrder: (data) => {
+      toast.success(`Có đơn hàng mới từ ${data.customer_name}!`, { duration: 5000 });
+      fetchOrders(pagination.page); // Làm mới danh sách đơn hàng
+    },
+    onStatusUpdate: (data) => {
+      // Nếu đang xem chính đơn hàng này, cập nhật chi tiết ngay lập tức
+      if (selectedOrderId === data.id) {
+        setSelectedOrder(prev => ({ ...prev, ...data }));
+        setNote((data.note || '').replace(NOTE_PAYMENT_TAG_REGEX, ''));
+      }
+      
+      // Cập nhật lại list đơn hàng để thấy trạng thái mới
+      setOrders(prevOrders => 
+        prevOrders.map(order => order.id === data.id ? { ...order, status: data.status } : order)
+      );
+    }
   });
 
   const isEmployee = userRole === 'employee';

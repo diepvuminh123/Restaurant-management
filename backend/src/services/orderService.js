@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const sseService = require('./sseService');
 
 class OrderService {
   static PAYMENT_TAG_REGEX = /^\[PAYMENT_METHOD:[^\]]+\]\s*/;
@@ -57,7 +58,7 @@ class OrderService {
       ? `[PAYMENT_METHOD:${paymentLabel}] ${customerNote}`
       : `[PAYMENT_METHOD:${paymentLabel}]`;
 
-    return Order.createFromCart({
+    const order = await Order.createFromCart({
       userId: owner.userId,
       sessionId: owner.sessionId,
       customerName: payload.customer_name,
@@ -68,6 +69,16 @@ class OrderService {
       paymentStatus,
       promotionCode: payload.promotion_code?.trim().toUpperCase() || null
     });
+
+    // Thông báo cho nhân viên về đơn hàng mới
+    sseService.notifyStaff('NEW_ORDER', {
+      id: order.id,
+      order_code: order.order_code,
+      customer_name: order.customer_name,
+      total_amount: order.total_amount
+    });
+
+    return order;
   }
 
   static async confirmDeposit(orderId) {
@@ -96,6 +107,11 @@ class OrderService {
     }
 
     const updatedOrder = await Order.confirmDepositPaid(orderId);
+    
+    // Thông báo cho khách hàng và nhân viên
+    sseService.notifyCustomer(updatedOrder.user_id, updatedOrder.session_id, 'ORDER_STATUS_UPDATED', updatedOrder);
+    sseService.notifyStaff('ORDER_STATUS_UPDATED', updatedOrder);
+
     return updatedOrder;
   }
 
@@ -164,7 +180,13 @@ class OrderService {
       return order;
     }
 
-    return Order.updateOrderStatus(orderId, status);
+    const updatedOrder = await Order.updateOrderStatus(orderId, status);
+
+    // Thông báo cập nhật trạng thái
+    sseService.notifyCustomer(updatedOrder.user_id, updatedOrder.session_id, 'ORDER_STATUS_UPDATED', updatedOrder);
+    sseService.notifyStaff('ORDER_STATUS_UPDATED', updatedOrder);
+
+    return updatedOrder;
   }
 
   static async cancelOrder(orderId, canceledBy, canceledReason) {
@@ -186,7 +208,13 @@ class OrderService {
       throw error;
     }
 
-    return Order.cancelOrder(orderId, canceledBy, canceledReason || null);
+    const canceledOrder = await Order.cancelOrder(orderId, canceledBy, canceledReason || null);
+
+    // Thông báo hủy đơn
+    sseService.notifyCustomer(canceledOrder.user_id, canceledOrder.session_id, 'ORDER_STATUS_UPDATED', canceledOrder);
+    sseService.notifyStaff('ORDER_STATUS_UPDATED', canceledOrder);
+
+    return canceledOrder;
   }
 
   static async cancelOrderForUser(userId, orderId, canceledReason) {
@@ -214,7 +242,13 @@ class OrderService {
       throw error;
     }
 
-    return Order.cancelOrder(orderId, userId, canceledReason || null);
+    const canceledOrder = await Order.cancelOrder(orderId, userId, canceledReason || null);
+
+    // Thông báo hủy đơn cho cả khách và nhân viên
+    sseService.notifyCustomer(canceledOrder.user_id, canceledOrder.session_id, 'ORDER_STATUS_UPDATED', canceledOrder);
+    sseService.notifyStaff('ORDER_STATUS_UPDATED', canceledOrder);
+
+    return canceledOrder;
   }
 
   static async updateOrderNote(orderId, note) {

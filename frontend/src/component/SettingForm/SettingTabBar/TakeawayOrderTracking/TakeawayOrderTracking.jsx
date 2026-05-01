@@ -12,6 +12,7 @@ import {
 import ApiService from '../../../../services/apiService';
 import ConfirmDialog from '../../../ConfirmDialog/ConfirmDialog';
 import { useConfirm } from '../../../../hooks/useConfirm';
+import useOrderSSE from '../../../../hooks/useOrderSSE';
 import './TakeawayOrderTracking.css';
 
 const STATUS_LABEL_MAP = {
@@ -62,8 +63,6 @@ const STATUS_TO_PROGRESS_INDEX = {
   READY: 2,
   COMPLETED: 3,
 };
-
-const POLLING_INTERVAL_MS = 20000;
 
 const formatCurrency = (amount) => Number(amount || 0).toLocaleString('vi-VN');
 
@@ -228,6 +227,21 @@ const TakeawayOrderTracking = () => {
     ? selectedOrder.items.map((item) => `${item.item_name} x${item.quantity}`).join(', ')
     : 'Không có dữ liệu món';
 
+  // SSE Real-time updates
+  useOrderSSE({
+    onStatusUpdate: (data) => {
+      // Cập nhật đơn hàng trong danh sách nếu khớp ID
+      setOrders(prevOrders => 
+        prevOrders.map(order => order.id === data.id ? { ...order, ...data } : order)
+      );
+      
+      // Nếu đang xem đơn này, thông báo cho người dùng
+      const orderLabel = data.order_code || `#${data.id}`;
+      const statusLabel = STATUS_LABEL_MAP[data.status] || data.status;
+      setActionText(`Đơn ${orderLabel} vừa được cập nhật trạng thái sang: ${statusLabel}`);
+    }
+  });
+
   useEffect(() => {
     const load = async ({ silent = false } = {}) => {
       if (!silent) {
@@ -299,12 +313,9 @@ const TakeawayOrderTracking = () => {
     };
 
     load();
-    const intervalId = window.setInterval(() => {
-      load({ silent: true });
-    }, POLLING_INTERVAL_MS);
 
     return () => {
-      window.clearInterval(intervalId);
+      // Cleanup nếu cần
     };
   }, [statusFilter, page]);
 
