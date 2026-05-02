@@ -49,7 +49,13 @@ export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
         onSignupSuccess(formData.email);
       }
     } catch (err) {
-      setError(err.message || "Đăng ký thất bại");
+      // Kiểm tra nếu có mảng errors chi tiết từ backend
+      if (err.errors && Array.isArray(err.errors) && err.errors.length > 0) {
+        // Hiển thị message đầu tiên từ field đầu tiên
+        setError(err.errors[0].message || "Đăng ký thất bại");
+      } else {
+        setError(err.message || "Đăng ký thất bại");
+      }
     } finally {
       setLoading(false);
     }

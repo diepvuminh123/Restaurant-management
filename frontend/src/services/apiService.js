@@ -24,8 +24,10 @@ class ApiService {
       const data = await response.json();
 
       if (!response.ok) {
-        
-        throw new Error(data.message || "Có lỗi xảy ra");
+        // Tạo error object với message và errors array từ backend
+        const error = new Error(data.message || "Có lỗi xảy ra");
+        error.errors = data.errors; // Thêm mảng errors từ backend
+        throw error;
       }
 
       
