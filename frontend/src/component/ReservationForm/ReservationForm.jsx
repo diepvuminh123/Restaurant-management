@@ -15,6 +15,12 @@ import {
     isSameLocalDate,
     roundUpMinutesToInterval,
 } from '../../utils/timeSlots';
+import {
+    normalizeReservationName,
+    normalizeReservationPhone,
+    validateReservationName,
+    validateReservationPhone,
+} from '../../utils/reservationValidation';
 
 const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false }) => {
     const navigate = useNavigate();
@@ -34,6 +40,7 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
     const [showRoleModal, setShowRoleModal] = useState(false);
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [guestErrors, setGuestErrors] = useState({});
     const [showCustomerForm, setShowCustomerForm] = useState(false);
 
     const todayStr = new Date().toISOString().split('T')[0];
@@ -89,8 +96,32 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
             );
             navigate('/login', { replace: true });
         } else if (role === 'guest') {
+            setGuestErrors({});
             setShowCustomerForm(true);
         }
+    };
+
+    const setGuestField = (field, value) => {
+        if (field === 'customerName') {
+            setCustomerName(value);
+        }
+
+        if (field === 'customerPhone') {
+            setCustomerPhone(value);
+        }
+
+        setGuestErrors((prev) => {
+            if (!prev[field]) return prev;
+
+            const next = { ...prev };
+            const validator = field === 'customerName' ? validateReservationName : validateReservationPhone;
+            const error = validator(value);
+
+            if (error) next[field] = error;
+            else delete next[field];
+
+            return next;
+        });
     };
 
     const handleSubmit = (e) => {
@@ -121,22 +152,39 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
 
     const handleCustomerFormSubmit = (e) => {
         e.preventDefault();
-        if (!customerName || !customerPhone) {
-            toast.warning(t('reservationQuick.fillGuestInfo'));
+        const nameError = validateReservationName(customerName);
+        const phoneError = validateReservationPhone(customerPhone);
+        const nextGuestErrors = {};
+
+        if (nameError) nextGuestErrors.customerName = nameError;
+        if (phoneError) nextGuestErrors.customerPhone = phoneError;
+
+        setGuestErrors(nextGuestErrors);
+
+        if (Object.keys(nextGuestErrors).length) {
             return;
         }
 
+        const normalizedCustomerName = normalizeReservationName(customerName);
+        const normalizedCustomerPhone = normalizeReservationPhone(customerPhone);
+
         // Navigate tới table-map với state
         if (onContinue) {
-            onContinue({ date, time, guests, customerName, customerPhone });
+            onContinue({
+                date,
+                time,
+                guests,
+                customerName: normalizedCustomerName,
+                customerPhone: normalizedCustomerPhone,
+            });
         } else {
             navigate('/table-map', { 
                 state: { 
                     dayReservation: date, 
                     timeReservation: time, 
                     numOfGuess: guests,
-                    customerName,
-                    customerPhone,
+                    customerName: normalizedCustomerName,
+                    customerPhone: normalizedCustomerPhone,
                 } 
             });
         }
@@ -157,10 +205,11 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
                         <input
                             type="text"
                             value={customerName}
-                            onChange={(e) => setCustomerName(e.target.value)}
+                            onChange={(e) => setGuestField('customerName', e.target.value)}
                             placeholder={t('reservationQuick.fullNamePlaceholder')}
-                            className="form-input"
+                            className={`form-input ${guestErrors.customerName ? 'form-input--error' : ''}`}
                         />
+                        {guestErrors.customerName ? <div className="form-error">{guestErrors.customerName}</div> : null}
                     </div>
 
                     <div className="form-group">
@@ -168,10 +217,12 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
                         <input
                             type="tel"
                             value={customerPhone}
-                            onChange={(e) => setCustomerPhone(e.target.value)}
+                            onChange={(e) => setGuestField('customerPhone', e.target.value)}
                             placeholder={t('reservationQuick.phonePlaceholder')}
-                            className="form-input"
+                            className={`form-input ${guestErrors.customerPhone ? 'form-input--error' : ''}`}
+                            inputMode="numeric"
                         />
+                        {guestErrors.customerPhone ? <div className="form-error">{guestErrors.customerPhone}</div> : null}
                     </div>
 
                     <button

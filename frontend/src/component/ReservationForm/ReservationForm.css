@@ -66,6 +66,23 @@
     box-shadow: none; 
 }
 
+.form-input--error {
+    border-color: #dc2626;
+    background-color: #fff5f5;
+}
+
+.form-input--error:focus {
+    border-color: #dc2626;
+    background-color: #fff5f5;
+}
+
+.form-error {
+    margin-top: 6px;
+    color: #dc2626;
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
 /* Custom Select Box */
 .custom-select {
     position: relative;

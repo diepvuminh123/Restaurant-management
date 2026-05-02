@@ -1,18 +1,26 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import ApiService from '../services/apiService';
 import { getLocalMinutes, parseTimeToMinutes } from '../utils/timeSlots';
 
 const RestaurantInfoContext = createContext();
 
-const FALLBACK_INFO = {
-  name: 'Nhà hàng',
-  slogan: 'Hương vị truyền thống',
+const DEFAULT_INFO = {
+  name: '',
+  slogan: '',
   address_line: '',
   contact_phone: '',
   contact_email: '',
   opening_time: '09:00',
   closing_time: '22:00',
 };
+
+const getFallbackInfo = (t) => ({
+  ...DEFAULT_INFO,
+  name: t('home.restaurantName'),
+  slogan: t('home.restaurantSlogan'),
+});
 
 const toHHMM = (timeText, fallback) => {
   if (!timeText) return fallback;
@@ -22,24 +30,26 @@ const toHHMM = (timeText, fallback) => {
 const normalizeInfo = (raw) => {
   if (!raw || typeof raw !== 'object') {
     return {
-      ...FALLBACK_INFO,
+      ...DEFAULT_INFO,
     };
   }
 
   return {
-    ...FALLBACK_INFO,
+    ...DEFAULT_INFO,
     ...raw,
-    name: String(raw.name || FALLBACK_INFO.name).trim(),
-    slogan: String(raw.slogan || FALLBACK_INFO.slogan).trim(),
+    name: String(raw.name || '').trim(),
+    slogan: String(raw.slogan || '').trim(),
     address_line: String(raw.address_line || '').trim(),
     contact_phone: String(raw.contact_phone || '').trim(),
     contact_email: String(raw.contact_email || '').trim(),
-    opening_time: toHHMM(raw.opening_time, FALLBACK_INFO.opening_time),
-    closing_time: toHHMM(raw.closing_time, FALLBACK_INFO.closing_time),
+    opening_time: toHHMM(raw.opening_time, DEFAULT_INFO.opening_time),
+    closing_time: toHHMM(raw.closing_time, DEFAULT_INFO.closing_time),
   };
 };
 
 export const RestaurantInfoProvider = ({ children }) => {
+  const { t } = useTranslation();
+  const fallbackInfo = useMemo(() => getFallbackInfo(t), [t]);
   const [restaurantInfo, setRestaurantInfo] = useState(() => normalizeInfo(null));
   const [loadingRestaurantInfo, setLoadingRestaurantInfo] = useState(true);
 
@@ -56,12 +66,12 @@ export const RestaurantInfoProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    void refreshRestaurantInfo();
+    refreshRestaurantInfo();
   }, [refreshRestaurantInfo]);
 
   const value = useMemo(() => {
-    const openingTime = restaurantInfo.opening_time || FALLBACK_INFO.opening_time;
-    const closingTime = restaurantInfo.closing_time || FALLBACK_INFO.closing_time;
+    const openingTime = restaurantInfo.opening_time || fallbackInfo.opening_time;
+    const closingTime = restaurantInfo.closing_time || fallbackInfo.closing_time;
 
     const openingMinutes = parseTimeToMinutes(openingTime);
     const closingMinutes = parseTimeToMinutes(closingTime);
@@ -77,8 +87,8 @@ export const RestaurantInfoProvider = ({ children }) => {
       restaurantInfo,
       loadingRestaurantInfo,
       refreshRestaurantInfo,
-      restaurantName: restaurantInfo.name || FALLBACK_INFO.name,
-      restaurantSlogan: restaurantInfo.slogan || FALLBACK_INFO.slogan,
+      restaurantName: restaurantInfo.name || fallbackInfo.name,
+      restaurantSlogan: restaurantInfo.slogan || fallbackInfo.slogan,
       contactPhone: restaurantInfo.contact_phone || '',
       contactEmail: restaurantInfo.contact_email || '',
       addressLine: restaurantInfo.address_line || '',
@@ -89,7 +99,7 @@ export const RestaurantInfoProvider = ({ children }) => {
       isOpenNow,
       timeRangeLabel: `${openingTime} - ${closingTime}`,
     };
-  }, [loadingRestaurantInfo, refreshRestaurantInfo, restaurantInfo]);
+  }, [fallbackInfo, loadingRestaurantInfo, refreshRestaurantInfo, restaurantInfo]);
 
   return (
     <RestaurantInfoContext.Provider value={value}>
@@ -104,4 +114,8 @@ export const useRestaurantInfoContext = () => {
     throw new Error('useRestaurantInfoContext must be used within RestaurantInfoProvider');
   }
   return context;
+};
+
+RestaurantInfoProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
