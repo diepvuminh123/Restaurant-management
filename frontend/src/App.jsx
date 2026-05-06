@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import './App.css';
 import LoginScreen from './screen/LoginScreen/LoginScreen';
 import HomeScreen from './screen/HomeScreen/HomeScreen';
@@ -260,6 +261,7 @@ function App() {
       <RestaurantInfoProvider>
         <BrowserRouter>
           <AppContent />
+          <Analytics />
         </BrowserRouter>
       </RestaurantInfoProvider>
     </ToastProvider>
