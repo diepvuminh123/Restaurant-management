@@ -127,30 +127,30 @@ CREATE TRIGGER update_menu_items_updated_at BEFORE UPDATE ON menu_items
 
 INSERT INTO menu_sections (name, sort_order, is_active) VALUES
 ('Món Chính', 1, true),
-('ĐềEUống', 2, true),
+('Đồ Uống', 2, true),
 ('Món Tráng Miệng', 3, true);
 
 INSERT INTO menu_categories (name, section_id) VALUES
-('PhềE, 1),
+('Phở', 1),
 ('Cơm', 1),
 ('Bún', 1),
 ('Bánh Mì', 1),
 ('Nước Ngọt', 2),
 ('Trà Sữa', 2),
-('Sinh TềE, 2),
+('Sinh Tố', 2),
 ('Chè', 3),
 ('Bánh Ngọt', 3);
 
 INSERT INTO menu_items (name, description_short, description_full, price, sale_price, images, section_id, rating_avg, rating_count, is_popular, available) VALUES
-('PhềEBò Đặc Biệt', 'PhềEbò truyền thống với nước dùng ninh xương.', 'PhềEbò nấu với nước dùng ninh 12 tiếng, thịt bò tươi.', 85000, NULL, '["\/images\/pho-bo.jpg", "\/images\/pho-bo-2.jpg"]'::jsonb, 1, 4.9, 128, true, true),
+('Phở Bò Đặc Biệt', 'Phở bò truyền thống với nước dùng ninh xương.', 'Phở bò nấu với nước dùng ninh 12 tiếng, thịt bò tươi.', 85000, NULL, '["\/images\/pho-bo.jpg", "\/images\/pho-bo-2.jpg"]'::jsonb, 1, 4.9, 128, true, true),
 ('Cơm Tấm Sườn Bì Chả', 'Cơm tấm với sườn nướng, bì và chả hấp.', 'Cơm tấm truyền thống Sài Gòn với sườn nướng thơm ngon, bì giòn và chả hấp mềm.', 65000, NULL, '["\/images\/com-tam.jpg"]'::jsonb, 1, 4.8, 95, true, true),
-('PhềEGà', 'PhềEgà thanh đạm với nước dùng trong.', 'PhềEgà nấu từ xương gà ta, thịt gà tươi, nước dùng thanh ngọt.', 70000, NULL, '["\/images\/pho-ga.jpg"]'::jsonb, 1, 4.7, 85, true, true),
+('Phở Gà', 'Phở gà thanh đạm với nước dùng trong.', 'Phở gà nấu từ xương gà ta, thịt gà tươi, nước dùng thanh ngọt.', 70000, NULL, '["\/images\/pho-ga.jpg"]'::jsonb, 1, 4.7, 85, true, true),
 ('Bún Chả Hà Nội', 'Bún chả truyền thống Hà Nội.', 'Bún chả với thịt nướng thơm, chả viên và nước mắm chua ngọt đặc trưng.', 75000, NULL, '["\/images\/bun-cha.jpg"]'::jsonb, 1, 4.8, 112, true, true),
 ('Cơm Gà Xối Mỡ', 'Cơm gà Hải Nam thơm ngon.', 'Cơm gà nấu với nước gà, thịt gà luộc mềm, kèm nước chấm đặc biệt.', 60000, NULL, '["\/images\/com-ga.jpg"]'::jsonb, 1, 4.6, 78, false, true);
 
 INSERT INTO menu_item_categories (menu_item_id, category_id)
 SELECT mi.id, mc.id FROM menu_items mi, menu_categories mc
-WHERE mi.name = 'PhềEBò Đặc Biệt' AND mc.name = 'PhềE;
+WHERE mi.name = 'Phở Bò Đặc Biệt' AND mc.name = 'Phở';
 
 INSERT INTO menu_item_categories (menu_item_id, category_id)
 SELECT mi.id, mc.id FROM menu_items mi, menu_categories mc
@@ -158,7 +158,7 @@ WHERE mi.name = 'Cơm Tấm Sườn Bì Chả' AND mc.name = 'Cơm';
 
 INSERT INTO menu_item_categories (menu_item_id, category_id)
 SELECT mi.id, mc.id FROM menu_items mi, menu_categories mc
-WHERE mi.name = 'PhềEGà' AND mc.name = 'PhềE;
+WHERE mi.name = 'Phở Gà' AND mc.name = 'Phở';
 
 INSERT INTO menu_item_categories (menu_item_id, category_id)
 SELECT mi.id, mc.id FROM menu_items mi, menu_categories mc
