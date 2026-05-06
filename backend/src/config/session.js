@@ -17,7 +17,7 @@ const sessionConfig = {
     maxAge: parseInt(process.env.SESSION_MAX_AGE) || 24 * 60 * 60 * 1000, // 24 hours
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax', //Ngăn gửi cookie tự động qua cross-site, bảo mật CSRF.
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Bắt buộc 'none' cho Vercel <-> Render
   },
 };
 
