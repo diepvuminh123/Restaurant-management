@@ -44,6 +44,14 @@ CREATE TRIGGER trg_users_updated_at
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- Insert Seed Users
+INSERT INTO users (username, email, password_hash, full_name, phone, role, is_verified) VALUES
+('admin', 'admin@restaurant.com', '$2b$10$IbRdLnf18kladI864Dyk/.lUezampkbOUkSyHks5/ThLhg5LtdYyW', 'System Admin', '0123456789', 'admin', true),
+('employee', 'employee@restaurant.com', '$2b$10$F481bcK6XJmc4CmdNHxUku27BqAjYQDEChzgICX0QbfQicZpJNMx6', 'Staff Member', '0987654321', 'employee', true),
+('customer', 'customer@restaurant.com', '$2b$10$vuVExtkBSrWSLMoDB9nKg.lQGm.dlu/kk7hVNDirXKckjaIhgleb.', 'Test Customer', '0369852147', 'customer', true)
+ON CONFLICT (username) DO NOTHING;
+
 -- ===== END auth_schema_clean.sql =====
 
 -- ===== BEGIN menu_schema_clean.sql =====
@@ -266,6 +274,56 @@ COMMENT ON COLUMN carts.session_id IS 'Session identifier for guest users (e.g.,
 COMMENT ON COLUMN cart_items.note IS 'Special instructions for the item (e.g., no onions, extra ice)';
 -- ===== END Cart_clean.sql =====
 
+-- ===== BEGIN promotions_schema_clean.sql =====
+CREATE TABLE IF NOT EXISTS promotions (
+    id              SERIAL PRIMARY KEY,
+    code            VARCHAR(50)  NOT NULL UNIQUE,   
+    description     TEXT,
+    discount_type   VARCHAR(20)  NOT NULL
+        CHECK (discount_type IN ('PERCENTAGE', 'FIXED_AMOUNT')),
+    discount_value  DECIMAL(12,2) NOT NULL CHECK (discount_value > 0),
+    min_order_value DECIMAL(12,2) NOT NULL DEFAULT 0,
+    max_discount_amount DECIMAL(12,2),              
+    start_date      TIMESTAMPTZ  NOT NULL,
+    end_date        TIMESTAMPTZ  NOT NULL,
+    usage_limit     INT,                            
+    used_count      INT          NOT NULL DEFAULT 0,
+    is_active       BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_promotions_code      ON promotions(code);
+CREATE INDEX IF NOT EXISTS idx_promotions_is_active ON promotions(is_active);
+CREATE INDEX IF NOT EXISTS idx_promotions_dates     ON promotions(start_date, end_date);
+-- ===== END promotions_schema_clean.sql =====
+
+-- ===== BEGIN faqs_schema_clean.sql =====
+CREATE TABLE IF NOT EXISTS faqs (
+    id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TRIGGER IF EXISTS update_faqs_updated_at ON faqs;
+CREATE TRIGGER update_faqs_updated_at
+    BEFORE UPDATE ON faqs
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+INSERT INTO faqs (question, answer, is_active, sort_order) VALUES
+('Nhà hàng mở cửa vào những khung giờ nào?', 'Chúng tôi phục vụ từ 10:00 sáng đến 22:00 tối mỗi ngày, kể cả Chủ Nhật và ngày Lễ.', true, 1),
+('Tôi có thể đặt bàn trước bao lâu?', 'Bạn có thể đặt bàn trước từ 1 đến 30 ngày. Đặc biệt vào cuối tuần hoặc ngày lễ, chúng tôi khuyến khích bạn đặt trước ít nhất 3 ngày.', true, 2),
+('Nhà hàng có chỗ đỗ xe ô tô không?', 'Có, nhà hàng có bãi đỗ xe rộng rãi dành cho cả ô tô và xe máy ngay trước cửa, hoàn toàn miễn phí và có bảo vệ 24/7.', true, 3),
+('Nhà hàng có phục vụ món ăn chay/vegan không?', 'Chúng tôi có một thực đơn riêng biệt gồm các món chay và thuần chay thơm ngon, đảm bảo đầy đủ dinh dưỡng và hương vị.', true, 4),
+('Tôi có thể thay đổi hoặc hủy bàn đã đặt được không?', 'Quý khách hoàn toàn có thể thay đổi hoặc hủy bàn miễn phí trước 2 tiếng so với giờ đặt. Vui lòng liên hệ qua hotline hoặc thao tác trực tiếp trên website.', true, 5)
+ON CONFLICT DO NOTHING;
+-- ===== END faqs_schema_clean.sql =====
+
 -- ===== BEGIN order_flow_schema_clean.sql =====
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
@@ -273,6 +331,8 @@ CREATE TABLE orders (
     user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
     session_id VARCHAR(255),
     cart_id INT NOT NULL UNIQUE REFERENCES carts(id) ON DELETE RESTRICT,
+    promotion_id INT REFERENCES promotions(id) ON DELETE SET NULL,
+    promotion_code VARCHAR(50),
     status VARCHAR(30) NOT NULL DEFAULT 'PENDING' 
         CHECK (status IN ('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')),
     payment_status VARCHAR(20) NOT NULL DEFAULT 'UNPAID'
@@ -303,6 +363,7 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX idx_orders_pickup_time ON orders(pickup_time);
 CREATE INDEX idx_orders_created_at ON orders(created_at);
+CREATE INDEX idx_orders_promotion_id ON orders(promotion_id);
 
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
