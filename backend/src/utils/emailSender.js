@@ -7,55 +7,31 @@ const nodemailer = require('nodemailer');
  */
 async function sendMail({ from, to, subject, html }) {
   if (process.env.NODE_ENV === 'production') {
-    // 1. Môi trường Production (Render) -> Gửi qua Elastic Email API v4
     const apiKey = process.env.ELASTIC_EMAIL_API_KEY;
     if (!apiKey) {
       throw new Error('Missing ELASTIC_EMAIL_API_KEY in environment variables');
     }
 
-    const payload = {
-      Recipients: [
-        {
-          Email: to
-        }
-      ],
-      Content: {
-        Body: [
-          {
-            ContentType: 'HTML',
-            Content: html,
-            Charset: 'utf-8'
-          }
-        ],
-        From: from,
-        ReplyTo: from,
-        Subject: subject
-      }
-    };
+    // Dùng API v2 (Query string hoặc Form data)
+    const url = new URL('https://api.elasticemail.com/v2/email/send');
+    url.searchParams.append('apikey', apiKey);
+    url.searchParams.append('from', from);
+    url.searchParams.append('to', to);
+    url.searchParams.append('subject', subject);
+    url.searchParams.append('bodyHtml', html);
+    url.searchParams.append('isTransactional', 'true');
 
-    const response = await fetch('https://api.elasticemail.com/v4/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-ElasticEmail-ApiKey': apiKey
-      },
-      body: JSON.stringify(payload)
+    const response = await fetch(url.toString(), {
+      method: 'POST'
     });
 
-    if (!response.ok) {
-      let errorDetail = '';
-      try {
-        const errJson = await response.json();
-        errorDetail = JSON.stringify(errJson);
-      } catch (e) {
-        errorDetail = response.statusText;
-      }
-      throw new Error(`Elastic Email Error: ${errorDetail}`);
+    const result = await response.json();
+
+    if (result.success === false) {
+      throw new Error(`Elastic Email Error: ${result.error}`);
     }
 
-    // Nếu cần lấy json response thì return:
-    // return await response.json();
-    return { success: true, message: 'Sent via Elastic Email API' };
+    return result;
 
   } else {
     // 2. Môi trường Localhost -> Gửi qua Nodemailer (Gmail SMTP)
