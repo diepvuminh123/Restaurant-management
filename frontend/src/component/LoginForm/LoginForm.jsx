@@ -36,12 +36,13 @@ export default function LoginForm({
 
     try {
       const response = await ApiService.login(formData.email, formData.password);
-      
+
       if (response.success) {
         onLoginSuccess?.(response.data.user);
       }
     } catch (err) {
-      if (err.isNotVerified) {
+      // Kiểm tra cả cờ isNotVerified và nội dung message 
+      if (err.isNotVerified || err.message?.includes("xác thực tài khoản")) {
         onNotVerified?.(formData.email);
       } else {
         setError(err.message || "Đăng nhập thất bại");
@@ -67,16 +68,16 @@ export default function LoginForm({
         <label className="label">
           Email <span className="required">*</span>
         </label>
-         <div className="passwordBox">
-        <input
-          type="email"
-          name="email"
-          className="input"
-          placeholder="email@example.com"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+        <div className="passwordBox">
+          <input
+            type="email"
+            name="email"
+            className="input"
+            placeholder="email@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         {/* Password */}
