@@ -3,11 +3,17 @@ const nodemailer = require('nodemailer');
 
 function createTransporter() {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // true cho cổng 465, false cho các cổng khác
     auth: {
-      user: process.env.EMAIL_USER,   
-      pass: process.env.EMAIL_PASS,   
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 10000, // 10 giây
   });
 }
 
