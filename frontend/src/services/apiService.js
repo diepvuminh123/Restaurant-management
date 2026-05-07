@@ -28,6 +28,7 @@ class ApiService {
         // Tạo error object với message và errors array từ backend
         const error = new Error(data.message || "Có lỗi xảy ra");
         error.errors = data.errors; // Thêm mảng errors từ backend
+        error.isNotVerified = data.isNotVerified; // Truyền cờ xác thực
         throw error;
       }
 

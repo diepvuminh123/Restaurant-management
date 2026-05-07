@@ -134,10 +134,6 @@ class AuthService {
     if (!user) {
       throw new Error("Email hoặc mật khẩu không đúng");
     }
-    const is_verified = await User.checkIs_verified(user.user_id);
-    if (is_verified.is_verified === false) {
-      throw new Error("Bạn vui lòng xác thực tài khoản trước khi đăng nhập");
-    }
     if (user.locked_until && new Date(user.locked_until) < new Date()) {
        await User.resetFailLoginAttempts(user.user_id);
     }
@@ -171,6 +167,24 @@ class AuthService {
       throw new Error("Email hoặc mật khẩu không đúng. Bạn còn " + (5 - (user.fail_login_attempts + 1)) + " lần thử nữa trước khi tài khoản bị khóa.");
     }
     await User.resetFailLoginAttempts(user.user_id);
+
+    const is_verified = await User.checkIs_verified(user.user_id);
+    if (is_verified.is_verified === false) {
+      // Tự động gửi OTP mới luôn để user xác thực ngay
+      const code = generateOtp6();
+      await Mail.createAuthMail({
+        user_id: user.user_id,
+        code,
+        otp_type: "signup",
+      });
+      await sendVerificationEmail({
+        to: email,
+        code: code,
+        minutes: otpExpiresMin,
+      });
+
+      throw new Error("Bạn vui lòng xác thực tài khoản trước khi đăng nhập");
+    }
 
     const { password_hash, ...userWithoutPassword } = user;
     return userWithoutPassword;
