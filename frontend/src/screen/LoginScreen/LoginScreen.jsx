@@ -68,6 +68,7 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
             onSignupClick={handleSignupClick}
             onForgotPasswordClick={handleForgotPasswordClick}
             onLoginSuccess={handleLoginSuccess}
+            onNotVerified={handleSignupSuccess}
           />
         );
       case 'signup':

@@ -119,9 +119,11 @@ class AuthController {
         },
       });
     } catch (error) {
-      res.status(401).json({
+      const status = error.message.includes("xác thực tài khoản") ? 403 : 401;
+      res.status(status).json({
         success: false,
         message: error.message,
+        isNotVerified: status === 403
       });
     }
   }

@@ -9,6 +9,7 @@ export default function LoginForm({
   onSignupClick,
   onForgotPasswordClick,
   onLoginSuccess,
+  onNotVerified,
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,7 +41,11 @@ export default function LoginForm({
         onLoginSuccess?.(response.data.user);
       }
     } catch (err) {
-      setError(err.message || "Đăng nhập thất bại");
+      if (err.isNotVerified) {
+        onNotVerified?.(formData.email);
+      } else {
+        setError(err.message || "Đăng nhập thất bại");
+      }
     } finally {
       setLoading(false);
     }
