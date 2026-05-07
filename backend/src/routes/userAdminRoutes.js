@@ -35,4 +35,11 @@ router.patch(
   UserAdminController.updateLockState
 );
 
+router.delete(
+  '/users/:id',
+  requireRole('admin', 'system_admin'),
+  validateParams(userIdParamSchema),
+  UserAdminController.deleteUser
+);
+
 module.exports = router;

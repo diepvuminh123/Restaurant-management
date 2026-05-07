@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IoSearchOutline, IoRefreshOutline } from 'react-icons/io5';
 import ApiService from '../../services/apiService';
 import { useToastContext } from '../../context/ToastContext';
+import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import './UserManagement.css';
 
 const ROLE_OPTIONS = [
@@ -101,6 +102,7 @@ const UserManagement = ({ currentUser }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updatingUserId, setUpdatingUserId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -184,6 +186,24 @@ const UserManagement = ({ currentUser }) => {
       await fetchUsers(pagination.page);
     } finally {
       setUpdatingUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteTarget) return;
+    try {
+      setUpdatingUserId(deleteTarget.userId);
+      const response = await ApiService.deleteAdminUser(deleteTarget.userId);
+      if (response.success) {
+        setUsers((prev) => prev.filter((u) => u.userId !== deleteTarget.userId));
+        setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
+        toast.success('Đã xóa người dùng thành công');
+      }
+    } catch (error) {
+      toast.error(error.message || 'Không thể xóa người dùng');
+    } finally {
+      setUpdatingUserId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -321,6 +341,25 @@ const UserManagement = ({ currentUser }) => {
                         >
                           {user.isLocked ? 'Mở khóa' : 'Khóa 24h'}
                         </button>
+                        <button
+                          type="button"
+                          className="btn btn--mini btn--danger"
+                          disabled={
+                            isBusy ||
+                            user.role === 'system_admin' ||
+                            isCurrentUser
+                          }
+                          onClick={() => setDeleteTarget(user)}
+                          title={
+                            user.role === 'system_admin'
+                              ? 'Không thể xóa tài khoản system admin'
+                              : isCurrentUser
+                              ? 'Không thể tự xóa tài khoản của mình'
+                              : 'Xóa người dùng'
+                          }
+                        >
+                          Xóa
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -353,6 +392,15 @@ const UserManagement = ({ currentUser }) => {
           </button>
         </div>
       </div>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Xác nhận xóa người dùng"
+          message={`Bạn có chắc chắn muốn xóa tài khoản "${deleteTarget.username}" (${deleteTarget.email})? Hành động này không thể hoàn tác.`}
+          onConfirm={handleDeleteUser}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 };

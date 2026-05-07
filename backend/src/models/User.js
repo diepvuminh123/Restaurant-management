@@ -295,6 +295,13 @@ class User {
 
     return result.rows[0];
   }
+  static async deleteUser(userId) {
+    const result = await pool.query(
+      `DELETE FROM users WHERE user_id = $1 RETURNING user_id`,
+      [userId]
+    );
+    return result.rows[0];
+  }
   
 }
 module.exports = User;

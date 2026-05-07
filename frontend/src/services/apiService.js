@@ -528,6 +528,12 @@ class ApiService {
     });
   }
 
+  static async deleteAdminUser(userId) {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // ============= RESERVATION API =============
 
   /**

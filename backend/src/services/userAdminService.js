@@ -131,6 +131,36 @@ class UserAdminService {
     const latestUser = await User.getAdminUserById(userId);
     return UserAdminService.toUserView(latestUser);
   }
+  static async deleteUser(userId, actorUserId, actorRole) {
+    const targetUser = await User.findById(userId);
+    if (!targetUser) {
+      throw UserAdminService.buildError('Không tìm thấy người dùng', 404);
+    }
+
+    if (targetUser.role === 'system_admin') {
+      throw UserAdminService.buildError('Không thể xóa tài khoản system admin', 403);
+    }
+
+    if (targetUser.role === 'admin' && actorRole !== 'system_admin') {
+      throw UserAdminService.buildError('Chỉ system admin mới có quyền xóa tài khoản admin', 403);
+    }
+
+    if (targetUser.user_id === actorUserId) {
+      throw UserAdminService.buildError('Bạn không thể tự xóa tài khoản của mình', 409);
+    }
+
+    await User.deleteUser(userId);
+
+    await AdminActionLog.create({
+      actorUserId,
+      targetUserId: userId,
+      action: 'DELETE_USER',
+      oldValue: { username: targetUser.username, email: targetUser.email, role: targetUser.role },
+      newValue: null,
+    });
+
+    return { userId };
+  }
 }
 
 module.exports = UserAdminService;

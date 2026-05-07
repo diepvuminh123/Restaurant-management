@@ -64,6 +64,27 @@ class UserAdminController {
       });
     }
   }
+  static async deleteUser(req, res) {
+    try {
+      const result = await UserAdminService.deleteUser(
+        Number(req.params.id),
+        req.session.userId,
+        req.session.userRole
+      );
+
+      res.json({
+        success: true,
+        message: 'Đã xóa người dùng thành công',
+        data: result,
+      });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error.message || 'Không thể xóa người dùng',
+      });
+    }
+  }
 }
 
 module.exports = UserAdminController;
