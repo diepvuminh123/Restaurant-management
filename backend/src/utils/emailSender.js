@@ -7,28 +7,32 @@ const nodemailer = require('nodemailer');
  */
 async function sendMail({ from, to, subject, html }) {
   if (process.env.NODE_ENV === 'production') {
-    const apiKey = process.env.ELASTIC_EMAIL_API_KEY;
+    const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      throw new Error('Missing ELASTIC_EMAIL_API_KEY in environment variables');
+      throw new Error('Missing RESEND_API_KEY in environment variables');
     }
 
-    // Dùng API v2 (Query string hoặc Form data)
-    const url = new URL('https://api.elasticemail.com/v2/email/send');
-    url.searchParams.append('apikey', apiKey);
-    url.searchParams.append('from', from);
-    url.searchParams.append('to', to);
-    url.searchParams.append('subject', subject);
-    url.searchParams.append('bodyHtml', html);
-    url.searchParams.append('isTransactional', 'true');
+    // Lưu ý: 
+    const resendFrom = "Restaurant MQH <onboarding@resend.dev>";
 
-    const response = await fetch(url.toString(), {
-      method: 'POST'
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: resendFrom,
+        to: [to],
+        subject: subject,
+        html: html
+      })
     });
 
     const result = await response.json();
 
-    if (result.success === false) {
-      throw new Error(`Elastic Email Error: ${result.error}`);
+    if (!response.ok) {
+      throw new Error(`Resend Error: ${result.message || JSON.stringify(result)}`);
     }
 
     return result;
