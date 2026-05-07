@@ -15,12 +15,12 @@ async function seedDatabase() {
         await client.connect();
         console.log('Kết nối thành công! Đang tiến hành đổ dữ liệu...');
 
-        const sqlFilePath = path.join(__dirname, 'database', 'add_prep_time_to_menu_items.sql');
+        const sqlFilePath = path.join(__dirname, 'database', 'full', 'full_schema_with_seed.sql');
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
 
         await client.query(sql);
 
-        console.log('🎉 Xong! Đã thêm các cột prep_time và notes thành công!');
+        console.log('🎉 Xong! Toàn bộ cấu trúc bảng và dữ liệu mẫu đã được đưa lên Render thành công!');
     } catch (err) {
         console.error('Lỗi trong quá trình đổ dữ liệu:', err);
     } finally {

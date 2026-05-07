@@ -88,6 +88,10 @@ CREATE TABLE IF NOT EXISTS menu_items (
     rating_count INT DEFAULT 0,
     is_popular BOOLEAN DEFAULT false,
     available BOOLEAN DEFAULT true,
+    is_new BOOLEAN DEFAULT false,
+    is_soldout BOOLEAN DEFAULT false,
+    prep_time INT DEFAULT 20,
+    notes TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (section_id) REFERENCES menu_sections(id) ON DELETE CASCADE
