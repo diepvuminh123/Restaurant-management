@@ -1,25 +1,8 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
-
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // true cho cổng 465, false cho các cổng khác
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false
-    },
-    connectionTimeout: 10000, // 10 giây
-  });
-}
+const { sendMail } = require('./utils/emailSender');
 
 async function sendVerificationEmail({ to, code, minutes }) {
-  const transporter = createTransporter();
- const html = `
+  const html = `
   <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333;">
     <div style="text-align:center; margin-bottom:16px;">
       <h2 style="margin:0 0 4px 0; font-size:24px; color:#b66333;">
@@ -68,7 +51,7 @@ async function sendVerificationEmail({ to, code, minutes }) {
   </div>
 `;
 
-  return transporter.sendMail({
+  return sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
     to: to,
     subject: 'Mã xác thực tài khoản',

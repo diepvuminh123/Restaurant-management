@@ -1,21 +1,5 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
-
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false
-    },
-    connectionTimeout: 10000,
-  });
-}
+const { sendMail } = require('./utils/emailSender');
 
 function escapeHtml(value) {
   return String(value)
@@ -128,7 +112,7 @@ async function sendTakeawayAutomationEmail({
   </div>
   `;
 
-  return transporter.sendMail({
+  return sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
     to,
     subject: eventContent.subject,

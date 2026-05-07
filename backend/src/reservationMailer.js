@@ -1,21 +1,5 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
-
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false
-    },
-    connectionTimeout: 10000,
-  });
-}
+const { sendMail } = require('./utils/emailSender');
 
 function formatReservationTime(value) {
   if (!value) return null;
@@ -65,8 +49,6 @@ const reservationMailer = async ({
   number_of_guests,
   note,
 } = {}) => {
-  const transporter = createTransporter();
-
   const resolvedReservationId = reservationId ?? reservation_id;
   const resolvedReservationTime = reservationTime ?? reservation_time;
   const resolvedTableId = tableId ?? table_id;
@@ -163,7 +145,7 @@ const reservationMailer = async ({
   </div>
 `;
 
-  return transporter.sendMail({
+  return sendMail({
     from: `"Restaurant MQH" <${process.env.EMAIL_USER}>`,
     to,
     subject: 'Xác nhận đặt bàn tại nhà hàng Huân Minh Quanh',
