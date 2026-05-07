@@ -15,7 +15,7 @@ async function seedDatabase() {
         await client.connect();
         console.log('Kết nối thành công! Đang tiến hành đổ dữ liệu...');
 
-        const sqlFilePath = path.join(__dirname, 'database', 'full', 'full_schema_with_seed.sql');
+        const sqlFilePath = path.join(__dirname, 'database', 'full', 'restaurant_tables_data.sql');
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
 
         await client.query(sql);

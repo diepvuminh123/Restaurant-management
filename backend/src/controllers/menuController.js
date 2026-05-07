@@ -444,7 +444,8 @@ class MenuController {
           message: "Vui lòng tải lên hình ảnh",
         });
       }
-      const imageUrl = `/images/upload/${req.file.filename}`;
+      // Cloudinary trả về URL ảnh trong req.file.path
+      const imageUrl = req.file.path;
 
       await MenuService.updateMenuItemImage(id, imageUrl);
 

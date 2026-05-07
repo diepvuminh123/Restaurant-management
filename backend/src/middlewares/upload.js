@@ -1,17 +1,19 @@
 const multer = require("multer");
-const path = require("path");
-// Tham khảo từ https://www.npmjs.com/package/multer 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../../../frontend/public/images/upload")
-);
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "restaurant_management",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${base}-${unique}${ext}`);
-  }
 });
 
 module.exports = multer({ storage });
