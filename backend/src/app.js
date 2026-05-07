@@ -22,7 +22,7 @@ const sseRoutes = require('./routes/sseRoutes');
 
 const app = express();
 
-// Trust proxy để Render có thể set cookie bảo mật (Secure)
+// Trust proxy cho Render 
 app.set("trust proxy", 1);
 
 // Middleware
