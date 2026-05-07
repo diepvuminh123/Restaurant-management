@@ -41,6 +41,11 @@ class CartController {
       const { userId, sessionId } = CartController.getCartOwner(req);
       const { menu_item_id, quantity, note } = req.body;
 
+
+      if (!userId) {
+        req.session.hasCart = true;
+      }
+
       if (!menu_item_id) {
         return res.status(400).json({
           success: false,
@@ -81,6 +86,10 @@ class CartController {
       const { userId, sessionId } = CartController.getCartOwner(req);
       const cartItemId = parseInt(req.params.id);
       const { quantity, note } = req.body;
+
+      if (!userId) {
+        req.session.hasCart = true;
+      }
 
       if (!cartItemId) {
         return res.status(400).json({
