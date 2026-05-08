@@ -21,11 +21,17 @@ router.post(
   PromotionController.validatePromotion
 );
 
+router.get(
+  '/promotions/public',
+  validateQuery(getPromotionsQuerySchema),
+  PromotionController.listPublicPromotions
+);
+
 
 // Admin routes
 router.get(
   '/promotions',
-  // requireRole('admin'),
+  requireRole('admin'),
   validateQuery(getPromotionsQuerySchema),
   PromotionController.listPromotions
 );

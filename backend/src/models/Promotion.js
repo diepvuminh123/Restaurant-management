@@ -51,10 +51,7 @@ class Promotion {
 
   static async getPublicActive({ page = 1, limit = 10, search = '' }) {
     const where = [
-      'is_active = TRUE',
-      'start_date <= NOW()',
-      'end_date >= NOW()',
-      '(usage_limit IS NULL OR used_count < usage_limit)'
+      'is_active = TRUE'
     ];
     const values = [];
     let idx = 1;
