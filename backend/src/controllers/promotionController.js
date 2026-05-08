@@ -15,6 +15,20 @@ class PromotionController {
     }
   }
 
+  static async listPublicPromotions(req, res) {
+    try {
+      const result = await PromotionService.listPublicPromotions(req.query);
+      res.json({
+        success: true,
+        data: result.items,
+        pagination: result.pagination
+      });
+    } catch (error) {
+      console.error('List public promotions error:', error);
+      res.status(500).json({ success: false, message: 'Lỗi khi lấy danh sách khuyến mãi công khai' });
+    }
+  }
+
   static async getPromotion(req, res) {
     try {
       const promo = await PromotionService.getPromotion(req.params.id);

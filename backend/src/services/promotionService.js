@@ -5,6 +5,10 @@ class PromotionService {
     return Promotion.getAll(query);
   }
 
+  static async listPublicPromotions(query) {
+    return Promotion.getPublicActive(query);
+  }
+
   static async getPromotion(id) {
     const promo = await Promotion.getById(id);
     if (!promo) {

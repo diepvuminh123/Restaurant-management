@@ -49,6 +49,55 @@ class Promotion {
     };
   }
 
+  static async getPublicActive({ page = 1, limit = 10, search = '' }) {
+    const where = [
+      'is_active = TRUE',
+      'start_date <= NOW()',
+      'end_date >= NOW()',
+      '(usage_limit IS NULL OR used_count < usage_limit)'
+    ];
+    const values = [];
+    let idx = 1;
+
+    if (search) {
+      where.push(`(code ILIKE $${idx} OR COALESCE(description, '') ILIKE $${idx})`);
+      values.push(`%${search}%`);
+      idx += 1;
+    }
+
+    const whereClause = `WHERE ${where.join(' AND ')}`;
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::int AS total FROM promotions ${whereClause}`,
+      values
+    );
+    const total = countResult.rows[0]?.total || 0;
+
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeLimit = Math.max(1, Math.min(100, Number(limit) || 10));
+    const offset = (safePage - 1) * safeLimit;
+
+    values.push(safeLimit, offset);
+
+    const result = await pool.query(
+      `SELECT * FROM promotions
+       ${whereClause}
+       ORDER BY end_date ASC, created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      values
+    );
+
+    return {
+      items: result.rows,
+      pagination: {
+        page: safePage,
+        limit: safeLimit,
+        total,
+        total_pages: Math.max(1, Math.ceil(total / safeLimit))
+      }
+    };
+  }
+
   static async getById(id) {
     const result = await pool.query('SELECT * FROM promotions WHERE id = $1', [id]);
     return result.rows[0] || null;

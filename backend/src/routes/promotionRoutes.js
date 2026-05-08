@@ -21,6 +21,13 @@ router.post(
   PromotionController.validatePromotion
 );
 
+router.get(
+  '/promotions/public',
+  optionalAuth,
+  validateQuery(getPromotionsQuerySchema),
+  PromotionController.listPublicPromotions
+);
+
 // Admin routes
 router.get(
   '/promotions',
