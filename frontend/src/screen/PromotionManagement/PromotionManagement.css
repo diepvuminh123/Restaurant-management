@@ -212,7 +212,15 @@
 .modal-content h2 {
   margin: 0 0 24px 0;
   font-size: 20px;
-  color: #333;
+}
+
+.modal-header {
+  margin: -32px -32px 24px -32px;
+  padding: 18px 32px;
+  font-size: 20px;
+  color: #fff;
+  background: #e36a2d;
+  border-radius: 12px 12px 0 0;
 }
 
 .promo-form {
