@@ -146,12 +146,15 @@ const usePromotionItems = () => {
         const fetchPromotions = async () => {
             try {
                 setPromotionsLoading(true);
-                const response = await ApiService.getPublicPromotions({
+                const response = await ApiService.getPromotions({
                     limit: 100,
+                    isActive: true,
                 });
 
                 if (response.success) {
-                    const nextPromotions = Array.isArray(response.data) ? response.data : [];
+                    const nextPromotions = Array.isArray(response.data)
+                        ? response.data.filter(isPromotionAvailable)
+                        : [];
 
                     setPromotions(nextPromotions);
                 }
