@@ -49,6 +49,13 @@
       "promotionsLabel": "Active offers",
       "promotionsValue": "{{count}} promotion codes available"
     },
+    "dynamicHighlights": {
+      "openHours": "Serving during {{timeRangeLabel}}",
+      "menuSections": "{{count}} menu sections currently available",
+      "featuredDishes": "{{count}} curated featured dishes",
+      "promotions": "{{count}} offers ready to use",
+      "faqs": "{{count}} frequently asked questions updated"
+    },
     "footerDescription": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service. We are committed to bringing you the highest quality dishes.",
     "featured": {
       "title": "Our Menu",
@@ -65,14 +72,17 @@
       "title": "What Our Guests Say",
       "items": [
         {
+          "name": "Thu Ha",
           "role": "Food enthusiast",
           "text": "The dishes were served quickly, plated beautifully, and balanced in flavor. The dinner atmosphere was excellent."
         },
         {
+          "name": "Minh's family",
           "role": "Family guest",
           "text": "The staff were wonderful and arranged our table very quickly. My family was very satisfied."
         },
         {
+          "name": "An Phat team",
           "role": "Corporate guest",
           "text": "A great place for team meetups with a comfortable sound level and very tasty grilled dishes."
         }

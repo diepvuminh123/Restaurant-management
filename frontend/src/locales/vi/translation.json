@@ -49,6 +49,13 @@
       "promotionsLabel": "Ưu đãi hiện có",
       "promotionsValue": "{{count}} mã khuyến mãi khả dụng"
     },
+    "dynamicHighlights": {
+      "openHours": "Phục vụ trong khung giờ {{timeRangeLabel}}",
+      "menuSections": "{{count}} danh mục thực đơn đang phục vụ",
+      "featuredDishes": "{{count}} món nổi bật được tuyển chọn",
+      "promotions": "{{count}} ưu đãi sẵn sàng áp dụng",
+      "faqs": "{{count}} câu hỏi thường gặp được cập nhật"
+    },
     "footerDescription": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất.",
     "featured": {
       "title": "Thực đơn của chúng tôi",
@@ -65,14 +72,17 @@
       "title": "Đánh giá của khách hàng",
       "items": [
         {
+          "name": "Thu Ha",
           "role": "Yêu thích ẩm thực",
           "text": "Món ăn nhanh chóng được phục vụ, trình bày sang trọng và hương vị cân bằng. Bầu không khí bữa tối tuyệt vời."
         },
         {
+          "name": "Gia đình anh Minh",
           "role": "Khách hàng gia đình",
           "text": "Nhân viên phục vụ rất tuyệt vời và sắp xếp bàn cho chúng tôi nhanh chóng. Gia đình tôi rất hài lòng."
         },
         {
+          "name": "Nhóm An Phát",
           "role": "Khách hàng công ty",
           "text": "Nơi tốt để họp nhóm với mức âm thanh thoải mái và các món nướng rất ngon."
         }
