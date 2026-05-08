@@ -697,22 +697,22 @@ class ApiService {
     });
   }
 
-  static async getPublicPromotions(filters = {}) {
-    const params = new URLSearchParams();
+  // static async getPublicPromotions(filters = {}) {
+  //   const params = new URLSearchParams();
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && String(value).trim() !== '') {
-        params.set(key, String(value).trim());
-      }
-    });
+  //   Object.entries(filters).forEach(([key, value]) => {
+  //     if (value !== undefined && value !== null && String(value).trim() !== '') {
+  //       params.set(key, String(value).trim());
+  //     }
+  //   });
 
-    const query = params.toString();
-    const endpoint = query ? '/promotions/public?' + query : '/promotions/public';
+  //   const query = params.toString();
+  //   const endpoint = query ? '/promotions' + query : '/promotions';
 
-    return this.request(endpoint, {
-      method: 'GET',
-    });
-  }
+  //   return this.request(endpoint, {
+  //     method: 'GET',
+  //   });
+  // }
 
   // ============= FAQ API =============
 

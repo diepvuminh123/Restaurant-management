@@ -146,7 +146,7 @@ const usePromotionItems = () => {
         const fetchPromotions = async () => {
             try {
                 setPromotionsLoading(true);
-                const response = await ApiService.getPublicPromotions({
+                const response = await ApiService.getPromotions({
                     limit: 100,
                 });
 
