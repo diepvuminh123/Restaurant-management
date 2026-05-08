@@ -31,7 +31,6 @@ router.get(
 // Admin routes
 router.get(
   '/promotions',
-  requireRole('admin'),
   validateQuery(getPromotionsQuerySchema),
   PromotionController.listPromotions
 );
