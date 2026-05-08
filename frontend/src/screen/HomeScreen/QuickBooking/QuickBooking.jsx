@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ReservationForm from '../../../component/ReservationForm/ReservationForm';
 import RestaurantInformation from '../../../component/RestaurantInformation/RestaurantInfromation';
+import Loading from '../../../component/Loading/Loading';
 import HomeReservationImage from '../../../picture/HomeReservation.jpg';
 import Restaurant1 from '../../../picture/Restaurant1.jpg';
 import Restaurant2 from '../../../picture/Restaurant2.jpg';
@@ -10,34 +11,356 @@ import Restaurant3 from '../../../picture/Restaurant3.jpg';
 import ApiService from '../../../services/apiService';
 import { useRestaurantInfoContext } from '../../../context/RestaurantInfoContext';
 import './QuickBooking.css';
-import { CiCalendar, CiStar } from 'react-icons/ci';
-import { FiShoppingBag, FiChevronLeft, FiChevronRight, FiGift, FiClock, FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
+import { CiStar } from 'react-icons/ci';
+import { FiShoppingBag, FiChevronLeft, FiChevronRight, FiGift, FiClock, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
+import { HiOutlineCalendarDays, HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useTranslation } from 'react-i18next';
 
+const FEATURED_PAGE_SIZE = 3;
+const PROMOTION_PAGE_SIZE = 3;
+
+const getCompactLayoutState = () => Boolean(globalThis.window?.innerWidth <= 640);
+
+const formatPromotionCurrency = (value) => `${Number(value || 0).toLocaleString('vi-VN')}đ`;
+
+const formatPromotionDate = (value, language) => {
+    if (!value) return '';
+
+    return new Intl.DateTimeFormat(language?.startsWith('vi') ? 'vi-VN' : 'en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(new Date(value));
+};
+
+const getPromotionDiscountLabel = (promotion) => {
+    if (promotion?.discount_type === 'PERCENTAGE') {
+        return `${Number(promotion.discount_value || 0)}%`;
+    }
+
+    return formatPromotionCurrency(promotion?.discount_value);
+};
+
+const isPromotionAvailable = (promotion) => {
+    if (promotion?.code && promotion?.is_active) {
+        const now = Date.now();
+        const startTime = new Date(promotion.start_date).getTime();
+        const endTime = new Date(promotion.end_date).getTime();
+        const withinUsageLimit = promotion.usage_limit == null || Number(promotion.used_count || 0) < Number(promotion.usage_limit);
+
+        return startTime <= now && endTime >= now && withinUsageLimit;
+    }
+
+    return false;
+};
+
+const useCompactFeaturedLayout = () => {
+    const [isCompactFeaturedLayout, setIsCompactFeaturedLayout] = useState(getCompactLayoutState);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsCompactFeaturedLayout(getCompactLayoutState());
+        };
+
+        handleResize();
+        globalThis.window?.addEventListener('resize', handleResize);
+
+        return () => globalThis.window?.removeEventListener('resize', handleResize);
+    }, []);
+
+    return isCompactFeaturedLayout;
+};
+
+const useFaqItems = () => {
+    const [faqs, setFaqs] = useState([]);
+
+    useEffect(() => {
+        const fetchFaqs = async () => {
+            try {
+                const data = await ApiService.getActiveFaqs();
+                if (Array.isArray(data)) {
+                    setFaqs(data);
+                }
+            } catch (error) {
+                console.error('Error fetching FAQs:', error);
+            }
+        };
+
+        fetchFaqs();
+    }, []);
+
+    return faqs;
+};
+
+const useFeaturedDishesData = () => {
+    const [featuredDishes, setFeaturedDishes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [sectionCount, setSectionCount] = useState(0);
+
+    useEffect(() => {
+        const fetchFeaturedDishes = async () => {
+            try {
+                setLoading(true);
+                const [menuResponse, sectionsResponse] = await Promise.all([
+                    ApiService.getMenuItems({
+                        limit: 100,
+                        sort_by: 'rating_avg',
+                        sort_order: 'DESC',
+                    }),
+                    ApiService.getMenuSections(),
+                ]);
+
+                if (menuResponse.success && menuResponse.items) {
+                    setFeaturedDishes(menuResponse.items);
+                }
+
+                if (sectionsResponse.success && Array.isArray(sectionsResponse.data)) {
+                    setSectionCount(sectionsResponse.data.length);
+                }
+            } catch (error) {
+                console.error('Error fetching featured dishes:', error);
+                setFeaturedDishes([]);
+                setSectionCount(0);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFeaturedDishes();
+    }, []);
+
+    return { featuredDishes, loading, sectionCount };
+};
+
+const renderSectionLoading = () => (
+    <div className="home-section__loading">
+        <Loading />
+    </div>
+);
+
+const usePromotionItems = () => {
+    const [promotions, setPromotions] = useState([]);
+    const [promotionsLoading, setPromotionsLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchPromotions = async () => {
+            try {
+                setPromotionsLoading(true);
+                const response = await ApiService.getPublicPromotions({
+                    limit: 100,
+                });
+
+                if (response.success) {
+                    const nextPromotions = Array.isArray(response.data) ? response.data : [];
+
+                    setPromotions(nextPromotions);
+                }
+            } catch (error) {
+                console.error('Error fetching promotions:', error);
+                setPromotions([]);
+            } finally {
+                setPromotionsLoading(false);
+            }
+        };
+
+        fetchPromotions();
+    }, []);
+
+    return {
+        promotionsLoading,
+        availablePromotions: promotions,
+    };
+};
+
+const useHomeTestimonials = (featuredDishes, t) => {
+    const [testimonials, setTestimonials] = useState([]);
+
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            const reviewSourceItems = featuredDishes
+                .filter((dish) => Number(dish?.rating_count || 0) > 0)
+                .slice(0, 3);
+
+            if (reviewSourceItems.length === 0) {
+                setTestimonials([]);
+                return;
+            }
+
+            try {
+                const responses = await Promise.all(
+                    reviewSourceItems.map((dish) =>
+                        ApiService.getPublicReviewsByMenuItem(dish.id, { page: 1, limit: 1 })
+                    )
+                );
+
+                const nextTestimonials = responses
+                    .map((response, index) => {
+                        const review = response?.data?.[0];
+                        const dish = reviewSourceItems[index];
+
+                        if (!review) {
+                            return null;
+                        }
+
+                        return {
+                            name: review.full_name || review.username || t('home.testimonials.anonymous'),
+                            role: dish?.name || t('home.testimonials.guestRole'),
+                            stars: Math.max(1, Math.min(5, Number(review.rating) || 5)),
+                            text: review.comment || t('home.testimonials.emptyComment'),
+                        };
+                    })
+                    .filter(Boolean);
+
+                setTestimonials(nextTestimonials);
+            } catch (error) {
+                console.error('Error fetching testimonials:', error);
+                setTestimonials([]);
+            }
+        };
+
+        fetchTestimonials();
+    }, [featuredDishes, t]);
+
+    return testimonials;
+};
+
+const getGalleryImages = (brandImageUrl, featuredDishes) => {
+    const dynamicImages = featuredDishes
+        .flatMap((dish) => (Array.isArray(dish.images) ? dish.images : []))
+        .filter(Boolean);
+
+    return [brandImageUrl, ...dynamicImages]
+        .filter(Boolean)
+        .slice(0, 3);
+};
+
+const getDynamicHighlights = ({ t, sectionCount, featuredDishCount, promotionCount, faqCount, timeRangeLabel }) => {
+    const highlightItems = [
+        t('home.dynamicHighlights.menuSections', { count: sectionCount || featuredDishCount > 0 ? sectionCount : 0 }),
+        t('home.dynamicHighlights.featuredDishes', { count: featuredDishCount }),
+        t('home.dynamicHighlights.promotions', { count: promotionCount }),
+        t('home.dynamicHighlights.faqs', { count: faqCount }),
+    ];
+
+    if (timeRangeLabel) {
+        highlightItems[0] = t('home.dynamicHighlights.openHours', { timeRangeLabel });
+    }
+
+    return highlightItems;
+};
+
+const renderFeaturedContent = ({ loading, featuredDishes, featuredDishesToRender, navigate, t }) => {
+    if (loading) {
+        return renderSectionLoading();
+    }
+
+    if (featuredDishes.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                <p>{t('home.featured.empty')}</p>
+            </div>
+        );
+    }
+
+    return featuredDishesToRender.map((dish, index) => (
+        <article
+            className="featured-dish-card"
+            key={dish.id || dish.name}
+            style={{ animationDelay: `${index * 70}ms` }}
+        >
+            <div className="featured-dish-card__media">
+                <img
+                    src={dish.images && Array.isArray(dish.images) && dish.images.length > 0 ? dish.images[0] : HomeReservationImage}
+                    alt={dish.name}
+                    className="dish-thumb"
+                />
+                {dish.is_new ? <span className="featured-dish-card__tag">{t('menuScreen.new')}</span> : null}
+                {dish.is_popular ? <span className="featured-dish-card__tag">{t('menuScreen.popular')}</span> : null}
+            </div>
+
+            <div className="featured-dish-card__content">
+                <div className="featured-dish-card__headline">
+                    <h3>{dish.name}</h3>
+                    <span className="featured-dish-card__rating">
+                        <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : t('home.featured.notRated')}
+                    </span>
+                </div>
+
+                <p>{dish.description_short || dish.description || dish.desc}</p>
+                <div className="dish-price">{(dish.effective_price || dish.price || 0).toLocaleString()}đ</div>
+
+                <div className="featured-dish-card__actions">
+                    <button
+                        className="featured-dish-card__btn featured-dish-card__btn--primary"
+                        type="button"
+                        onClick={() => navigate('/menu')}
+                        style={{ width: '100%' }}
+                    >
+                        <FiShoppingBag /> {t('home.featured.viewMenu')}
+                    </button>
+                </div>
+            </div>
+        </article>
+    ));
+};
+
+const renderPromotionContent = ({ promotionsLoading, promotionsToRender, navigate, t, i18n }) => {
+    if (promotionsLoading) {
+        return renderSectionLoading();
+    }
+
+    if (promotionsToRender.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
+                <p>{t('home.promotions.empty')}</p>
+            </div>
+        );
+    }
+
+    return promotionsToRender.map((promotion, index) => (
+        <article
+            className="perk-card"
+            key={promotion.id || promotion.code}
+            style={{ animationDelay: `${index * 70}ms` }}
+        >
+            <div className="perk-icon"><FiGift /></div>
+            <div className="perk-card__code">{promotion.code}</div>
+            <h3>{getPromotionDiscountLabel(promotion)}</h3>
+            <p>{promotion.description || t('home.promotions.noDescription')}</p>
+            <div className="perk-card__meta">
+                <span>{t('home.promotions.minOrder', { value: formatPromotionCurrency(promotion.min_order_value) })}</span>
+                <span>{t('home.promotions.validUntil', { date: formatPromotionDate(promotion.end_date, i18n.language) })}</span>
+            </div>
+            <button className="mini-btn" onClick={() => navigate('/menu')}>
+                {t('home.perks.viewDetails')}
+            </button>
+        </article>
+    ));
+};
+
 const QuickBooking = ({ user }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const {
         restaurantName,
         restaurantSlogan,
+        brandImageUrl,
         contactPhone,
         contactEmail,
         addressLine,
-        openingTime,
-        closingTime,
         timeRangeLabel,
     } = useRestaurantInfoContext();
 
-    const [featuredDishes, setFeaturedDishes] = useState([]);
-    const [faqs, setFaqs] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [isCompactFeaturedLayout, setIsCompactFeaturedLayout] = useState(() =>
-        typeof window !== 'undefined' ? window.innerWidth <= 640 : false
-    );
+    const faqs = useFaqItems();
+    const isCompactFeaturedLayout = useCompactFeaturedLayout();
+    const { featuredDishes, loading, sectionCount } = useFeaturedDishesData();
+    const { availablePromotions, promotionsLoading } = usePromotionItems();
+    const testimonials = useHomeTestimonials(featuredDishes, t);
 
-    const PAGE_SIZE = 3;
     const [pageIndex, setPageIndex] = useState(0);
     const [slideDirection, setSlideDirection] = useState('next');
+    const [promotionPageIndex, setPromotionPageIndex] = useState(0);
+    const [promotionSlideDirection, setPromotionSlideDirection] = useState('next');
     const touchStartXRef = useRef(null);
     const featuredGridRef = useRef(null);
     const dragStateRef = useRef({
@@ -46,56 +369,6 @@ const QuickBooking = ({ user }) => {
         startX: 0,
         startScrollLeft: 0,
     });
-
-    // Fetch menu items (sorted by rating)
-    useEffect(() => {
-        fetchFeaturedDishes();
-        fetchFaqs();
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsCompactFeaturedLayout(window.innerWidth <= 640);
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const fetchFaqs = async () => {
-        try {
-            const data = await ApiService.getActiveFaqs();
-            if (Array.isArray(data)) {
-                setFaqs(data);
-            }
-        } catch (error) {
-            console.error('Error fetching FAQs:', error);
-        }
-    };
-
-    const fetchFeaturedDishes = async () => {
-        try {
-            setLoading(true);
-            const filters = {
-                limit: 100,
-                sort_by: 'rating_avg',
-                sort_order: 'DESC',
-            };
-
-            const response = await ApiService.getMenuItems(filters);
-            if (response.success && response.items) {
-                setFeaturedDishes(response.items);
-            }
-        } catch (error) {
-            console.error('Error fetching featured dishes:', error);
-            // Fallback: hiển thị array rỗng hoặc data mẫu
-            setFeaturedDishes([]);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const sortedFeaturedDishes = useMemo(() => {
         const copy = Array.isArray(featuredDishes) ? [...featuredDishes] : [];
@@ -108,7 +381,7 @@ const QuickBooking = ({ user }) => {
     }, [featuredDishes]);
 
     const totalPages = useMemo(() => {
-        const count = Math.ceil(sortedFeaturedDishes.length / PAGE_SIZE);
+        const count = Math.ceil(sortedFeaturedDishes.length / FEATURED_PAGE_SIZE);
         return Math.max(1, count);
     }, [sortedFeaturedDishes.length]);
 
@@ -117,11 +390,29 @@ const QuickBooking = ({ user }) => {
     }, [totalPages]);
 
     const pagedDishes = useMemo(() => {
-        const start = pageIndex * PAGE_SIZE;
-        return sortedFeaturedDishes.slice(start, start + PAGE_SIZE);
+        const start = pageIndex * FEATURED_PAGE_SIZE;
+        return sortedFeaturedDishes.slice(start, start + FEATURED_PAGE_SIZE);
     }, [pageIndex, sortedFeaturedDishes]);
 
     const featuredDishesToRender = isCompactFeaturedLayout ? sortedFeaturedDishes : pagedDishes;
+
+    const promotionTotalPages = useMemo(() => {
+        const count = Math.ceil(availablePromotions.length / PROMOTION_PAGE_SIZE);
+        return Math.max(1, count);
+    }, [availablePromotions.length]);
+
+    useEffect(() => {
+        setPromotionPageIndex((prev) => Math.min(Math.max(prev, 0), promotionTotalPages - 1));
+    }, [promotionTotalPages]);
+
+    const pagedPromotions = useMemo(() => {
+        if (isCompactFeaturedLayout) {
+            return availablePromotions;
+        }
+
+        const start = promotionPageIndex * PROMOTION_PAGE_SIZE;
+        return availablePromotions.slice(start, start + PROMOTION_PAGE_SIZE);
+    }, [availablePromotions, isCompactFeaturedLayout, promotionPageIndex]);
 
     const changePage = (direction) => {
         setPageIndex((prev) => {
@@ -139,6 +430,23 @@ const QuickBooking = ({ user }) => {
 
     const goPrevPage = () => changePage('prev');
     const goNextPage = () => changePage('next');
+
+    const changePromotionPage = (direction) => {
+        setPromotionPageIndex((prev) => {
+            const nextPage = direction === 'prev'
+                ? Math.max(0, prev - 1)
+                : Math.min(promotionTotalPages - 1, prev + 1);
+
+            if (nextPage !== prev) {
+                setPromotionSlideDirection(direction);
+            }
+
+            return nextPage;
+        });
+    };
+
+    const goPrevPromotionPage = () => changePromotionPage('prev');
+    const goNextPromotionPage = () => changePromotionPage('next');
 
     const onTouchStart = (e) => {
         touchStartXRef.current = e.touches?.[0]?.clientX ?? null;
@@ -195,89 +503,88 @@ const QuickBooking = ({ user }) => {
         featuredGridRef.current.releasePointerCapture?.(event.pointerId);
     };
 
-    let featuredMenuContent;
+    const featuredGridClassName = isCompactFeaturedLayout
+        ? 'featured-grid featured-grid--mobile'
+        : `featured-grid featured-grid--animated featured-grid--${slideDirection}`;
 
-    if (loading) {
-        featuredMenuContent = (
-            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                <p>{t('common.loading')}</p>
-            </div>
-        );
-    } else if (featuredDishes.length > 0) {
-        featuredMenuContent = featuredDishesToRender.map((dish, index) => (
-            <article
-                className="featured-dish-card"
-                key={dish.id || dish.name}
-                style={{ animationDelay: `${index * 70}ms` }}
-            >
-                <div className="featured-dish-card__media">
-                    <img
-                        src={dish.images && Array.isArray(dish.images) && dish.images.length > 0 ? dish.images[0] : HomeReservationImage}
-                        alt={dish.name}
-                        className="dish-thumb"
-                    />
-                    {dish.is_new ? <span className="featured-dish-card__tag">{t('menuScreen.new')}</span> : null}
-                    {dish.is_popular ? <span className="featured-dish-card__tag">{t('menuScreen.popular')}</span> : null}
-                </div>
+    const promotionGridClassName = isCompactFeaturedLayout
+        ? 'perk-grid'
+        : `perk-grid perk-grid--animated perk-grid--${promotionSlideDirection}`;
 
-                <div className="featured-dish-card__content">
-                    <div className="featured-dish-card__headline">
-                        <h3>{dish.name}</h3>
-                        <span className="featured-dish-card__rating">
-                            <CiStar /> {dish.rating_avg > 0 ? dish.rating_avg.toFixed(1) : t('home.featured.notRated')}
-                        </span>
-                    </div>
+    const featuredMenuContent = renderFeaturedContent({
+        loading,
+        featuredDishes,
+        featuredDishesToRender,
+        navigate,
+        t,
+    });
 
-                    <p>{dish.description_short || dish.description || dish.desc}</p>
-                    <div className="dish-price">{(dish.effective_price || dish.price || 0).toLocaleString()}đ</div>
+    const promotionsContent = renderPromotionContent({
+        promotionsLoading,
+        promotionsToRender: pagedPromotions,
+        navigate,
+        t,
+        i18n,
+    });
 
-                    <div className="featured-dish-card__actions">
-                        <button
-                            className="featured-dish-card__btn featured-dish-card__btn--primary"
-                            type="button"
-                            onClick={() => navigate('/menu')}
-                            style={{ width: '100%' }}
-                        >
-                            <FiShoppingBag /> {t('home.featured.viewMenu')}
-                        </button>
-                    </div>
-                </div>
-            </article>
-        ));
-    } else {
-        featuredMenuContent = (
-            <div style={{ textAlign: 'center', padding: '40px', gridColumn: '1/-1' }}>
-                <p>{t('home.featured.empty')}</p>
-            </div>
-        );
-    }
+    const testimonialItems = testimonials.length > 0
+        ? testimonials
+        : [
+            {
+                name: t('home.testimonials.items.0.name'),
+                role: t('home.testimonials.items.0.role'),
+                stars: 5,
+                text: t('home.testimonials.items.0.text'),
+            },
+            {
+                name: t('home.testimonials.items.1.name'),
+                role: t('home.testimonials.items.1.role'),
+                stars: 5,
+                text: t('home.testimonials.items.1.text'),
+            },
+            {
+                name: t('home.testimonials.items.2.name'),
+                role: t('home.testimonials.items.2.role'),
+                stars: 4,
+                text: t('home.testimonials.items.2.text'),
+            },
+        ];
 
-    const testimonials = [
+    const whyUsItems = getDynamicHighlights({
+        t,
+        sectionCount,
+        featuredDishCount: featuredDishes.length,
+        promotionCount: availablePromotions.length,
+        faqCount: faqs.length,
+        timeRangeLabel,
+    });
+
+    const galleryImages = getGalleryImages(brandImageUrl, featuredDishes);
+
+    const heroHighlights = [
         {
-            name: 'Diep Vu Minh',
-            role: t('home.testimonials.items.0.role'),
-            stars: 5,
-            text: t('home.testimonials.items.0.text'),
+            key: 'hours',
+            icon: FiClock,
+            label: t('home.heroHighlights.openHoursLabel'),
+            value: timeRangeLabel || t('home.heroHighlights.openHoursFallback'),
         },
         {
-            name: 'Nguyen Le Minh Han',
-            role: t('home.testimonials.items.1.role'),
-            stars: 5,
-            text: t('home.testimonials.items.1.text'),
+            key: 'featured',
+            icon: FiShoppingBag,
+            label: t('home.heroHighlights.featuredLabel'),
+            value: t('home.heroHighlights.featuredValue', { count: featuredDishes.length }),
         },
         {
-            name: 'Ngo Quang Danh',
-            role: t('home.testimonials.items.2.role'),
-            stars: 4,
-            text: t('home.testimonials.items.2.text'),
+            key: 'promotions',
+            icon: FiGift,
+            label: t('home.heroHighlights.promotionsLabel'),
+            value: t('home.heroHighlights.promotionsValue', { count: availablePromotions.length }),
         },
     ];
 
-    const perks = [
-        { icon: <FiGift />, title: t('home.perks.items.0.title'), desc: t('home.perks.items.0.desc') },
-        { icon: <FiClock />, title: t('home.perks.items.1.title'), desc: t('home.perks.items.1.desc') },
-        { icon: <FiCalendar />, title: t('home.perks.items.2.title'), desc: t('home.perks.items.2.desc') },
-    ];
+    const mapHref = addressLine
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLine)}`
+        : 'https://maps.google.com';
 
     return (
         <div className="home-quick-booking-section">
@@ -286,13 +593,7 @@ const QuickBooking = ({ user }) => {
                 
                 
                 <div className="restaurant-info-panel">
-                    
-                    <div className="rating-badge">
-                        <CiStar className="star-icon" />
-                        <span>{t('home.rating')}</span>
-                    </div>
-
-
+                    <p className="hero-kicker">{t('home.heroKicker')}</p>
                     <h1 className="restaurant-title">{restaurantName || t('home.restaurantName')}</h1>
 
                    
@@ -300,13 +601,37 @@ const QuickBooking = ({ user }) => {
                         {restaurantSlogan || t('home.description')}
                     </p>
 
+                    <div className="hero-highlight-grid">
+                        {heroHighlights.map((item) => {
+                            const Icon = item.icon;
+
+                            return (
+                                <article className="hero-highlight-card" key={item.key}>
+                                    <div className="hero-highlight-card__icon">
+                                        <Icon />
+                                    </div>
+                                    <div className="hero-highlight-card__content">
+                                        <span>{item.label}</span>
+                                        <strong>{item.value}</strong>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+
                     
                     <div className="action-buttons">
                         <button className="btn btn-primary" onClick={() => navigate('/booking')}>
-                            <CiCalendar className="btn-icon" /> {t('home.bookTable')}
+                            <span className="btn-icon-wrap" aria-hidden="true">
+                                <HiOutlineCalendarDays className="btn-icon" />
+                            </span>
+                            <span>{t('home.bookTable')}</span>
                         </button>
                         <button className="btn btn-secondary" onClick={() => navigate('/menu')}>
-                            {t('home.takeaway')}
+                            <span className="btn-icon-wrap" aria-hidden="true">
+                                <HiOutlineShoppingBag className="btn-icon" />
+                            </span>
+                            <span>{t('home.takeaway')}</span>
                         </button>
                     </div>
                 </div>
@@ -318,9 +643,10 @@ const QuickBooking = ({ user }) => {
 
             </div>
             
-            <div className="restaurant-main-image">
-
-            </div>
+            <div
+                className="restaurant-main-image"
+                style={brandImageUrl ? { backgroundImage: `url(${brandImageUrl})` } : undefined}
+            />
 
             <RestaurantInformation />
 
@@ -331,7 +657,7 @@ const QuickBooking = ({ user }) => {
                 </div>
 
                 <div className="home-featured-menu__carousel">
-                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
+                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > FEATURED_PAGE_SIZE ? (
                         <button
                             className="home-featured-menu__nav home-featured-menu__nav--prev"
                             type="button"
@@ -345,7 +671,7 @@ const QuickBooking = ({ user }) => {
 
                     <div
                         ref={featuredGridRef}
-                        className={`featured-grid ${isCompactFeaturedLayout ? 'featured-grid--mobile' : `featured-grid--animated featured-grid--${slideDirection}`}`}
+                        className={featuredGridClassName}
                         onTouchStart={isCompactFeaturedLayout ? undefined : onTouchStart}
                         onTouchEnd={isCompactFeaturedLayout ? undefined : onTouchEnd}
                         onPointerDown={isCompactFeaturedLayout ? handleFeaturedPointerDown : undefined}
@@ -357,7 +683,7 @@ const QuickBooking = ({ user }) => {
                         {featuredMenuContent}
                     </div>
 
-                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
+                    {!isCompactFeaturedLayout && sortedFeaturedDishes.length > FEATURED_PAGE_SIZE ? (
                         <button
                             className="home-featured-menu__nav home-featured-menu__nav--next"
                             type="button"
@@ -370,7 +696,7 @@ const QuickBooking = ({ user }) => {
                     ) : null}
                 </div>
 
-                {!isCompactFeaturedLayout && sortedFeaturedDishes.length > PAGE_SIZE ? (
+                {!isCompactFeaturedLayout && sortedFeaturedDishes.length > FEATURED_PAGE_SIZE ? (
                     <div className="home-featured-menu__status" aria-label={t('home.featured.pageStatus', { current: pageIndex + 1, total: totalPages })}>
                         <div className="home-featured-menu__status-bar" aria-hidden="true">
                             <span
@@ -389,13 +715,13 @@ const QuickBooking = ({ user }) => {
                     <h2>{t('home.testimonials.title')}</h2>
                 </div>
                 <div className="testimonial-grid">
-                    {testimonials.map((item) => (
+                    {testimonialItems.map((item, index) => (
                         <article className="testimonial-card" key={item.name}>
                             <div className="testimonial-stars">{'*'.repeat(item.stars)}</div>
                             <p className="testimonial-text">{item.text}</p>
                             <div className="testimonial-author">
                                 <strong>{item.name}</strong>
-                                <span>{item.role}</span>
+                                <span>{item.role || `${t('home.testimonials.guestRole')} ${index + 1}`}</span>
                             </div>
                         </article>
                     ))}
@@ -408,10 +734,9 @@ const QuickBooking = ({ user }) => {
                     <h2>{t('home.whyUs.title')}</h2>
                 </div>
                 <div className="why-grid">
-                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.0')}</div>
-                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.1')}</div>
-                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.2')}</div>
-                    <div className="why-item"><FiCheckCircle /> {t('home.whyUs.items.3')}</div>
+                    {whyUsItems.map((item) => (
+                        <div className="why-item" key={item}><FiCheckCircle /> {item}</div>
+                    ))}
                 </div>
             </section>
 
@@ -420,25 +745,56 @@ const QuickBooking = ({ user }) => {
                     <p className="section-subtitle">{t('home.gallery.subtitle')}</p>
                 </div>
                 <div className="gallery-grid">
-                    <img src={Restaurant1} alt={t('home.gallery.images.0')} />
-                    <img src={Restaurant2} alt={t('home.gallery.images.1')} />
-                    <img src={Restaurant3} alt={t('home.gallery.images.2')} />
-                </div>
-            </section>
-
-            <section className="home-section home-perks">
-                <div className="perk-grid">
-                    {perks.map((perk) => (
-                        <article className="perk-card" key={perk.title}>
-                            <div className="perk-icon">{perk.icon}</div>
-                            <h3>{perk.title}</h3>
-                            <p>{perk.desc}</p>
-                            <button className="mini-btn" onClick={() => navigate('/menu')}>{t('home.perks.viewDetails')}</button>
-                        </article>
+                    {(galleryImages.length > 0 ? galleryImages : [Restaurant1, Restaurant2, Restaurant3]).map((image, index) => (
+                        <img key={image} src={image} alt={t(`home.gallery.images.${index}`)} />
                     ))}
                 </div>
             </section>
 
+            <section className="home-section home-perks">
+                <div className="home-featured-menu__carousel">
+                    {!isCompactFeaturedLayout && promotionTotalPages > 1 ? (
+                        <button
+                            className="home-featured-menu__nav home-featured-menu__nav--prev"
+                            type="button"
+                            onClick={goPrevPromotionPage}
+                            disabled={promotionPageIndex === 0 || promotionsLoading}
+                            aria-label={t('home.promotions.prevItems')}
+                        >
+                            <FiChevronLeft />
+                        </button>
+                    ) : null}
+
+                    <div className={promotionGridClassName}>
+                        {promotionsContent}
+                    </div>
+
+                    {!isCompactFeaturedLayout && promotionTotalPages > 1 ? (
+                        <button
+                            className="home-featured-menu__nav home-featured-menu__nav--next"
+                            type="button"
+                            onClick={goNextPromotionPage}
+                            disabled={promotionPageIndex >= promotionTotalPages - 1 || promotionsLoading}
+                            aria-label={t('home.promotions.nextItems')}
+                        >
+                            <FiChevronRight />
+                        </button>
+                    ) : null}
+                </div>
+
+                {!isCompactFeaturedLayout && promotionTotalPages > 1 ? (
+                    <div className="home-featured-menu__status" aria-label={t('home.promotions.pageStatus', { current: promotionPageIndex + 1, total: promotionTotalPages })}>
+                        <div className="home-featured-menu__status-bar" aria-hidden="true">
+                            <span
+                                className="home-featured-menu__status-fill"
+                                style={{ width: `${((promotionPageIndex + 1) / promotionTotalPages) * 100}%` }}
+                            />
+                        </div>
+                        <span className="home-featured-menu__status-text">{promotionPageIndex + 1}/{promotionTotalPages}</span>
+                    </div>
+                ) : null}
+            </section>
+ 
             <section className="home-section home-contact-map">
                 <div className="section-head centered">
                     <p className="section-subtitle">{t('home.contact.subtitle')}</p>
@@ -449,7 +805,7 @@ const QuickBooking = ({ user }) => {
                         <div className="map-pin"><FiMapPin /></div>
                         <h3>Google Maps</h3>
                         <p>{t('home.contact.mapDescription')}</p>
-                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">{t('home.contact.getDirections')}</a>
+                        <a href={mapHref} target="_blank" rel="noreferrer">{t('home.contact.getDirections')}</a>
                     </div>
                     <div className="contact-card">
                         <h3>{t('home.contact.infoTitle')}</h3>

@@ -37,9 +37,18 @@
     "restaurantName": "Restaurant",
     "restaurantSlogan": "Signature Cuisine",
     "rating": "4.8 • Over 500 reviews",
+    "heroKicker": "Quick booking for a smoother dining experience",
     "description": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service",
     "bookTable": "Book Table",
     "takeaway": "Order Takeaway",
+    "heroHighlights": {
+      "openHoursLabel": "Service hours",
+      "openHoursFallback": "Update opening hours",
+      "featuredLabel": "Featured dishes",
+      "featuredValue": "{{count}} dishes currently showcased",
+      "promotionsLabel": "Active offers",
+      "promotionsValue": "{{count}} promotion codes available"
+    },
     "footerDescription": "Experience authentic Vietnamese cuisine with elegant ambiance and dedicated service. We are committed to bringing you the highest quality dishes.",
     "featured": {
       "title": "Our Menu",
@@ -103,6 +112,15 @@
           "desc": "Private room for 8-12 guests with a customized menu."
         }
       ]
+    },
+    "promotions": {
+      "empty": "There are no active promotion codes right now",
+      "noDescription": "Use this offer during checkout to receive the matching discount.",
+      "minOrder": "Minimum order: {{value}}",
+      "validUntil": "Valid until: {{date}}",
+      "prevItems": "View previous 3 promotion codes",
+      "nextItems": "View next 3 promotion codes",
+      "pageStatus": "Page {{current}} of {{total}}"
     },
     "contact": {
       "subtitle": "Contact and map",

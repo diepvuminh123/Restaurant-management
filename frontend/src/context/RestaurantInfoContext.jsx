@@ -89,6 +89,8 @@ export const RestaurantInfoProvider = ({ children }) => {
       refreshRestaurantInfo,
       restaurantName: restaurantInfo.name || fallbackInfo.name,
       restaurantSlogan: restaurantInfo.slogan || fallbackInfo.slogan,
+      restaurantLogoUrl: restaurantInfo.logo_url || '',
+      brandImageUrl: restaurantInfo.brand_image_url || '',
       contactPhone: restaurantInfo.contact_phone || '',
       contactEmail: restaurantInfo.contact_email || '',
       addressLine: restaurantInfo.address_line || '',

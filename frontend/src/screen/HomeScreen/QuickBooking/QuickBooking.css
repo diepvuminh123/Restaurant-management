@@ -8,44 +8,60 @@
 
 /* Phần trên: Thông tin Nhà hàng (Trái) và Form (Phải) */
 .booking-content-top {
-    display: flex;
-    justify-content: space-between; 
-    align-items: stretch;
-    gap: clamp(24px, 3vw, 44px);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(340px, 430px);
+    align-items: start;
+    gap: clamp(28px, 4vw, 72px);
     background-color: #FBF8F4; 
     padding: 52px 60px 46px;
     border-radius: 0;
+    overflow: hidden;
+}
+
+.booking-content-top::before,
+.booking-content-top::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.booking-content-top::before {
+    width: 320px;
+    height: 320px;
+    left: -120px;
+    bottom: -180px;
+    background: radial-gradient(circle, rgba(214, 122, 65, 0.14) 0%, rgba(214, 122, 65, 0) 72%);
+}
+
+.booking-content-top::after {
+    width: 260px;
+    height: 260px;
+    right: 260px;
+    top: -120px;
+    background: radial-gradient(circle, rgba(191, 99, 43, 0.12) 0%, rgba(191, 99, 43, 0) 74%);
 }
 
 /* A. Cột bên trái: Thông tin Nhà hàng */
 .restaurant-info-panel {
-    flex: 1 1 0;
-    max-width: 620px;
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
+    padding-top: 8px;
 }
 
-/* Đánh giá */
-.rating-badge {
-    display: inline-flex;
-    align-items: center;
-    width: auto;
-    max-width: max-content;
-    background-color: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.hero-kicker {
+    margin: 0 0 14px;
+    color: #b86632;
     font-size: 0.82rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 18px;
-}
-
-.star-icon {
-    color: #FBC02D; /* Màu vàng sao */
-    margin-right: 5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
 /* Tên nhà hàng */
@@ -61,22 +77,76 @@
 
 /* Mô tả */
 .restaurant-description {
-    font-size: 0.98rem;
+    font-size: 1.03rem;
     color: #666;
     line-height: 1.62;
-    margin-bottom: 30px;
-    max-width: 530px;
+    margin-bottom: 24px;
+    max-width: 560px;
+}
+
+.hero-highlight-grid {
+    width: min(100%, 760px);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.hero-highlight-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    min-height: 104px;
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 1px solid #ecd8c8;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 248, 241, 0.98) 100%);
+    box-shadow: 0 14px 28px rgba(101, 71, 42, 0.08);
+}
+
+.hero-highlight-card__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    flex: 0 0 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff0e5;
+    color: #bb6733;
+    font-size: 1.15rem;
+}
+
+.hero-highlight-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hero-highlight-card__content span {
+    color: #8a7868;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.hero-highlight-card__content strong {
+    color: #2f3135;
+    font-size: 1.02rem;
+    line-height: 1.45;
 }
 
 /* Các nút hành động */
 .action-buttons {
     display: flex;
-    width: fit-content;
-    gap: 14px;
+    width: min(100%, 760px);
+    gap: 16px;
 }
 .action-buttons > .btn {
-    flex: 0 0 auto;
-    min-width: 160px;
+    flex: 0 1 auto;
+    min-width: 0;
+    width: clamp(220px, 27vw, 300px);
     justify-content: center;
     text-align: center;
     white-space: nowrap;
@@ -86,21 +156,38 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 13px 18px;
+    gap: 12px;
+    min-height: 64px;
+    padding: 16px 26px;
     border: 1px solid transparent;
-    border-radius: 18px;
-    font-size: 0.96rem;
-    font-weight: 700;
+    border-radius: 22px;
+    font-size: 1.04rem;
+    font-weight: 800;
     cursor: pointer;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     box-sizing: border-box;
-    box-shadow: 0 8px 18px rgba(72, 43, 20, 0.08);
+    box-shadow: 0 12px 24px rgba(72, 43, 20, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+.home-quick-booking-section .btn > span:last-child {
+    line-height: 1;
+}
+
+.home-quick-booking-section .btn-icon-wrap {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .home-quick-booking-section .btn-icon {
-    font-size: 1.08em;
+    width: 27px;
+    height: 27px;
+    flex: 0 0 auto;
 }
 
 .home-quick-booking-section .btn-primary {
@@ -120,10 +207,19 @@
     box-shadow: 0 8px 16px rgba(201, 110, 53, 0.18);
 }
 
+.home-quick-booking-section .btn-primary .btn-icon {
+    color: #fff7f1;
+}
+
 .home-quick-booking-section .btn-secondary {
     background: rgba(255, 248, 241, 0.92);
     color: #8f4618;
     border-color: #d39a72;
+    box-shadow: 0 10px 22px rgba(183, 112, 63, 0.08);
+}
+
+.home-quick-booking-section .btn-secondary .btn-icon {
+    color: #b05d2b;
 }
 
 .home-quick-booking-section .btn-secondary:hover {
@@ -142,8 +238,9 @@
 
 /* B. Cột bên phải: Form Đặt Bàn Nhanh */
 .quick-booking-form-wrapper {
-    flex: 0 1 430px;
-    max-width: 430px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
     display: flex;
     justify-content: flex-end; 
 }
@@ -327,6 +424,21 @@
     --featured-enter-x: -26px;
 }
 
+.perk-grid--animated .perk-card {
+    opacity: 0;
+    transform: translate3d(var(--featured-enter-x, 0), 18px, 0) scale(0.985);
+    animation: featured-card-enter 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    will-change: transform, opacity;
+}
+
+.perk-grid--next .perk-card {
+    --featured-enter-x: 26px;
+}
+
+.perk-grid--prev .perk-card {
+    --featured-enter-x: -26px;
+}
+
 .featured-dish-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 18px 32px rgba(28, 35, 43, 0.1);
@@ -447,6 +559,17 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
+}
+
+.home-section__loading {
+    grid-column: 1 / -1;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #d67a41 0%, #c96e35 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 .dish-card,
@@ -571,6 +694,10 @@
     padding: 20px;
 }
 
+.home-promotion-menu {
+    border: 1px solid #efefef;
+}
+
 .perk-icon {
     width: 42px;
     height: 42px;
@@ -587,10 +714,28 @@
     margin: 0 0 8px;
 }
 
+.perk-card__code {
+    margin-bottom: 10px;
+    color: #cb6b33;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 .perk-card p {
     margin: 0 0 18px;
     color: #666;
     line-height: 1.55;
+}
+
+.perk-card__meta {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 18px;
+    color: #7a6a5d;
+    font-size: 0.88rem;
+    line-height: 1.5;
 }
 
 .contact-map-grid {
@@ -708,14 +853,13 @@
     }
 
     .booking-content-top {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 28px;
         padding: 34px 18px;
     }
 
     .restaurant-info-panel,
     .quick-booking-form-wrapper {
-        flex: 1 1 100%;
         max-width: none;
         width: 100%;
         padding-right: 0;
@@ -723,6 +867,10 @@
 
     .quick-booking-form-wrapper {
         justify-content: flex-start;
+    }
+
+    .hero-highlight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .action-buttons {
@@ -769,8 +917,26 @@
 }
 
 @media (max-width: 640px) {
+    .hero-kicker {
+        font-size: 0.74rem;
+        letter-spacing: 0.12em;
+    }
+
     .restaurant-title {
         font-size: 2rem;
+    }
+
+    .restaurant-description {
+        font-size: 0.96rem;
+    }
+
+    .hero-highlight-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .hero-highlight-card {
+        min-height: 0;
     }
 
     .restaurant-main-image {

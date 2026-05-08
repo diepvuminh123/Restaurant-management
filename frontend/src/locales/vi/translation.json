@@ -37,9 +37,18 @@
     "restaurantName": "Nhà hàng",
     "restaurantSlogan": "Ẩm thực đặc sắc",
     "rating": "4.8 • Hơn 500 đánh giá",
+    "heroKicker": "Đặt chỗ nhanh cho trải nghiệm trọn vẹn",
     "description": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm",
     "bookTable": "Đặt bàn",
     "takeaway": "Đặt món mang về",
+    "heroHighlights": {
+      "openHoursLabel": "Giờ phục vụ",
+      "openHoursFallback": "Cập nhật giờ hoạt động",
+      "featuredLabel": "Món nổi bật",
+      "featuredValue": "{{count}} món đang lên thực đơn",
+      "promotionsLabel": "Ưu đãi hiện có",
+      "promotionsValue": "{{count}} mã khuyến mãi khả dụng"
+    },
     "footerDescription": "Trải nghiệm ẩm thực Việt Nam đích thực với không gian sang trọng và dịch vụ tận tâm. Chúng tôi cam kết mang đến những món ăn chất lượng cao nhất.",
     "featured": {
       "title": "Thực đơn của chúng tôi",
@@ -103,6 +112,15 @@
           "desc": "Phòng riêng cho 8-12 khách với thực đơn tùy chỉnh."
         }
       ]
+    },
+    "promotions": {
+      "empty": "Hiện chưa có mã khuyến mãi khả dụng",
+      "noDescription": "Áp dụng ưu đãi này khi đặt món để nhận mức giảm tương ứng.",
+      "minOrder": "Đơn tối thiểu: {{value}}",
+      "validUntil": "Hiệu lực đến: {{date}}",
+      "prevItems": "Xem 3 mã khuyến mãi trước",
+      "nextItems": "Xem 3 mã khuyến mãi tiếp theo",
+      "pageStatus": "Trang {{current}} trên {{total}}"
     },
     "contact": {
       "subtitle": "Liên hệ và bản đồ",

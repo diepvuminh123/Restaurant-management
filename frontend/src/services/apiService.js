@@ -680,6 +680,40 @@ class ApiService {
     });
   }
 
+  static async getPromotions(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    const endpoint = query ? '/promotions?' + query : '/promotions';
+
+    return this.request(endpoint, {
+      method: 'GET',
+    });
+  }
+
+  static async getPublicPromotions(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    const endpoint = query ? '/promotions/public?' + query : '/promotions/public';
+
+    return this.request(endpoint, {
+      method: 'GET',
+    });
+  }
+
   // ============= FAQ API =============
 
   static async getActiveFaqs() {
