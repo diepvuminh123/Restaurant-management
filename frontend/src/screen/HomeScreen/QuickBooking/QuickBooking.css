@@ -1023,6 +1023,35 @@
         will-change: auto;
     }
 
+    .home-perks .perk-grid--mobile {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+        cursor: grab;
+    }
+
+    .home-perks .perk-grid--mobile::-webkit-scrollbar {
+        display: none;
+    }
+
+    .home-perks .perk-grid--mobile:active {
+        cursor: grabbing;
+    }
+
+    .home-perks .perk-grid--mobile .perk-card {
+        flex: 0 0 82vw;
+        scroll-snap-align: start;
+        opacity: 1;
+        transform: none;
+        animation: none;
+        will-change: auto;
+    }
+
     .featured-dish-card__actions {
         grid-template-columns: 1fr;
     }

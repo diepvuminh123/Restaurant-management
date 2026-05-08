@@ -358,7 +358,14 @@ const QuickBooking = ({ user }) => {
     const [promotionSlideDirection, setPromotionSlideDirection] = useState('next');
     const touchStartXRef = useRef(null);
     const featuredGridRef = useRef(null);
+    const promotionGridRef = useRef(null);
     const dragStateRef = useRef({
+        isDragging: false,
+        pointerType: null,
+        startX: 0,
+        startScrollLeft: 0,
+    });
+    const promotionDragStateRef = useRef({
         isDragging: false,
         pointerType: null,
         startX: 0,
@@ -498,12 +505,50 @@ const QuickBooking = ({ user }) => {
         featuredGridRef.current.releasePointerCapture?.(event.pointerId);
     };
 
+    const handlePromotionPointerDown = (event) => {
+        if (!isCompactFeaturedLayout || !promotionGridRef.current) return;
+        if (event.pointerType !== 'mouse') return;
+
+        promotionDragStateRef.current = {
+            isDragging: true,
+            pointerType: event.pointerType,
+            startX: event.clientX,
+            startScrollLeft: promotionGridRef.current.scrollLeft,
+        };
+
+        promotionGridRef.current.setPointerCapture?.(event.pointerId);
+    };
+
+    const handlePromotionPointerMove = (event) => {
+        if (
+            !isCompactFeaturedLayout ||
+            !promotionGridRef.current ||
+            !promotionDragStateRef.current.isDragging ||
+            promotionDragStateRef.current.pointerType !== 'mouse'
+        ) return;
+
+        const deltaX = event.clientX - promotionDragStateRef.current.startX;
+        promotionGridRef.current.scrollLeft = promotionDragStateRef.current.startScrollLeft - deltaX;
+    };
+
+    const handlePromotionPointerUp = (event) => {
+        if (!isCompactFeaturedLayout || !promotionGridRef.current) return;
+
+        promotionDragStateRef.current = {
+            isDragging: false,
+            pointerType: null,
+            startX: 0,
+            startScrollLeft: 0,
+        };
+        promotionGridRef.current.releasePointerCapture?.(event.pointerId);
+    };
+
     const featuredGridClassName = isCompactFeaturedLayout
         ? 'featured-grid featured-grid--mobile'
         : `featured-grid featured-grid--animated featured-grid--${slideDirection}`;
 
     const promotionGridClassName = isCompactFeaturedLayout
-        ? 'perk-grid'
+        ? 'perk-grid perk-grid--mobile'
         : `perk-grid perk-grid--animated perk-grid--${promotionSlideDirection}`;
 
     const featuredMenuContent = renderFeaturedContent({
@@ -760,7 +805,15 @@ const QuickBooking = ({ user }) => {
                         </button>
                     ) : null}
 
-                    <div className={promotionGridClassName}>
+                    <div
+                        ref={promotionGridRef}
+                        className={promotionGridClassName}
+                        onPointerDown={isCompactFeaturedLayout ? handlePromotionPointerDown : undefined}
+                        onPointerMove={isCompactFeaturedLayout ? handlePromotionPointerMove : undefined}
+                        onPointerUp={isCompactFeaturedLayout ? handlePromotionPointerUp : undefined}
+                        onPointerCancel={isCompactFeaturedLayout ? handlePromotionPointerUp : undefined}
+                        onPointerLeave={isCompactFeaturedLayout ? handlePromotionPointerUp : undefined}
+                    >
                         {promotionsContent}
                     </div>
 
