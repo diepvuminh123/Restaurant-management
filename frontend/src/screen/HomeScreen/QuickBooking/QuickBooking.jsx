@@ -224,15 +224,7 @@ const useHomeTestimonials = (featuredDishes, t) => {
     return testimonials;
 };
 
-const getGalleryImages = (brandImageUrl, featuredDishes) => {
-    const dynamicImages = featuredDishes
-        .flatMap((dish) => (Array.isArray(dish.images) ? dish.images : []))
-        .filter(Boolean);
-
-    return [brandImageUrl, ...dynamicImages]
-        .filter(Boolean)
-        .slice(0, 3);
-};
+const getGalleryImages = () => [Restaurant1, Restaurant2, Restaurant3];
 
 const getDynamicHighlights = ({ t, sectionCount, featuredDishCount, promotionCount, faqCount, timeRangeLabel }) => {
     const highlightItems = [
@@ -559,7 +551,7 @@ const QuickBooking = ({ user }) => {
         timeRangeLabel,
     });
 
-    const galleryImages = getGalleryImages(brandImageUrl, featuredDishes);
+    const galleryImages = getGalleryImages();
 
     const heroHighlights = [
         {
@@ -745,7 +737,7 @@ const QuickBooking = ({ user }) => {
                     <p className="section-subtitle">{t('home.gallery.subtitle')}</p>
                 </div>
                 <div className="gallery-grid">
-                    {(galleryImages.length > 0 ? galleryImages : [Restaurant1, Restaurant2, Restaurant3]).map((image, index) => (
+                    {galleryImages.map((image, index) => (
                         <img key={image} src={image} alt={t(`home.gallery.images.${index}`)} />
                     ))}
                 </div>
