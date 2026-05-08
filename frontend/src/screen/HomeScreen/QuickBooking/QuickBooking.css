@@ -161,7 +161,7 @@
     padding: 16px 26px;
     border: 1px solid transparent;
     border-radius: 22px;
-    font-size: 1.04rem;
+    font-size: 1.28rem;
     font-weight: 800;
     cursor: pointer;
     letter-spacing: -0.02em;
@@ -185,8 +185,8 @@
 }
 
 .home-quick-booking-section .btn-icon {
-    width: 27px;
-    height: 27px;
+    width: 32px;
+    height: 32px;
     flex: 0 0 auto;
 }
 
