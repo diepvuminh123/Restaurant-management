@@ -205,6 +205,35 @@ router.get(
   OrderController.getOrdersForStaff
 );
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get order detail for staff
+ *     description: Employee/Admin retrieves detailed information for one takeaway order.
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order detail retrieved successfully
+ *       400:
+ *         description: Invalid order ID
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not enough permission
+ *       404:
+ *         description: Order not found
+ */
 router.get(
   '/orders/:id',
   requireRole('admin', 'employee'),
@@ -212,6 +241,48 @@ router.get(
   OrderController.getOrderDetailForStaff
 );
 
+/**
+ * @swagger
+ * /api/orders/{id}/status:
+ *   patch:
+ *     summary: Update order status
+ *     description: Employee/Admin updates the operational status of a takeaway order.
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, CONFIRMED, PREPARING, READY, COMPLETED, CANCELED]
+ *                 example: CONFIRMED
+ *     responses:
+ *       200:
+ *         description: Order status updated successfully
+ *       400:
+ *         description: Invalid payload or order ID
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not enough permission
+ *       404:
+ *         description: Order not found
+ */
 router.patch(
   '/orders/:id/status',
   requireRole('admin', 'employee'),
@@ -345,6 +416,49 @@ router.patch(
   OrderController.cancelOrder
 );
 
+/**
+ * @swagger
+ * /api/orders/{id}/note:
+ *   patch:
+ *     summary: Update order note
+ *     description: Employee/Admin updates the note attached to a takeaway order.
+ *     tags: [Orders]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - note
+ *             properties:
+ *               note:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 1000
+ *                 example: Customer will arrive 10 minutes late
+ *     responses:
+ *       200:
+ *         description: Order note updated successfully
+ *       400:
+ *         description: Invalid payload or order ID
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not enough permission
+ *       404:
+ *         description: Order not found
+ */
 router.patch(
   '/orders/:id/note',
   requireRole('admin', 'employee'),

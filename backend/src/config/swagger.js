@@ -370,6 +370,22 @@ const options = {
       {
         name: 'Admin Reviews',
         description: 'Review moderation endpoints for admin'
+      },
+      {
+        name: 'Promotions',
+        description: 'Promotion management endpoints'
+      },
+      {
+        name: 'FAQ',
+        description: 'FAQ management endpoints'
+      },
+      {
+        name: 'User Admin',
+        description: 'User administration endpoints'
+      },
+      {
+        name: 'SSE',
+        description: 'Server-Sent Events endpoints'
       }
     ]
   },

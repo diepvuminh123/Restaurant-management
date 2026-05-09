@@ -197,6 +197,40 @@ router.post('/login', validate(loginSchema), AuthController.login);
  */
 router.post('/resetPassword', validate(resetPasswordSchema), AuthController.resetPassword);
 
+/**
+ * @swagger
+ * /api/auth/changePassword:
+ *   post:
+ *     summary: Change current user's password
+ *     description: Change password for the authenticated user.
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: "oldpassword123"
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: "newpassword123"
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Validation error or current password is incorrect
+ *       401:
+ *         description: Not authenticated
+ */
 router.post('/changePassword', requireAuth, validate(changePasswordSchema), AuthController.changePassword);
 
 /**
