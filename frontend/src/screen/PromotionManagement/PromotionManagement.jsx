@@ -267,7 +267,7 @@ const PromotionManagement = () => {
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>{isEditing ? 'Chỉnh sửa Khuyến mãi' : 'Tạo Khuyến mãi mới'}</h2>
+            <div className="modal-header">{isEditing ? 'Chỉnh sửa Khuyến mãi' : 'Tạo Khuyến mãi mới'}</div>
             <form onSubmit={handleSubmit} className="promo-form">
               <div className="form-group full-width">
                 <label>Mã khuyến mãi *</label>

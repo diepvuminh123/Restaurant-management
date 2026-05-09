@@ -323,9 +323,9 @@ const renderPromotionContent = ({ promotionsLoading, promotionsToRender, navigat
                 <span>{t('home.promotions.minOrder', { value: formatPromotionCurrency(promotion.min_order_value) })}</span>
                 <span>{t('home.promotions.validUntil', { date: formatPromotionDate(promotion.end_date, i18n.language) })}</span>
             </div>
-            <button className="mini-btn" onClick={() => navigate('/menu')}>
+            {/* <button className="mini-btn" onClick={() => navigate('/menu')}>
                 {t('home.perks.viewDetails')}
-            </button>
+            </button> */}
         </article>
     ));
 };
