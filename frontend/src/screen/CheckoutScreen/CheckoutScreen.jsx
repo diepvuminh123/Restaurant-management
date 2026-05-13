@@ -8,6 +8,7 @@ import ApiService from '../../services/apiService';
 import ToastContainer from '../../component/Toast/ToastContainer';
 import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
+import zaloQR from '../../picture/zalo.jpg';
 import './CheckoutScreen.css';
 
 const CheckoutScreen = () => {
@@ -474,11 +475,10 @@ const CheckoutScreen = () => {
                   <div className="qr-code-container">
                     <div className="qr-code-placeholder">
                       <img 
-                        src="https://via.placeholder.com/200x200/4a90e2/ffffff?text=QR+Code" 
+                        src={zaloQR}
                         alt="QR Code ZaloPay" 
                       />
                     </div>
-                    <p className="qr-instruction">Quét mã để thanh toán 50% đơn hàng</p>
                   </div>
                   <p className="payment-note">
                     Nội dung chuyển khoản: Mã số quý khách + số điện thoại
@@ -486,12 +486,35 @@ const CheckoutScreen = () => {
                 </div>
               )}
 
-              {selectedPaymentMethod !== 'zalopay' && (
+              {selectedPaymentMethod === 'acb' && (
                 <div className="payment-details">
-                  <div className="bank-info">
-                    <h4>Gửi bill xác nhận</h4>
-                    <p>Sau khi chuyển khoản, vui lòng gửi ảnh biên lai để xác nhận giao dịch.</p>
+                  <div className="qr-code-container">
+                    <div className="qr-code-placeholder">
+                      <img 
+                        src={zaloQR}
+                        alt="QR Code ACB" 
+                      />
+                    </div>
                   </div>
+                  <p className="payment-note">
+                    Nội dung chuyển khoản: Mã số quý khách + số điện thoại
+                  </p>
+                </div>
+              )}
+
+              {selectedPaymentMethod === 'vietcombank' && (
+                <div className="payment-details">
+                  <div className="qr-code-container">
+                    <div className="qr-code-placeholder">
+                      <img 
+                        src={zaloQR}
+                        alt="QR Code Vietcombank" 
+                      />
+                    </div>
+                  </div>
+                  <p className="payment-note">
+                    Nội dung chuyển khoản: Mã số quý khách + số điện thoại
+                  </p>
                 </div>
               )}
 

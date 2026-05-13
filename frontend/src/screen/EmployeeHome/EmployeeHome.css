@@ -58,15 +58,15 @@
   min-height: 42px;
   padding: 0 16px;
   border-radius: 12px;
-  background: #111827;
+  background: #c66b33;
   color: #fff;
   font-weight: 600;
   text-decoration: none;
 }
 
-.employee-home__link:hover {
+/* .employee-home__link:hover {
   background: #1f2937;
-}
+} */
 
 .employee-home__panels {
   display: grid;
