@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IoArrowBack, IoCheckmarkCircle, IoCardOutline, IoBusiness, IoLogoUsd, IoChatbubbleEllipsesOutline, IoHappyOutline } from 'react-icons/io5';
 import { useToast } from '../../hooks/useToast';
@@ -10,6 +11,205 @@ import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import zaloQR from '../../picture/zalo.jpg';
 import './CheckoutScreen.css';
+
+const PRIVILEGED_ROLES = new Set(['admin', 'employee', 'system_admin', 'staff']);
+
+const canShowPromotionSuggestionsForUser = (user) => (
+  Boolean(user && !PRIVILEGED_ROLES.has(String(user?.role || '').toLowerCase()))
+);
+
+const navigateBackFromCheckout = (currentStep, navigate, setCurrentStep) => {
+  if (currentStep === 2) {
+    setCurrentStep(1);
+    return;
+  }
+  if (currentStep === 3) {
+    navigate('/menu', { replace: true });
+    return;
+  }
+  navigate(-1);
+};
+
+const applyPromotionCode = async ({
+  promoCode,
+  totalAmount,
+  setPromoLoading,
+  setAppliedPromotion,
+  error,
+  success,
+}) => {
+  if (!promoCode.trim()) {
+    error('Vui lòng nhập mã khuyến mãi');
+    return;
+  }
+
+  setPromoLoading(true);
+  try {
+    const result = await ApiService.validatePromotion(promoCode.trim(), totalAmount);
+    if (result.success) {
+      setAppliedPromotion(result.data);
+      success(`Áp dụng mã ${result.data.promotion.code} thành công!`);
+    }
+  } catch (err) {
+    error(err.message || 'Mã khuyến mãi không hợp lệ');
+    setAppliedPromotion(null);
+  } finally {
+    setPromoLoading(false);
+  }
+};
+
+const proceedToDepositStep = async ({
+  cartLoading,
+  cartItems,
+  customerInfo,
+  validateCart,
+  error,
+  success,
+  setCurrentStep,
+}) => {
+  if (cartLoading) {
+    return;
+  }
+
+  if (cartItems.length === 0) {
+    error('Giỏ hàng đang trống, vui lòng chọn món trước khi đặt.');
+    return;
+  }
+
+  if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.pickupDate || !customerInfo.pickupTime) {
+    error('Vui lòng điền đầy đủ thông tin bắt buộc và thời gian nhận món.');
+    return;
+  }
+
+  const pickupTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}:00`);
+  if (Number.isNaN(pickupTime.getTime())) {
+    error('Thời gian nhận món không hợp lệ.');
+    return;
+  }
+
+  const minLeadTimeMinutes = 120;
+  const now = Date.now();
+  const minPickupTime = now + minLeadTimeMinutes * 60 * 1000;
+
+  if (pickupTime.getTime() < minPickupTime) {
+    error('Thời gian nhận món phải sau ít nhất 2 tiếng kể từ bây giờ để nhà hàng kịp chuẩn bị.');
+    return;
+  }
+
+  try {
+    const result = await validateCart();
+    if (!result.valid) {
+      error((result.errors || ['Giỏ hàng không hợp lệ']).join('\n'));
+      return;
+    }
+
+    success('Thông tin đã được xác nhận!');
+    setCurrentStep(2);
+  } catch (err) {
+    error(err.message || 'Không thể kiểm tra giỏ hàng. Vui lòng thử lại.');
+  }
+};
+
+const formatPromotionValue = (promotion) => {
+  const value = Number(promotion?.discount_value || 0);
+  if (promotion?.discount_type === 'PERCENTAGE') {
+    return `Giảm ${value}%`;
+  }
+  return `Giảm ${value.toLocaleString('vi-VN')}đ`;
+};
+
+const buildPromotionCards = (availablePromotions, totalAmount) => {
+  const now = new Date();
+
+  return availablePromotions.map((promotion) => {
+    const startDate = promotion?.start_date ? new Date(promotion.start_date) : null;
+    const endDate = promotion?.end_date ? new Date(promotion.end_date) : null;
+    const minOrderValue = Number(promotion?.min_order_value || 0);
+    const usageLimit = promotion?.usage_limit === null ? null : Number(promotion?.usage_limit);
+    const usedCount = Number(promotion?.used_count || 0);
+    const isStarted = !startDate || Number.isNaN(startDate.getTime()) || startDate <= now;
+    const isExpired = Boolean(endDate && !Number.isNaN(endDate.getTime()) && endDate < now);
+    const isUsageAvailable = usageLimit === null || usedCount < usageLimit;
+    const meetsMinimum = totalAmount >= minOrderValue;
+    const isSelectable = Boolean(isStarted && !isExpired && isUsageAvailable);
+
+    let helperText = 'Bấm để điền mã';
+    if (!isStarted) {
+      helperText = 'Chưa đến thời gian áp dụng';
+    } else if (isExpired) {
+      helperText = 'Mã đã hết hạn';
+    } else if (!isUsageAvailable) {
+      helperText = 'Mã đã hết lượt sử dụng';
+    } else if (!meetsMinimum) {
+      helperText = `Đơn tối thiểu ${minOrderValue.toLocaleString('vi-VN')}đ`;
+    }
+
+    return {
+      ...promotion,
+      isSelectable,
+      helperText,
+    };
+  });
+};
+
+const PromotionSuggestionList = ({
+  loading,
+  promotionCards,
+  promoCode,
+  onSelectPromotion,
+}) => {
+  const getPromotionSuggestionClassName = (promotion) => {
+    const isSelected = promoCode.trim().toUpperCase() === String(promotion?.code || '').toUpperCase();
+    const disabledClassName = promotion?.isSelectable ? '' : ' is-disabled';
+
+    return `promo-suggestion-card${isSelected ? ' is-selected' : ''}${disabledClassName}`;
+  };
+
+  let content = null;
+  if (loading) {
+    content = <p className="promo-suggestion-list__empty">Đang tải mã khuyến mãi...</p>;
+  } else if (promotionCards.length === 0) {
+    content = <p className="promo-suggestion-list__empty">Hiện chưa có mã khuyến mãi khả dụng.</p>;
+  } else {
+    content = promotionCards.map((promotion) => (
+      <button
+        key={promotion.id || promotion.code}
+        type="button"
+        className={getPromotionSuggestionClassName(promotion)}
+        onClick={() => onSelectPromotion(promotion)}
+        disabled={promotion.isSelectable !== true}
+      >
+        <div className="promo-suggestion-card__top">
+          <span className="promo-suggestion-card__code">{promotion.code}</span>
+          <span className="promo-suggestion-card__value">{formatPromotionValue(promotion)}</span>
+        </div>
+        <div className="promo-suggestion-card__description">
+          {promotion.description || 'Áp dụng ưu đãi này cho đơn takeaway phù hợp.'}
+        </div>
+        <div className="promo-suggestion-card__meta">
+          <span>{promotion.helperText}</span>
+          {Number(promotion.min_order_value || 0) > 0 ? (
+            <span>Đơn từ {Number(promotion.min_order_value).toLocaleString('vi-VN')}đ</span>
+          ) : null}
+        </div>
+      </button>
+    ));
+  }
+
+  return (
+    <div className="promo-suggestion-list">
+      <div className="promo-suggestion-list__header">Mã hiện có</div>
+      {content}
+    </div>
+  );
+};
+
+PromotionSuggestionList.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  promotionCards: PropTypes.arrayOf(PropTypes.object).isRequired,
+  promoCode: PropTypes.string.isRequired,
+  onSelectPromotion: PropTypes.func.isRequired,
+};
 
 const CheckoutScreen = () => {
   const navigate = useNavigate();
@@ -28,6 +228,7 @@ const CheckoutScreen = () => {
   
   const storedUser = sessionStorage.getItem(STORAGE_KEYS.USER);
   const user = storedUser ? JSON.parse(storedUser) : null;
+  const canShowPromotionSuggestions = canShowPromotionSuggestionsForUser(user);
 
   const [currentStep, setCurrentStep] = useState(1); // 1: Chọn món, 2: Cọc, 3: Gửi bill
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('zalopay');
@@ -45,22 +246,47 @@ const CheckoutScreen = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromotion, setAppliedPromotion] = useState(null);
   const [promoLoading, setPromoLoading] = useState(false);
+  const [availablePromotions, setAvailablePromotions] = useState([]);
+  const [availablePromotionsLoading, setAvailablePromotionsLoading] = useState(false);
 
   const totalAmount = cartTotalAmount;
   const discountAmount = appliedPromotion?.discountAmount || 0;
   const finalAmount = totalAmount - discountAmount;
 
+  useEffect(() => {
+    if (!canShowPromotionSuggestions) {
+      setAvailablePromotions([]);
+      return;
+    }
+
+    const fetchAvailablePromotions = async () => {
+      try {
+        setAvailablePromotionsLoading(true);
+        const response = await ApiService.getPublicPromotions({ limit: 20 });
+        if (response.success) {
+          setAvailablePromotions(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (err) {
+        console.error('Fetch public promotions error:', err);
+        setAvailablePromotions([]);
+      } finally {
+        setAvailablePromotionsLoading(false);
+      }
+    };
+
+    fetchAvailablePromotions();
+  }, [canShowPromotionSuggestions]);
+
+  const promotionCards = useMemo(
+    () => buildPromotionCards(availablePromotions, totalAmount),
+    [availablePromotions, totalAmount]
+  );
+
   // Tính số tiền cọc (50% tổng đơn sau giảm giá)
   const depositAmount = finalAmount * 0.5;
 
   const handleBackToMenu = () => {
-    if (currentStep === 2) {
-      setCurrentStep(1);
-    } else if (currentStep === 3) {
-      navigate('/menu', { replace: true });
-    } else {
-      navigate(-1);
-    }
+    navigateBackFromCheckout(currentStep, navigate, setCurrentStep);
   };
 
   const handlePaymentMethodChange = (method) => {
@@ -75,76 +301,34 @@ const CheckoutScreen = () => {
     }));
   };
 
-  const handleApplyPromo = async () => {
-    if (!promoCode.trim()) {
-      error('Vui lòng nhập mã khuyến mãi');
-      return;
-    }
-
-    setPromoLoading(true);
-    try {
-      const result = await ApiService.validatePromotion(promoCode.trim(), totalAmount);
-      if (result.success) {
-        setAppliedPromotion(result.data);
-        success(`Áp dụng mã ${result.data.promotion.code} thành công!`);
-      }
-    } catch (err) {
-      error(err.message || 'Mã khuyến mãi không hợp lệ');
-      setAppliedPromotion(null);
-    } finally {
-      setPromoLoading(false);
-    }
-  };
+  const handleApplyPromo = () => applyPromotionCode({
+    promoCode,
+    totalAmount,
+    setPromoLoading,
+    setAppliedPromotion,
+    error,
+    success,
+  });
 
   const handleRemovePromo = () => {
     setAppliedPromotion(null);
     setPromoCode('');
   };
 
-  const handleConfirmOrder = async () => {
-    if (cartLoading) {
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      error('Giỏ hàng đang trống, vui lòng chọn món trước khi đặt.');
-      return;
-    }
-
-    // Validate customer info
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.pickupDate || !customerInfo.pickupTime) {
-      error('Vui lòng điền đầy đủ thông tin bắt buộc và thời gian nhận món.');
-      return;
-    }
-
-    const pickupTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}:00`);
-    if (Number.isNaN(pickupTime.getTime())) {
-      error('Thời gian nhận món không hợp lệ.');
-      return;
-    }
-
-    const minLeadTimeMinutes = 120; // 2 hours
-    const now = Date.now();
-    const minPickupTime = now + minLeadTimeMinutes * 60 * 1000;
-
-    if (pickupTime.getTime() < minPickupTime) {
-      error(`Thời gian nhận món phải sau ít nhất 2 tiếng kể từ bây giờ để nhà hàng kịp chuẩn bị.`);
-      return;
-    }
-
-    try {
-      const result = await validateCart();
-      if (!result.valid) {
-        error((result.errors || ['Giỏ hàng không hợp lệ']).join('\n'));
-        return;
-      }
-
-      success('Thông tin đã được xác nhận!');
-      setCurrentStep(2);
-    } catch (err) {
-      error(err.message || 'Không thể kiểm tra giỏ hàng. Vui lòng thử lại.');
-    }
+  const handleSelectPromotion = (promotion) => {
+    if (!promotion?.code) return;
+    setPromoCode(String(promotion.code).toUpperCase());
   };
+
+  const handleConfirmOrder = () => proceedToDepositStep({
+    cartLoading,
+    cartItems,
+    customerInfo,
+    validateCart,
+    error,
+    success,
+    setCurrentStep,
+  });
 
   const handleConfirmDeposit = async () => {
     const confirmed = await showConfirm({
@@ -364,21 +548,32 @@ const CheckoutScreen = () => {
                         <button className="btn-remove-promo" onClick={handleRemovePromo}>Xóa</button>
                       </div>
                     ) : (
-                      <div className="promo-input-group">
-                        <input
-                          type="text"
-                          placeholder="Nhập mã giảm giá..."
-                          value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value)}
-                        />
-                        <button 
-                          className="btn-apply-promo" 
-                          onClick={handleApplyPromo}
-                          disabled={promoLoading || !promoCode.trim()}
-                        >
-                          {promoLoading ? 'Đang kiểm tra...' : 'Áp dụng'}
-                        </button>
-                      </div>
+                      <>
+                        <div className="promo-input-group">
+                          <input
+                            type="text"
+                            placeholder="Nhập mã giảm giá..."
+                            value={promoCode}
+                            onChange={(e) => setPromoCode(e.target.value)}
+                          />
+                          <button 
+                            className="btn-apply-promo" 
+                            onClick={handleApplyPromo}
+                            disabled={promoLoading || !promoCode.trim()}
+                          >
+                            {promoLoading ? 'Đang kiểm tra...' : 'Áp dụng'}
+                          </button>
+                        </div>
+
+                        {canShowPromotionSuggestions ? (
+                          <PromotionSuggestionList
+                            loading={availablePromotionsLoading}
+                            promotionCards={promotionCards}
+                            promoCode={promoCode}
+                            onSelectPromotion={handleSelectPromotion}
+                          />
+                        ) : null}
+                      </>
                     )}
                   </div>
 

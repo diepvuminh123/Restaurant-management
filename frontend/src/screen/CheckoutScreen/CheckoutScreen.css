@@ -629,6 +629,89 @@
   margin: 0 0 12px 0;
 }
 
+.promo-suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.promo-suggestion-list__header {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.promo-suggestion-list__empty {
+  margin: 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.promo-suggestion-card {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid #eadfda;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.promo-suggestion-card:hover:not(:disabled) {
+  border-color: #e36a2d;
+  box-shadow: 0 8px 22px rgba(227, 106, 45, 0.08);
+  transform: translateY(-1px);
+}
+
+.promo-suggestion-card.is-selected {
+  border-color: #e36a2d;
+  background: #fff7f1;
+}
+
+.promo-suggestion-card.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.promo-suggestion-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.promo-suggestion-card__code {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2d2d2d;
+}
+
+.promo-suggestion-card__value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e36a2d;
+}
+
+.promo-suggestion-card__description {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.promo-suggestion-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #8b8b8b;
+}
+
 .promo-input-group {
   display: flex;
   gap: 8px;
@@ -653,8 +736,8 @@
 .btn-apply-promo {
   padding: 0 16px;
   background: #fff;
-  color: #10b981;
-  border: 1.5px solid #10b981;
+  color: #0b5d40;
+  border: 1.5px solid #0b5d40;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -774,6 +857,13 @@
 
   .payment-options {
     grid-template-columns: 1fr;
+  }
+
+  .promo-suggestion-card__top,
+  .promo-suggestion-card__meta,
+  .applied-promo {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .step-line {
