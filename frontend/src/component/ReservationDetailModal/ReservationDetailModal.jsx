@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { IoCheckmarkOutline, IoCloseOutline, IoPlayOutline } from 'react-icons/io5';
+import { IoCheckmarkOutline, IoCloseOutline } from 'react-icons/io5';
 import './ReservationDetailModal.css';
 
 const RESERVATION_STATUS_LABELS = {
@@ -9,6 +9,13 @@ const RESERVATION_STATUS_LABELS = {
   COMPLETED: 'Hoàn tất',
   CANCELED: 'Đã hủy',
 };
+
+const RESERVATION_STATUS_OPTIONS = [
+  { value: 'CONFIRM', label: 'Đã xác nhận' },
+  { value: 'ON_SERVING', label: 'Đang phục vụ' },
+  { value: 'COMPLETED', label: 'Hoàn tất' },
+  { value: 'CANCELED', label: 'Đã hủy' },
+];
 
 const formatDisplayDate = (isoString) => {
   if (!isoString) return '--';
@@ -85,6 +92,7 @@ const ReservationDetailModal = ({
   updatingStatus,
 }) => {
   const dialogRef = useRef(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -115,35 +123,17 @@ const ReservationDetailModal = ({
   const createdAt = detail?.created_at || null;
   const currentState = String(detail?.reservation_state || '').toUpperCase();
 
-  const nextPrimaryAction = useMemo(() => {
-    if (!reservationId || loading) return null;
-    if (currentState === 'CONFIRM') {
-      return {
-        label: 'Chuyển sang đang phục vụ',
-        value: 'ON_SERVING',
-        icon: IoPlayOutline,
-      };
-    }
+  useEffect(() => {
+    setSelectedStatus(currentState || '');
+  }, [currentState, reservationId, isOpen]);
 
-    if (currentState === 'ON_SERVING') {
-      return {
-        label: 'Đánh dấu hoàn tất',
-        value: 'COMPLETED',
-        icon: IoCheckmarkOutline,
-      };
-    }
-
-    return null;
-  }, [currentState, loading, reservationId]);
-
-  const canCancel = useMemo(() => {
+  const canUpdateStatus = useMemo(() => {
     if (!reservationId) return false;
     if (loading) return false;
-    if (currentState !== 'CONFIRM') return false;
-    return typeof onUpdateStatus === 'function';
-  }, [currentState, loading, onUpdateStatus, reservationId]);
-
-  const canRunPrimaryAction = Boolean(nextPrimaryAction && typeof onUpdateStatus === 'function');
+    if (typeof onUpdateStatus !== 'function') return false;
+    if (!selectedStatus) return false;
+    return selectedStatus !== currentState;
+  }, [currentState, loading, onUpdateStatus, reservationId, selectedStatus]);
 
   if (!isOpen) return null;
 
@@ -226,26 +216,33 @@ const ReservationDetailModal = ({
             </div>
 
             <div className="reservation-detail__actions">
-              {nextPrimaryAction ? (
-                <button
-                  type="button"
-                  className="reservation-detail__action reservation-detail__action--primary"
-                  disabled={!canRunPrimaryAction || updatingStatus}
-                  onClick={() => onUpdateStatus(reservationId, nextPrimaryAction.value)}
+              <div className="reservation-detail__field">
+                <div className="reservation-detail__label">Chọn trạng thái mới</div>
+                <select
+                  className="reservation-detail__select"
+                  value={selectedStatus}
+                  disabled={loading || updatingStatus}
+                  onChange={(e) => setSelectedStatus(String(e.target.value || '').toUpperCase())}
                 >
-                  <nextPrimaryAction.icon />
-                  <span>{updatingStatus ? 'Đang cập nhật...' : nextPrimaryAction.label}</span>
-                </button>
-              ) : null}
+                  {RESERVATION_STATUS_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="reservation-detail__helper">
+                  Trạng thái hiện tại: {RESERVATION_STATUS_LABELS[currentState] || currentState || '--'}
+                </div>
+              </div>
 
               <button
                 type="button"
-                className="reservation-detail__action reservation-detail__action--danger"
-                disabled={!canCancel || updatingStatus}
-                onClick={() => onUpdateStatus(reservationId, 'CANCELED')}
+                className="reservation-detail__action reservation-detail__action--primary"
+                disabled={!canUpdateStatus || updatingStatus}
+                onClick={() => onUpdateStatus(reservationId, selectedStatus)}
               >
-                <IoCloseOutline />
-                <span>{updatingStatus ? 'Đang cập nhật...' : 'Hủy đặt chỗ'}</span>
+                <IoCheckmarkOutline />
+                <span>{updatingStatus ? 'Đang cập nhật...' : 'Cập nhật trạng thái'}</span>
               </button>
             </div>
 
