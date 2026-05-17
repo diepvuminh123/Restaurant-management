@@ -310,14 +310,16 @@ const CheckoutScreen = () => {
   const discountAmount = appliedPromotion?.discountAmount || 0;
   const finalAmount = totalAmount - discountAmount;
 
+  // Guard: chặn admin/sysadmin/employee vào checkout ở luồng khách hàng
+  const hasRedirectedRef = React.useRef(false);
   useEffect(() => {
+    if (hasRedirectedRef.current) return;
     if (user && (user.role === 'admin' || user.role === 'system_admin' || user.role === 'employee')) {
-      error('Tài khoản nhân viên/quản trị không thể mua hàng hay đặt món ở luồng khách hàng. Vui lòng sử dụng tài khoản khách hàng.');
-      setTimeout(() => {
-        navigate('/home', { replace: true });
-      }, 3000);
+      hasRedirectedRef.current = true;
+      navigate('/home', { replace: true });
     }
-  }, [user, navigate, error]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!canShowPromotionSuggestions) {
