@@ -3,13 +3,16 @@ import { FiDatabase, FiFileText, FiLink, FiActivity } from 'react-icons/fi';
 import './SystemDocs.css';
 
 const SystemDocs = () => {
+  const backendBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
+  const swaggerUrl = `${backendBaseUrl}/api-docs/`;
+
   const docs = [
     {
       id: 'api-docs',
       title: 'Tài liệu API (Swagger)',
       description: 'Giao diện tương tác và kiểm thử các API endpoints của hệ thống.',
       icon: <FiLink />,
-      url: 'http://localhost:5001/api-docs/',
+      url: swaggerUrl,
       isExternal: true
     },
     {
