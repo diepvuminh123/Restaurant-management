@@ -750,7 +750,7 @@ const CheckoutScreen = () => {
                     </div>
                   </div>
                   <p className="payment-note">
-                    Nội dung chuyển khoản: Mã số quý khách + số điện thoại
+                    Nội dung chuyển khoản: <strong>{customerInfo.phone} {customerInfo.name}</strong>
                   </p>
                 </div>
               )}
@@ -766,7 +766,7 @@ const CheckoutScreen = () => {
                     </div>
                   </div>
                   <p className="payment-note">
-                    Nội dung chuyển khoản: Mã số quý khách + số điện thoại
+                    Nội dung chuyển khoản: <strong>{customerInfo.phone} {customerInfo.name}</strong>
                   </p>
                 </div>
               )}
@@ -782,7 +782,7 @@ const CheckoutScreen = () => {
                     </div>
                   </div>
                   <p className="payment-note">
-                    Nội dung chuyển khoản: Mã số quý khách + số điện thoại
+                    Nội dung chuyển khoản: <strong>{customerInfo.phone} {customerInfo.name}</strong>
                   </p>
                 </div>
               )}

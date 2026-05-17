@@ -304,3 +304,447 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Deposit and Payment Status Styles */
+.payment-status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  text-align: center;
+  width: fit-content;
+}
+
+.payment-status-badge.is-unpaid {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+}
+
+.payment-status-badge.is-paid {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #dcfce7;
+}
+
+.lookup-deposit-box {
+  background: #fff8f6;
+  border: 1px solid #ffd8cd;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(194, 65, 12, 0.04);
+}
+
+.lookup-deposit-box h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #c2410c;
+}
+
+.lookup-deposit-box p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.btn-pay-deposit {
+  align-self: flex-start;
+  background: #c2410c;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(194, 65, 12, 0.2);
+}
+
+.btn-pay-deposit:hover {
+  background: #9a3412;
+  box-shadow: 0 4px 10px rgba(194, 65, 12, 0.3);
+}
+
+/* Modal Specific Overlays for Lookup Screen */
+.payment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(17, 24, 39, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease-out;
+  padding: 16px;
+}
+
+.payment-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.payment-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.payment-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.payment-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  transition: all 0.2s;
+}
+
+.payment-modal-close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.payment-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Modal Summary */
+.payment-modal-summary {
+  background: #fdf8f5;
+  border: 1px solid #f5c7ad;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.modal-summary-row strong {
+  color: #111827;
+}
+
+.modal-summary-row.highlight {
+  border-top: 1px dashed #f5c7ad;
+  padding-top: 10px;
+  margin-top: 2px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.modal-deposit-amount {
+  color: #c96f3d !important;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Payment Methods */
+.modal-payment-methods h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.modal-payment-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.modal-payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-payment-option svg {
+  font-size: 22px;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.modal-payment-option span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.modal-payment-option:hover {
+  border-color: #c96f3d;
+  background: #fafafa;
+}
+
+.modal-payment-option.active {
+  border-color: #c96f3d;
+  background: #fdf8f5;
+}
+
+.modal-payment-option.active svg {
+  color: #c96f3d;
+}
+
+.modal-payment-option.active span {
+  color: #c96f3d;
+  font-weight: 600;
+}
+
+/* Payment Details Grid */
+.modal-payment-details {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.modal-payment-info-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-row > span {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-row strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+.copyable-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-copy {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.modal-qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modal-qr-placeholder {
+  background: #ffffff;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-qr-placeholder img {
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+}
+
+.qr-guide-text {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Modal Payment Instructions */
+.modal-payment-instructions {
+  display: flex;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 12px;
+  color: #1e40af;
+  align-items: flex-start;
+}
+
+.modal-payment-instructions svg {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.modal-payment-instructions p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Modal Footer */
+.payment-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #f3f4f6;
+  background: #f9fafb;
+}
+
+.modal-messenger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0084ff;
+  border: 1px solid #0084ff;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-messenger-btn:hover {
+  background: #006bce;
+  border-color: #006bce;
+}
+
+.modal-close-btn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive adjustment for modal */
+@media (max-width: 640px) {
+  .payment-modal-content {
+    max-height: 95vh;
+  }
+  .payment-modal-body {
+    padding: 16px;
+    gap: 16px;
+  }
+  .modal-payment-options {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .modal-payment-details {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .payment-modal-footer {
+    flex-direction: column;
+    padding: 12px 16px;
+  }
+  .payment-modal-footer button {
+    width: 100%;
+  }
+}

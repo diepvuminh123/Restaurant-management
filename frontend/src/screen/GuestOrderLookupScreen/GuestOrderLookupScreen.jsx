@@ -1,11 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { IoSearchOutline } from "react-icons/io5";
+import { 
+  IoSearchOutline,
+  IoCloseOutline,
+  IoCopyOutline,
+  IoCardOutline,
+  IoBusiness,
+  IoLogoUsd,
+  IoChatbubbleEllipsesOutline,
+  IoInformationCircleOutline 
+} from "react-icons/io5";
 import ApiService from "../../services/apiService";
 import useOrderSSE from "../../hooks/useOrderSSE";
 import "./GuestOrderLookupScreen.css";
 import BackButton from "../../component/BackButton/BackButton";
 import { useTranslation } from 'react-i18next';
+import zaloQR from "../../picture/zalo.jpg";
 
 const getStatusLabelMap = (t) => ({
   PENDING: t('orderLookup.status.pending'),
@@ -62,6 +72,9 @@ const GuestOrderLookupScreen = () => {
   const [errorText, setErrorText] = useState("");
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [modalPaymentMethod, setModalPaymentMethod] = useState('zalopay');
+  const [copiedField, setCopiedField] = useState('');
   const [offset, setOffset] = useState(0);
   const [pagination, setPagination] = useState({
     limit: PAGE_LIMIT,
@@ -69,6 +82,12 @@ const GuestOrderLookupScreen = () => {
     total: 0,
     hasNext: false,
   });
+
+  const handleCopy = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(''), 2000);
+  };
 
   // SSE Real-time updates
   useOrderSSE({
@@ -305,7 +324,35 @@ const GuestOrderLookupScreen = () => {
                   <strong>
                     {formatCurrency(selectedOrder.deposit_amount, locale)}đ
                   </strong>
+
+                  <span>{locale === 'en' ? 'Deposit Status:' : 'Trạng thái cọc:'}</span>
+                  <strong className={`payment-status-badge ${selectedOrder.payment_status === 'DEPOSIT_PAID' || selectedOrder.payment_status === 'PAID' ? 'is-paid' : 'is-unpaid'}`}>
+                    {selectedOrder.payment_status === 'UNPAID' && (locale === 'en' ? 'Unpaid' : 'Chưa cọc')}
+                    {selectedOrder.payment_status === 'DEPOSIT_PAID' && (locale === 'en' ? 'Deposit Paid' : 'Đã cọc')}
+                    {selectedOrder.payment_status === 'PAID' && (locale === 'en' ? 'Fully Paid' : 'Đã thanh toán')}
+                    {selectedOrder.payment_status === 'REFUNDED' && (locale === 'en' ? 'Refunded' : 'Đã hoàn cọc')}
+                  </strong>
                 </div>
+
+                {selectedOrder.payment_status === 'UNPAID' && selectedOrder.status !== 'CANCELED' && (
+                  <div className="lookup-deposit-box">
+                    <h4>
+                      {locale === 'en' ? 'Deposit Payment Required' : 'Yêu cầu thanh toán cọc'}
+                    </h4>
+                    <p>
+                      {locale === 'en' 
+                        ? `This order requires a 50% deposit (${formatCurrency(selectedOrder.deposit_amount, locale)}đ). After transferring, please send a screenshot of the transaction via Messenger for confirmation.`
+                        : `Đơn hàng này yêu cầu cọc trước 50% giá trị (${formatCurrency(selectedOrder.deposit_amount, locale)}đ). Sau khi chuyển khoản, vui lòng gửi ảnh bill qua Messenger để nhà hàng xác nhận.`}
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-pay-deposit"
+                      onClick={() => setShowPaymentModal(true)}
+                    >
+                      {locale === 'en' ? 'Proceed with Deposit' : 'Tiến hành cọc'}
+                    </button>
+                  </div>
+                )}
 
                 <div className="detail-items">
                   <h3>{t('orderLookup.itemsTitle')}</h3>
@@ -343,6 +390,212 @@ const GuestOrderLookupScreen = () => {
               </>
             )}
           </section>
+        </div>
+      )}
+
+      {showPaymentModal && selectedOrder && (
+        <div className="payment-modal-overlay" onClick={() => setShowPaymentModal(false)}>
+          <div className="payment-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="payment-modal-header">
+              <h3>{locale === 'en' ? 'Deposit Payment 50%' : 'Thanh toán cọc 50%'}</h3>
+              <button type="button" className="payment-modal-close" onClick={() => setShowPaymentModal(false)}>
+                <IoCloseOutline />
+              </button>
+            </div>
+            
+            <div className="payment-modal-body">
+              <div className="payment-modal-summary">
+                <div className="modal-summary-row">
+                  <span>{locale === 'en' ? 'Order Code:' : 'Mã đơn hàng:'}</span>
+                  <strong>{selectedOrder.order_code || `#${selectedOrder.id}`}</strong>
+                </div>
+                <div className="modal-summary-row">
+                  <span>{locale === 'en' ? 'Total Amount:' : 'Tổng tiền đơn:'}</span>
+                  <span>{formatCurrency(selectedOrder.final_amount, locale)}đ</span>
+                </div>
+                <div className="modal-summary-row highlight">
+                  <span>{locale === 'en' ? 'Deposit Required (50%):' : 'Số tiền cần cọc (50%):'}</span>
+                  <strong className="modal-deposit-amount">{formatCurrency(selectedOrder.deposit_amount, locale)}đ</strong>
+                </div>
+              </div>
+
+              <div className="modal-payment-methods">
+                <h4>{locale === 'en' ? 'Select Payment Method' : 'Chọn phương thức thanh toán'}</h4>
+                <div className="modal-payment-options">
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'zalopay' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('zalopay')}
+                  >
+                    <IoCardOutline />
+                    <span>ZaloPay</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'acb' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('acb')}
+                  >
+                    <IoBusiness />
+                    <span>Ngân hàng ACB</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'vietcombank' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('vietcombank')}
+                  >
+                    <IoLogoUsd />
+                    <span>Vietcombank</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="modal-payment-details">
+                <div className="modal-payment-info-box">
+                  {modalPaymentMethod === 'zalopay' && (
+                    <>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Wallet:' : 'Ví điện tử:'}</span>
+                        <strong>ZaloPay</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Phone Number:' : 'Số điện thoại:'}</span>
+                        <div className="copyable-value">
+                          <strong>0915728661</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('0915728661', 'phone')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'phone' ? (locale === 'en' ? 'Copied' : 'Đã chép') : (locale === 'en' ? 'Copy' : 'Sao chép')}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Account Holder:' : 'Chủ tài khoản:'}</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  {modalPaymentMethod === 'acb' && (
+                    <>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Bank:' : 'Ngân hàng:'}</span>
+                        <strong>ACB (Ngân hàng TMCP Á Châu)</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Account Number:' : 'Số tài khoản:'}</span>
+                        <div className="copyable-value">
+                          <strong>10427847</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('10427847', 'account')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'account' ? (locale === 'en' ? 'Copied' : 'Đã chép') : (locale === 'en' ? 'Copy' : 'Sao chép')}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Account Holder:' : 'Chủ tài khoản:'}</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  {modalPaymentMethod === 'vietcombank' && (
+                    <>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Bank:' : 'Ngân hàng:'}</span>
+                        <strong>Vietcombank (Ngoại thương VN)</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Account Number:' : 'Số tài khoản:'}</span>
+                        <div className="copyable-value">
+                          <strong>10182749372</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('10182749372', 'account')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'account' ? (locale === 'en' ? 'Copied' : 'Đã chép') : (locale === 'en' ? 'Copy' : 'Sao chép')}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>{locale === 'en' ? 'Account Holder:' : 'Chủ tài khoản:'}</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="info-row">
+                    <span>{locale === 'en' ? 'Deposit Amount:' : 'Số tiền cọc:'}</span>
+                    <div className="copyable-value">
+                      <strong>{formatCurrency(selectedOrder.deposit_amount, locale)}đ</strong>
+                      <button 
+                        type="button"
+                        className="btn-copy" 
+                        onClick={() => handleCopy(selectedOrder.deposit_amount.toString(), 'amount')}
+                      >
+                        <IoCopyOutline /> {copiedField === 'amount' ? (locale === 'en' ? 'Copied' : 'Đã chép') : (locale === 'en' ? 'Copy' : 'Sao chép')}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="info-row">
+                    <span>{locale === 'en' ? 'Transfer Note:' : 'Nội dung CK:'}</span>
+                    <div className="copyable-value">
+                      <strong>{`${selectedOrder.order_code || `#${selectedOrder.id}`} ${selectedOrder.customer_phone || ''}`.trim()}</strong>
+                      <button 
+                        type="button"
+                        className="btn-copy" 
+                        onClick={() => handleCopy(`${selectedOrder.order_code || `#${selectedOrder.id}`} ${selectedOrder.customer_phone || ''}`.trim(), 'content')}
+                      >
+                        <IoCopyOutline /> {copiedField === 'content' ? (locale === 'en' ? 'Copied' : 'Đã chép') : (locale === 'en' ? 'Copy' : 'Sao chép')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-qr-container">
+                  <div className="modal-qr-placeholder">
+                    <img src={zaloQR} alt="QR Code" />
+                  </div>
+                  <p className="qr-guide-text">{locale === 'en' ? 'Scan QR Code for fast payment' : 'Quét mã QR để chuyển khoản nhanh chóng'}</p>
+                </div>
+              </div>
+
+              <div className="modal-payment-instructions">
+                <IoInformationCircleOutline />
+                <p>
+                  {locale === 'en'
+                    ? "After successful transfer, please screenshot the transaction and send it via Messenger for the restaurant to confirm your deposit as soon as possible."
+                    : "Sau khi chuyển khoản thành công, vui lòng chụp màn hình giao dịch và gửi qua Messenger để nhà hàng đối chiếu và xác nhận trạng thái cọc sớm nhất."}
+                </p>
+              </div>
+            </div>
+
+            <div className="payment-modal-footer">
+              <button 
+                type="button" 
+                className="modal-messenger-btn"
+                onClick={() => {
+                  window.open('https://m.me/yourpage', '_blank');
+                }}
+              >
+                <IoChatbubbleEllipsesOutline />
+                <span>{locale === 'en' ? 'Send bill via Messenger' : 'Gửi bill qua Messenger'}</span>
+              </button>
+              <button 
+                type="button" 
+                className="modal-close-btn"
+                onClick={() => setShowPaymentModal(false)}
+              >
+                {locale === 'en' ? 'Close' : 'Đóng'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
