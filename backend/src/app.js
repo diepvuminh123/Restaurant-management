@@ -55,6 +55,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/orders', sseRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', cartRoutes);
 app.use('/api', reservationRoutes);
@@ -65,7 +66,6 @@ app.use('/api', reviewRoutes);
 app.use('/api', promotionRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/stats', statsRoutes);
-app.use('/api/orders', sseRoutes);
 
 
 // Error Handler
