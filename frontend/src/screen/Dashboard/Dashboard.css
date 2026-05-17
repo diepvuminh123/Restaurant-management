@@ -50,6 +50,7 @@
 
 .stat-icon.total-orders,
 .stat-icon.total-customers,
+.stat-icon.total-reservations,
 .stat-icon.total-revenue {
     background-color: #D06F35;
 }

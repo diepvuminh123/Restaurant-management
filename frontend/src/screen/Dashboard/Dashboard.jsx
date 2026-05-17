@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import ApiService from '../../services/apiService';
 import './Dashboard.css';
-import { FiTrendingUp, FiUsers, FiDollarSign, FiShoppingBag } from 'react-icons/fi';
+import { FiTrendingUp, FiUsers, FiDollarSign, FiShoppingBag, FiCalendar } from 'react-icons/fi';
 
 const Dashboard = () => {
     const [dashboardData, setDashboardData] = useState({
         totalOrders: 0,
+        totalReservations: 0,
         totalCustomers: 0,
         totalRevenue: 0,
         topDishes: [],
@@ -84,6 +85,19 @@ const Dashboard = () => {
                         <h3>{dashboardData.totalCustomers.toLocaleString()}</h3>
                         <span className="stat-change">
                             <FiTrendingUp /> 0.42%
+                        </span>
+                    </div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-icon total-reservations">
+                        <FiCalendar />
+                    </div>
+                    <div className="stat-content">
+                        <p className="stat-label">Tổng đặt bàn</p>
+                        <h3>{dashboardData.totalReservations.toLocaleString()}</h3>
+                        <span className="stat-change positive">
+                            <FiTrendingUp /> Theo bộ lọc thời gian
                         </span>
                     </div>
                 </div>
