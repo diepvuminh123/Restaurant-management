@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
+const tableRoutes = require('./routes/tableRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userAdminRoutes = require('./routes/userAdminRoutes');
 const restaurantInfoRoutes = require('./routes/restaurantInfoRoutes');
@@ -57,6 +58,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 app.use('/api/auth', authRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', cartRoutes);
+app.use('/api', tableRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', userAdminRoutes);

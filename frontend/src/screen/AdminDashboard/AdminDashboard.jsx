@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminHeader from '../../component/AdminHeader/AdminHeader';
 import AdminSidebar from '../../component/AdminSidebar/AdminSidebar';
@@ -10,6 +11,7 @@ import PromotionManagement from '../PromotionManagement/PromotionManagement';
 import FAQManagement from './FAQManagement/FAQManagement';
 import Dashboard from '../Dashboard/Dashboard';
 import SystemDocs from '../SystemDocs/SystemDocs';
+import TableManagement from '../TableManagement/TableManagement';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -58,6 +60,13 @@ const AdminDashboard = ({ user, onLogout }) => {
                 <Navigate to={homeRedirectPath} replace />
               )
             } />
+            <Route path="tables" element={
+              user.role === 'admin' ? (
+                <TableManagement />
+              ) : (
+                <Navigate to={homeRedirectPath} replace />
+              )
+            } />
             <Route path="users" element={
               (user.role === 'admin' || user.role === 'system_admin') ? (
                 <UserManagement currentUser={user} />
@@ -99,6 +108,14 @@ const AdminDashboard = ({ user, onLogout }) => {
       </div>
     </div>
   );
+};
+
+AdminDashboard.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+    username: PropTypes.string,
+  }).isRequired,
+  onLogout: PropTypes.func.isRequired,
 };
 
 export default AdminDashboard;
