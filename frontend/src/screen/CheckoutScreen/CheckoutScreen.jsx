@@ -311,15 +311,11 @@ const CheckoutScreen = () => {
   const finalAmount = totalAmount - discountAmount;
 
   // Guard: chặn admin/sysadmin/employee vào checkout ở luồng khách hàng
-  const hasRedirectedRef = React.useRef(false);
   useEffect(() => {
-    if (hasRedirectedRef.current) return;
     if (user && (user.role === 'admin' || user.role === 'system_admin' || user.role === 'employee')) {
-      hasRedirectedRef.current = true;
       navigate('/home', { replace: true });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user, navigate]);
 
   useEffect(() => {
     if (!canShowPromotionSuggestions) {
