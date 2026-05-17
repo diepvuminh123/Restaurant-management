@@ -17,7 +17,7 @@ const SystemDocs = () => {
       title: 'Database Diagram',
       description: 'Sơ đồ thiết kế cơ sở dữ liệu (ERD) và các ràng buộc toàn hệ thống.',
       icon: <FiDatabase />,
-      url: 'https://dbdiagram.io/d/Student-Management-6a029dc67a923b947285975a',
+      url: 'https://dbdiagram.io/d/Quan-ly-nha-hang-69255c95228c5bbc1a6029c3',
       isExternal: true
     },
     {

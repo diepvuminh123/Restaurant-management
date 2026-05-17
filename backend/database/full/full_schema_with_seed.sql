@@ -49,7 +49,8 @@ EXECUTE FUNCTION update_updated_at_column();
 INSERT INTO users (username, email, password_hash, full_name, phone, role, is_verified) VALUES
 ('admin', 'admin@restaurant.com', '$2b$10$IbRdLnf18kladI864Dyk/.lUezampkbOUkSyHks5/ThLhg5LtdYyW', 'System Admin', '0123456789', 'admin', true),
 ('employee', 'employee@restaurant.com', '$2b$10$F481bcK6XJmc4CmdNHxUku27BqAjYQDEChzgICX0QbfQicZpJNMx6', 'Staff Member', '0987654321', 'employee', true),
-('customer', 'customer@restaurant.com', '$2b$10$vuVExtkBSrWSLMoDB9nKg.lQGm.dlu/kk7hVNDirXKckjaIhgleb.', 'Test Customer', '0369852147', 'customer', true)
+('customer', 'customer@restaurant.com', '$2b$10$vuVExtkBSrWSLMoDB9nKg.lQGm.dlu/kk7hVNDirXKckjaIhgleb.', 'Test Customer', '0369852147', 'customer', true),
+('sysadmin', 'sysadmin@restaurant.com', '$2b$10$A22Dna1u.whmK1tOR2Ao0uo..fKnbN14bdFuJ6LdqEp/o2sdj3mTy', 'System Administrator', '0999999999', 'system_admin', true)
 ON CONFLICT (username) DO NOTHING;
 
 -- ===== END auth_schema_clean.sql =====
