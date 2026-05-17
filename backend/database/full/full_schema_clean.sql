@@ -273,6 +273,8 @@ CREATE TABLE orders (
     user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
     session_id VARCHAR(255),
     cart_id INT NOT NULL UNIQUE REFERENCES carts(id) ON DELETE RESTRICT,
+    promotion_id INT REFERENCES promotions(id) ON DELETE SET NULL,
+    promotion_code VARCHAR(50),
     status VARCHAR(30) NOT NULL DEFAULT 'PENDING' 
         CHECK (status IN ('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELED')),
     payment_status VARCHAR(20) NOT NULL DEFAULT 'UNPAID'
@@ -303,6 +305,7 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX idx_orders_pickup_time ON orders(pickup_time);
 CREATE INDEX idx_orders_created_at ON orders(created_at);
+CREATE INDEX idx_orders_promotion_id ON orders(promotion_id);
 
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
