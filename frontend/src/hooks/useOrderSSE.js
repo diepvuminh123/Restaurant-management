@@ -6,15 +6,27 @@ import { useEffect, useRef } from 'react';
  */
 const useOrderSSE = (callbacks = {}) => {
   const eventSourceRef = useRef(null);
-  const { onNewOrder, onStatusUpdate } = callbacks;
 
+  // Dùng ref để lưu callbacks → tránh effect bị re-run khi parent re-render
+  const onNewOrderRef = useRef(callbacks.onNewOrder);
+  const onStatusUpdateRef = useRef(callbacks.onStatusUpdate);
+
+  // Cập nhật ref mỗi khi callbacks thay đổi (không gây re-mount SSE)
+  useEffect(() => {
+    onNewOrderRef.current = callbacks.onNewOrder;
+  }, [callbacks.onNewOrder]);
+
+  useEffect(() => {
+    onStatusUpdateRef.current = callbacks.onStatusUpdate;
+  }, [callbacks.onStatusUpdate]);
+
+  // Chỉ mount SSE 1 lần duy nhất khi component được gắn vào DOM
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
     const streamUrl = `${apiUrl}/api/orders/stream`;
 
     console.log('[SSE] Connecting to:', streamUrl);
 
-    // Khởi tạo EventSource với credentials để gửi kèm session cookie
     const es = new EventSource(streamUrl, { withCredentials: true });
     eventSourceRef.current = es;
 
@@ -27,7 +39,7 @@ const useOrderSSE = (callbacks = {}) => {
       try {
         const data = JSON.parse(event.data);
         console.log('[SSE] New Order received:', data);
-        if (onNewOrder) onNewOrder(data);
+        if (onNewOrderRef.current) onNewOrderRef.current(data);
       } catch (err) {
         console.error('[SSE] Error parsing NEW_ORDER data:', err);
       }
@@ -38,7 +50,7 @@ const useOrderSSE = (callbacks = {}) => {
       try {
         const data = JSON.parse(event.data);
         console.log('[SSE] Order Status Update:', data);
-        if (onStatusUpdate) onStatusUpdate(data);
+        if (onStatusUpdateRef.current) onStatusUpdateRef.current(data);
       } catch (err) {
         console.error('[SSE] Error parsing ORDER_STATUS_UPDATED data:', err);
       }
@@ -51,11 +63,10 @@ const useOrderSSE = (callbacks = {}) => {
 
     return () => {
       console.log('[SSE] Closing connection');
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      es.close();
+      eventSourceRef.current = null;
     };
-  }, [onNewOrder, onStatusUpdate]);
+  }, []); // ← [] = chỉ chạy 1 lần, không phụ thuộc vào callbacks
 
   return eventSourceRef.current;
 };

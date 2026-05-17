@@ -4,13 +4,16 @@ const sseService = require('../services/sseService');
  * Xử lý kết nối SSE cho đơn hàng
  */
 exports.setupOrderStream = (req, res) => {
-  // Thiết lập headers cho SSE
+
   // Không set CORS header thủ công ở đây — đã được xử lý bởi CORS middleware trong app.js
   res.setHeader('Content-Type', 'text/event-stream');
+  // Không cache
   res.setHeader('Cache-Control', 'no-cache');
+  // Cho phép kết nối lâu dài
   res.setHeader('Connection', 'keep-alive');
   // Tắt buffering trên Nginx/Render proxy để SSE hoạt động đúng
   res.setHeader('X-Accel-Buffering', 'no');
+  // Đẩy response ra ngay lập tức
   res.flushHeaders();
 
   // Thông tin user từ session
