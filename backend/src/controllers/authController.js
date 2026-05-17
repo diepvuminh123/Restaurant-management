@@ -1,4 +1,5 @@
 const AuthService = require("../services/authService");
+const CartService = require("../services/cartService");
 
 class AuthController {
   /**
@@ -99,9 +100,17 @@ class AuthController {
       const user = await AuthService.login(email, password);
 
       // Lưu thông tin vào session
+      const guestSessionId = req.sessionID;
       req.session.userId = user.user_id;
       req.session.username = user.username;
       req.session.userRole = user.role;
+
+      // Chuyển giỏ hàng từ guest sang user (nếu có)
+      try {
+        await CartService.migrateGuestCart(guestSessionId, user.user_id);
+      } catch (err) {
+        console.error("Lỗi khi migrate giỏ hàng:", err);
+      }
 
       res.json({
         success: true,
