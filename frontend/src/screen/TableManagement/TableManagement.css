@@ -154,252 +154,57 @@
 }
 
 .table-management__table-wrap {
-  padding: 18px;
+  overflow: auto;
 }
 
-.table-management__map-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.table-management__map-header h2 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-}
-
-.table-management__map-header p {
-  margin: 6px 0 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.table-management__map-layout {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 12px 18px;
-  align-items: start;
-}
-
-.table-management__map-corner {
-  min-height: 1px;
-}
-
-.table-management__column-axis {
-  display: grid;
-  gap: 22px 26px;
-}
-
-.table-management__row-axis {
-  display: grid;
-  gap: 22px 0;
-}
-
-.table-management__axis-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #f8f2ed;
-  color: #8d4d2b;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.table-management__axis-label--column {
-  min-height: 38px;
-}
-
-.table-management__axis-label--row {
-  min-height: 92px;
-  padding: 0 10px;
-}
-
-.table-management__map-grid {
-  display: grid;
-  gap: 22px 26px;
-  justify-items: center;
-  align-items: stretch;
-  padding: 8px 0 12px;
-  min-height: 220px;
-}
-
-.table-management__map-cell {
+.table-admin-table {
   width: 100%;
-  min-height: 92px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  border-collapse: collapse;
+  min-width: 980px;
 }
 
-.table-management__map-cell--empty {
-  border: 1px dashed #e5d4c8;
-  border-radius: 14px;
-  background: #fcfaf8;
+.table-admin-table th,
+.table-admin-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #f1f3f6;
+  font-size: 14px;
+  vertical-align: top;
 }
 
-.table-management__map-cell--duplicate {
-  padding: 8px 0;
-}
-
-.table-management__empty-slot {
+.table-admin-table th {
+  background: #fafbfc;
+  color: #4f555d;
   font-size: 13px;
   font-weight: 600;
-  color: #b08972;
 }
 
-.table-management__duplicate-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #fde7db;
-  color: #9a3412;
-  font-size: 12px;
+.table-admin-table__main {
+  margin: 0;
   font-weight: 600;
+  color: #1f2937;
 }
 
-.table-management__table-box {
-  appearance: none;
-  background: #ffffff;
-  border: 2px solid #d06835;
-  border-radius: 14px;
-  width: 92px;
-  height: 70px;
-  padding: 8px 10px;
+.table-admin-table__sub {
+  margin: 4px 0 0;
+  color: #7a838e;
+  font-size: 13px;
+}
+
+.table-admin-table__note {
+  white-space: normal;
+  max-width: 260px;
+}
+
+.table-admin-table__actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  font: inherit;
-  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease, color 0.12s ease;
-}
-
-.table-management__table-box.available:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.table-management__table-box:focus-visible {
-  outline: 3px solid #d06835;
-  outline-offset: 2px;
-}
-
-.table-management__table-box.booked {
-  background: #e9ecef;
-  border-color: #e9ecef;
-  color: #495057;
-}
-
-.table-management__table-box.booked:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.table-management__table-box.selected {
-  background: #7c2d12;
-  border-color: #7c2d12;
-  color: #fff;
-}
-
-.table-management__table-box-id {
-  font-weight: 700;
-}
-
-.table-management__table-box-seats {
-  font-size: 12px;
-  color: #495057;
-}
-
-.table-management__table-box.booked .table-management__table-box-seats,
-.table-management__table-box.booked .table-management__table-box-status {
-  color: #495057;
-}
-
-.table-management__table-box.selected .table-management__table-box-seats,
-.table-management__table-box.selected .table-management__table-box-status {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.table-management__table-box-status {
-  font-size: 12px;
-  color: #495057;
+  gap: 8px;
 }
 
 .table-management__placeholder {
   padding: 28px;
   margin: 0;
   color: #6b7280;
-}
-
-.table-management__selection-notice {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 16px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: #f7efe9;
-  color: #2b1a12;
-  font-weight: 600;
-}
-
-.table-management__selection-hint {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 16px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: #f8f9fa;
-  color: #495057;
-}
-
-.table-management__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  justify-content: flex-start;
-  color: #495057;
-  font-size: 13px;
-  margin-top: 14px;
-}
-
-.table-management__legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.table-management__legend-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 6px;
-  display: inline-block;
-}
-
-.table-management__legend-dot--available {
-  background: #ffffff;
-  border: 2px solid #d06835;
-}
-
-.table-management__legend-dot--selected {
-  background: #d06835;
-  border: 2px solid #d06835;
-}
-
-.table-management__legend-dot--booked {
-  background: #e9ecef;
-  border: 2px solid #e9ecef;
 }
 
 .btn {
@@ -421,7 +226,7 @@
 
 .btn--primary {
   background: #e36a2d;
-  color: #2b1a12;
+  color: #fff;
 }
 
 .btn--primary:hover:not(:disabled) {
@@ -487,38 +292,15 @@
     grid-template-columns: 1fr;
   }
 
-  .table-management__map-layout {
-    grid-template-columns: 64px minmax(0, 1fr);
-    gap: 10px 12px;
-  }
-
-  .table-management__column-axis,
-  .table-management__map-grid {
-    gap: 16px 14px;
-  }
-
-  .table-management__row-axis {
-    gap: 16px 0;
-  }
-
-  .table-management__axis-label {
-    font-size: 12px;
-  }
-
-  .table-management__axis-label--row {
-    min-height: 84px;
-    padding: 0 6px;
-  }
-
-  .table-management__map-cell {
-    min-height: 84px;
-  }
-
   .table-management__header,
   .table-management__modal-header,
   .table-management__editor-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .table-admin-table__actions {
+    flex-wrap: wrap;
   }
 
   .table-management__modal-overlay {
@@ -527,10 +309,5 @@
 
   .table-management__modal {
     padding: 16px;
-  }
-
-  .table-management__map-grid {
-    grid-template-columns: repeat(3, minmax(88px, 1fr)) !important;
-    gap: 18px 18px;
   }
 }

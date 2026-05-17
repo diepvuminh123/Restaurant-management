@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   IoAdd,
+  IoCreateOutline,
   IoSearchOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -29,6 +29,11 @@ const formatTableLabel = (tableId) => {
   return Number.isFinite(number) ? `B${String(number).padStart(2, '0')}` : String(tableId);
 };
 
+const formatPlacementValue = (value) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number + 1 : '--';
+};
+
 const getStatusMeta = (status) => {
   switch (status) {
     case 'RESERVED':
@@ -40,18 +45,6 @@ const getStatusMeta = (status) => {
   }
 };
 
-const getAdminTableVisualState = (isSelected, tableStatus) => {
-  if (isSelected) {
-    return 'selected';
-  }
-
-  if (tableStatus === 'AVAILABLE') {
-    return 'available';
-  }
-
-  return 'booked';
-};
-
 const mapTableToForm = (table) => ({
   capacity: String(table.capacity ?? ''),
   table_status: String(table.table_status || 'AVAILABLE'),
@@ -59,35 +52,6 @@ const mapTableToForm = (table) => ({
   position_y: String(table.position_y ?? 0),
   restaurant_note: table.restaurant_note || '',
 });
-
-const AdminTableBox = ({ table, editingTableId, onEditTable }) => {
-  const statusMeta = getStatusMeta(table.table_status);
-  const isSelected = editingTableId === table.table_id;
-  const visualState = getAdminTableVisualState(isSelected, table.table_status);
-
-  return (
-    <button
-      type="button"
-      className={`table-management__table-box ${visualState}`}
-      onClick={() => onEditTable(table)}
-      aria-pressed={isSelected}
-    >
-      <span className="table-management__table-box-id">{formatTableLabel(table.table_id)}</span>
-      <span className="table-management__table-box-seats">{table.capacity} chỗ</span>
-      <span className="table-management__table-box-status">{statusMeta.label}</span>
-    </button>
-  );
-};
-
-AdminTableBox.propTypes = {
-  table: PropTypes.shape({
-    table_id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    capacity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    table_status: PropTypes.string,
-  }).isRequired,
-  editingTableId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  onEditTable: PropTypes.func.isRequired,
-};
 
 const TableManagement = () => {
   const toast = useToastContext();
@@ -155,80 +119,6 @@ const TableManagement = () => {
     () => tables.find((table) => table.table_id === editingTableId) || null,
     [editingTableId, tables]
   );
-
-  const duplicatePositionInfo = useMemo(() => {
-    const positionMap = new Map();
-
-    filteredTables.forEach((table) => {
-      const key = `${table.position_x}:${table.position_y}`;
-      const existing = positionMap.get(key) || [];
-      existing.push(table);
-      positionMap.set(key, existing);
-    });
-
-    const duplicateGroups = Array.from(positionMap.values()).filter((group) => group.length > 1);
-    const duplicateTableIds = new Set(duplicateGroups.flat().map((table) => table.table_id));
-    const groupedPositions = Array.from(positionMap.entries()).map(([key, group]) => {
-      const [positionX, positionY] = key.split(':').map((value) => Number(value || 0));
-
-      return {
-        key,
-        positionX,
-        positionY,
-        tables: group,
-      };
-    });
-
-    const uniqueColumns = [...new Set(groupedPositions.map((group) => group.positionX))].sort((left, right) => left - right);
-    const uniqueRows = [...new Set(groupedPositions.map((group) => group.positionY))].sort((left, right) => left - right);
-    const columnIndexMap = new Map(uniqueColumns.map((value, index) => [value, index + 1]));
-    const rowIndexMap = new Map(uniqueRows.map((value, index) => [value, index + 1]));
-
-    const normalizedGroups = groupedPositions.map((group) => ({
-      ...group,
-      gridColumn: columnIndexMap.get(group.positionX) || 1,
-      gridRow: rowIndexMap.get(group.positionY) || 1,
-      displayColumn: columnIndexMap.get(group.positionX) || 1,
-      displayRow: rowIndexMap.get(group.positionY) || 1,
-    }));
-
-    return {
-      duplicateGroups,
-      duplicateTableIds,
-      groupedPositions: normalizedGroups,
-      columnCount: uniqueColumns.length,
-      rowCount: uniqueRows.length,
-    };
-  }, [filteredTables]);
-
-  const gridSize = useMemo(() => {
-    return {
-      columns: Math.max(duplicatePositionInfo.columnCount || 0, 4),
-      rows: Math.max(duplicatePositionInfo.rowCount || 0, 3),
-    };
-  }, [duplicatePositionInfo.columnCount, duplicatePositionInfo.rowCount]);
-
-  const mapCells = useMemo(() => {
-    const positionMap = new Map(
-      duplicatePositionInfo.groupedPositions.map((group) => [`${group.displayRow}:${group.displayColumn}`, group])
-    );
-
-    const cells = [];
-
-    for (let row = 1; row <= gridSize.rows; row += 1) {
-      for (let column = 1; column <= gridSize.columns; column += 1) {
-        const group = positionMap.get(`${row}:${column}`) || null;
-        cells.push({
-          key: `${row}:${column}`,
-          row,
-          column,
-          tables: group ? [...group.tables].sort((left, right) => Number(left.table_id) - Number(right.table_id)) : [],
-        });
-      }
-    }
-
-    return cells;
-  }, [duplicatePositionInfo.groupedPositions, gridSize.columns, gridSize.rows]);
 
   const handleResetForm = () => {
     setEditingTableId(null);
@@ -315,9 +205,9 @@ const TableManagement = () => {
     setActiveFilters({ ...draftFilters });
   };
 
-  const mapContent = (() => {
+  const tableContent = (() => {
     if (loading) {
-      return <p className="table-management__placeholder">Đang tải sơ đồ bàn...</p>;
+      return <p className="table-management__placeholder">Đang tải danh sách bàn...</p>;
     }
 
     if (filteredTables.length === 0) {
@@ -325,84 +215,63 @@ const TableManagement = () => {
     }
 
     return (
-      <div className="table-management__map-layout">
-        <div className="table-management__map-corner" aria-hidden="true" />
-
-        <div
-          className="table-management__column-axis"
-          style={{ gridTemplateColumns: `repeat(${gridSize.columns}, minmax(90px, 1fr))` }}
-        >
-          {Array.from({ length: gridSize.columns }, (_, index) => (
-            <span key={`column-${index + 1}`} className="table-management__axis-label table-management__axis-label--column">
-              Cột {index + 1}
-            </span>
-          ))}
-        </div>
-
-        <div
-          className="table-management__row-axis"
-          style={{ gridTemplateRows: `repeat(${gridSize.rows}, minmax(92px, auto))` }}
-        >
-          {Array.from({ length: gridSize.rows }, (_, index) => (
-            <span key={`row-${index + 1}`} className="table-management__axis-label table-management__axis-label--row">
-              Hàng {index + 1}
-            </span>
-          ))}
-        </div>
-
-        <div
-          className="table-management__map-grid"
-          style={{
-            gridTemplateColumns: `repeat(${gridSize.columns}, minmax(90px, 1fr))`,
-            gridTemplateRows: `repeat(${gridSize.rows}, minmax(92px, auto))`,
-          }}
-        >
-          {mapCells.map((cell) => {
-            const hasMultipleTables = cell.tables.length > 1;
+      <table className="table-admin-table">
+        <thead>
+          <tr>
+            <th>Bàn</th>
+            <th>Sức chứa</th>
+            <th>Trạng thái</th>
+            <th>Vị trí</th>
+            <th>Ghi chú</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredTables.map((table) => {
+            const statusMeta = getStatusMeta(table.table_status);
 
             return (
-              <div
-                key={cell.key}
-                className={`table-management__map-cell ${cell.tables.length === 0 ? 'table-management__map-cell--empty' : ''} ${hasMultipleTables ? 'table-management__map-cell--duplicate' : ''}`}
-              >
-                {cell.tables.length > 0 ? (
-                  <>
-                    {cell.tables.map((table) => (
-                      <AdminTableBox
-                        key={table.table_id}
-                        table={table}
-                        editingTableId={editingTableId}
-                        onEditTable={handleEditTable}
-                      />
-                    ))}
-                    {hasMultipleTables && (
-                      <span className="table-management__duplicate-chip">{cell.tables.length} bàn</span>
-                    )}
-                  </>
-                ) : (
-                  <span className="table-management__empty-slot">Trống</span>
-                )}
-              </div>
+              <tr key={table.table_id}>
+                <td>
+                  <p className="table-admin-table__main">{formatTableLabel(table.table_id)}</p>
+                  <p className="table-admin-table__sub">Mã bàn #{table.table_id}</p>
+                </td>
+                <td>{table.capacity} chỗ</td>
+                <td>
+                  <span className={`pill pill--${statusMeta.className}`}>
+                    {statusMeta.label}
+                  </span>
+                </td>
+                <td>
+                  <p className="table-admin-table__main">Cột {formatPlacementValue(table.position_x)}</p>
+                  <p className="table-admin-table__sub">Hàng {formatPlacementValue(table.position_y)}</p>
+                </td>
+                <td>
+                  <p className="table-admin-table__sub table-admin-table__note">{table.restaurant_note || '--'}</p>
+                </td>
+                <td>
+                  <div className="table-admin-table__actions">
+                    <button type="button" className="btn btn--ghost btn--mini" onClick={() => handleEditTable(table)}>
+                      <IoCreateOutline />
+                      Sửa
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--danger btn--mini"
+                      onClick={() => handleDeleteTable(table)}
+                    >
+                      <IoTrashOutline />
+                      Xóa
+                    </button>
+                  </div>
+                </td>
+              </tr>
             );
           })}
-        </div>
-      </div>
+        </tbody>
+      </table>
     );
   })();
-
-  let selectionBlock = (
-    <div className="table-management__selection-hint">
-      Chọn bàn phù hợp với nhu cầu quản lý của bạn.
-    </div>
-  );
-
-  if (currentEditingTable) {
-    selectionBlock = (
-      <output className="table-management__selection-notice" aria-live="polite">
-        Đang chỉnh {formatTableLabel(currentEditingTable.table_id)} • {currentEditingTable.capacity} chỗ.
-      </output>
-    );
-  }
 
   let submitLabel = 'Tạo bàn';
   if (submitting) {
@@ -454,22 +323,7 @@ const TableManagement = () => {
       </section>
 
       <section className="table-management__table-wrap">
-        <div className="table-management__map-header">
-          <div>
-            <h2>Sơ đồ bàn</h2>
-            <p>Chọn bàn phù hợp với yêu cầu của bạn</p>
-          </div>
-        </div>
-
-        {mapContent}
-
-        {selectionBlock}
-
-        <div className="table-management__legend" aria-label="Chú thích trạng thái bàn">
-          <span><span className="table-management__legend-dot table-management__legend-dot--available" /> Trống</span>
-          <span><span className="table-management__legend-dot table-management__legend-dot--selected" /> Đã chọn</span>
-          <span><span className="table-management__legend-dot table-management__legend-dot--booked" /> Đã đặt</span>
-        </div>
+        {tableContent}
       </section>
 
       {isModalOpen && (
