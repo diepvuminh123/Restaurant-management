@@ -46,10 +46,16 @@ class SSEService {
       targets = targets.filter(filter);
     }
 
+    console.log(`[SSE] Sending event "${event}" to ${targets.length}/${this.clients.length} clients`);
+
     const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 
     targets.forEach(client => {
-      client.res.write(payload);
+      try {
+        client.res.write(payload);
+      } catch (err) {
+        console.error(`[SSE] Failed to write to client ${client.id}:`, err.message);
+      }
     });
   }
 

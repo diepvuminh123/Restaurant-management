@@ -17,11 +17,14 @@ exports.setupOrderStream = (req, res) => {
   res.flushHeaders();
 
   // Thông tin user từ session
+  // Lưu ý: auth middleware lưu là req.session.userId và req.session.userRole (không phải req.session.user.id)
   const metadata = {
-    userId: req.session?.user?.id || null,
-    role: req.session?.user?.role || null,
+    userId: req.session?.userId || null,
+    role: req.session?.userRole || null,
     sessionId: req.sessionID || null
   };
+
+  console.log(`[SSE] New connection — userId: ${metadata.userId}, role: ${metadata.role}, sessionId: ${metadata.sessionId}`);
 
   // Thêm client vào service
   const clientId = sseService.addClient(res, metadata);
