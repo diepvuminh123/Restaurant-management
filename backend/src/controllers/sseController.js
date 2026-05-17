@@ -5,13 +5,13 @@ const sseService = require('../services/sseService');
  */
 exports.setupOrderStream = (req, res) => {
   // Thiết lập headers cho SSE
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || 'http://localhost:3000',
-    'Access-Control-Allow-Credentials': 'true'
-  });
+  // Không set CORS header thủ công ở đây — đã được xử lý bởi CORS middleware trong app.js
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  // Tắt buffering trên Nginx/Render proxy để SSE hoạt động đúng
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
 
   // Thông tin user từ session
   const metadata = {
