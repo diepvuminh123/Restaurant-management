@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { IoArrowBack, IoCheckmarkCircle, IoCardOutline, IoBusiness, IoLogoUsd, IoChatbubbleEllipsesOutline, IoHappyOutline } from 'react-icons/io5';
+import { IoArrowBack, IoCheckmarkCircle, IoCardOutline, IoBusiness, IoLogoUsd, IoChevronDown, IoChevronUp, IoChatbubbleEllipsesOutline, IoHappyOutline } from 'react-icons/io5';
 import { useToast } from '../../hooks/useToast';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useCart } from '../../hooks/useCart';
@@ -158,11 +158,28 @@ const PromotionSuggestionList = ({
   promoCode,
   onSelectPromotion,
 }) => {
+  const trackRef = useRef(null);
+
   const getPromotionSuggestionClassName = (promotion) => {
     const isSelected = promoCode.trim().toUpperCase() === String(promotion?.code || '').toUpperCase();
     const disabledClassName = promotion?.isSelectable ? '' : ' is-disabled';
 
     return `promo-suggestion-card${isSelected ? ' is-selected' : ''}${disabledClassName}`;
+  };
+
+  const scrollPromotions = (direction) => {
+    const container = trackRef.current;
+    if (!container) return;
+
+    const firstCard = container.querySelector('.promo-suggestion-card');
+    const cardWidth = firstCard instanceof HTMLElement ? firstCard.offsetWidth : 240;
+    const gap = 12;
+    const offset = (cardWidth + gap) * 0.9;
+
+    container.scrollBy({
+      top: direction * offset,
+      behavior: 'smooth',
+    });
   };
 
   let content = null;
@@ -198,8 +215,36 @@ const PromotionSuggestionList = ({
 
   return (
     <div className="promo-suggestion-list">
-      <div className="promo-suggestion-list__header">Mã hiện có</div>
-      {content}
+      <div className="promo-suggestion-list__head">
+        <div className="promo-suggestion-list__header">Mã hiện có</div>
+        {!loading && promotionCards.length > 1 ? (
+          <div className="promo-suggestion-list__nav">
+            <button
+              type="button"
+              className="promo-suggestion-list__nav-btn"
+              onClick={() => scrollPromotions(-1)}
+              aria-label="Xem mã khuyến mãi phía trên"
+            >
+              <IoChevronUp />
+            </button>
+            <button
+              type="button"
+              className="promo-suggestion-list__nav-btn"
+              onClick={() => scrollPromotions(1)}
+              aria-label="Xem mã khuyến mãi phía dưới"
+            >
+              <IoChevronDown />
+            </button>
+          </div>
+        ) : null}
+      </div>
+      {loading || promotionCards.length === 0 ? (
+        content
+      ) : (
+        <div className="promo-suggestion-list__viewport" ref={trackRef}>
+          {content}
+        </div>
+      )}
     </div>
   );
 };
