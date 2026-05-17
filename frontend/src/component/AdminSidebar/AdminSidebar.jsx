@@ -8,52 +8,21 @@ import { IoBagHandleOutline, IoLogOutOutline } from 'react-icons/io5';
 import { CiUser } from 'react-icons/ci';
 import { HiOutlineUsers } from 'react-icons/hi2';
 import { MdOutlineRateReview, MdLocalOffer, MdQuestionAnswer } from 'react-icons/md';
-import { RiStore2Line } from 'react-icons/ri';
+import { RiStore2Line, RiSettings3Line } from 'react-icons/ri';
 import './AdminSidebar.css';
 
 const AdminSidebar = ({ onLogout, userRole, user, basePath, isOpen = false, onClose }) => {
   const navigate = useNavigate();
   const resolvedBasePath = basePath || (userRole === 'employee' ? '/employee' : '/admin');
-  const menuItems = [
-    {
-      path: `${resolvedBasePath}/dashboard`,
-      icon: <AiOutlineHome />,
-      label: 'Trang chủ',
-    },
-  ];
+  
+  const menuItems = [];
 
-  if (userRole === 'employee') {
+  if (userRole === 'system_admin') {
+    // SysAdmin chỉ được thấy: Tài liệu hệ thống & Quản lý người dùng
     menuItems.push({
-      path: `${resolvedBasePath}/bookings`,
-      icon: <BsCalendar3 />,
-      label: 'Đặt bàn (tại nhà hàng)',
-    });
-
-    menuItems.push({
-      path: `${resolvedBasePath}/takeaway`,
-      icon: <IoBagHandleOutline />,
-      label: 'Đặt món mang đi',
-    });
-  }
-
-  menuItems.push({
-    path: `${resolvedBasePath}/menu`,
-    icon: <LuUtensilsCrossed />,
-    label: 'Trạng thái món ăn',
-  });
-
-  // Chỉ admin mới thấy menu Quản lý người dùng
-  if (userRole === 'admin') {
-    menuItems.push({
-      path: `${resolvedBasePath}/reviews`,
-      icon: <MdOutlineRateReview />,
-      label: 'Quản lý đánh giá',
-    });
-
-    menuItems.push({
-      path: `${resolvedBasePath}/restaurant-info`,
-      icon: <RiStore2Line />,
-      label: 'Thông tin nhà hàng',
+      path: `${resolvedBasePath}/system-docs`,
+      icon: <RiSettings3Line />,
+      label: 'Tài liệu hệ thống',
     });
 
     menuItems.push({
@@ -61,18 +30,65 @@ const AdminSidebar = ({ onLogout, userRole, user, basePath, isOpen = false, onCl
       icon: <HiOutlineUsers />,
       label: 'Quản lý người dùng',
     });
-
+  } else {
+    // Các vai trò khác mới được thấy: Trang chủ & Trạng thái món ăn
     menuItems.push({
-      path: `${resolvedBasePath}/promotions`,
-      icon: <MdLocalOffer />,
-      label: 'Quản lý khuyến mãi',
+      path: `${resolvedBasePath}/dashboard`,
+      icon: <AiOutlineHome />,
+      label: 'Trang chủ',
     });
 
+    if (userRole === 'employee') {
+      menuItems.push({
+        path: `${resolvedBasePath}/bookings`,
+        icon: <BsCalendar3 />,
+        label: 'Đặt bàn (tại nhà hàng)',
+      });
+
+      menuItems.push({
+        path: `${resolvedBasePath}/takeaway`,
+        icon: <IoBagHandleOutline />,
+        label: 'Đặt món mang đi',
+      });
+    }
+
     menuItems.push({
-      path: `${resolvedBasePath}/faqs`,
-      icon: <MdQuestionAnswer />,
-      label: 'Quản lý FAQ',
+      path: `${resolvedBasePath}/menu`,
+      icon: <LuUtensilsCrossed />,
+      label: 'Trạng thái món ăn',
     });
+
+    if (userRole === 'admin') {
+      menuItems.push({
+        path: `${resolvedBasePath}/reviews`,
+        icon: <MdOutlineRateReview />,
+        label: 'Quản lý đánh giá',
+      });
+
+      menuItems.push({
+        path: `${resolvedBasePath}/restaurant-info`,
+        icon: <RiStore2Line />,
+        label: 'Thông tin nhà hàng',
+      });
+
+      menuItems.push({
+        path: `${resolvedBasePath}/users`,
+        icon: <HiOutlineUsers />,
+        label: 'Quản lý người dùng',
+      });
+
+      menuItems.push({
+        path: `${resolvedBasePath}/promotions`,
+        icon: <MdLocalOffer />,
+        label: 'Quản lý khuyến mãi',
+      });
+
+      menuItems.push({
+        path: `${resolvedBasePath}/faqs`,
+        icon: <MdQuestionAnswer />,
+        label: 'Quản lý FAQ',
+      });
+    }
   }
 
   const handleLogout = async () => {
@@ -81,7 +97,7 @@ const AdminSidebar = ({ onLogout, userRole, user, basePath, isOpen = false, onCl
     navigate('/login');
   };
 
-  const roleLabel = userRole === 'admin' ? 'Admin' : userRole === 'employee' ? 'Nhân viên' : 'Tài khoản';
+  const roleLabel = userRole === 'admin' ? 'Admin' : userRole === 'employee' ? 'Nhân viên' : userRole === 'system_admin' ? 'SysAdmin' : 'Tài khoản';
 
   return (
     <>
@@ -128,8 +144,6 @@ const AdminSidebar = ({ onLogout, userRole, user, basePath, isOpen = false, onCl
             <span className="admin-sidebar__label">{item.label}</span>
           </NavLink>
         ))}
-
-        
       </nav>
       </aside>
     </>

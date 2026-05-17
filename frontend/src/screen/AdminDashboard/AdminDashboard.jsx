@@ -9,10 +9,12 @@ import RestaurantInfoManagement from '../RestaurantInfoManagement/RestaurantInfo
 import PromotionManagement from '../PromotionManagement/PromotionManagement';
 import FAQManagement from './FAQManagement/FAQManagement';
 import Dashboard from '../Dashboard/Dashboard';
+import SystemDocs from '../SystemDocs/SystemDocs';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const homeRedirectPath = user.role === 'system_admin' ? '/admin/system-docs' : '/admin/dashboard';
 
   return (
     <div className="admin-dashboard">
@@ -35,44 +37,63 @@ const AdminDashboard = ({ user, onLogout }) => {
         
         <main className="admin-dashboard__content">
           <Routes>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="menu" element={<MenuManagement user={user} />} />
+            <Route path="dashboard" element={
+              user.role === 'admin' ? (
+                <Dashboard />
+              ) : (
+                <Navigate to="/admin/system-docs" replace />
+              )
+            } />
+            <Route path="menu" element={
+              user.role === 'admin' ? (
+                <MenuManagement user={user} />
+              ) : (
+                <Navigate to="/admin/system-docs" replace />
+              )
+            } />
             <Route path="reviews" element={
               user.role === 'admin' ? (
                 <ReviewManagement />
               ) : (
-                <Navigate to="/admin/dashboard" replace />
+                <Navigate to={homeRedirectPath} replace />
               )
             } />
             <Route path="users" element={
               (user.role === 'admin' || user.role === 'system_admin') ? (
                 <UserManagement currentUser={user} />
               ) : (
-                <Navigate to="/admin/dashboard" replace />
+                <Navigate to={homeRedirectPath} replace />
               )
             } />
             <Route path="restaurant-info" element={
               user.role === 'admin' ? (
                 <RestaurantInfoManagement />
               ) : (
-                <Navigate to="/admin/dashboard" replace />
+                <Navigate to={homeRedirectPath} replace />
               )
             } />
             <Route path="promotions" element={
               user.role === 'admin' ? (
                 <PromotionManagement />
               ) : (
-                <Navigate to="/admin/dashboard" replace />
+                <Navigate to={homeRedirectPath} replace />
               )
             } />
             <Route path="faqs" element={
               user.role === 'admin' ? (
                 <FAQManagement />
               ) : (
+                <Navigate to={homeRedirectPath} replace />
+              )
+            } />
+            <Route path="system-docs" element={
+              user.role === 'system_admin' ? (
+                <SystemDocs />
+              ) : (
                 <Navigate to="/admin/dashboard" replace />
               )
             } />
-            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="*" element={<Navigate to={homeRedirectPath} replace />} />
           </Routes>
         </main>
       </div>

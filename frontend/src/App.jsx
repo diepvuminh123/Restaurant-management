@@ -81,7 +81,7 @@ function AppContent() {
   const handleLoginSuccess = (userData) => {
     // Cart được quản lý bởi server qua API, không cần xử lý cart ownership ở client
     // Backend tự động migrate guest cart sang user cart khi đăng nhập
-    
+
     // Save to sessionStorage
     sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
     setUser(userData);
@@ -89,8 +89,10 @@ function AppContent() {
     toast.success("Đăng nhập thành công!");
   };
 
-  // Helper function để xác định default route dựa trên role
   const getDefaultRoute = (userRole) => {
+    if (userRole === 'system_admin') {
+      return '/admin/system-docs';
+    }
     if (userRole === 'admin') {
       return '/admin/dashboard';
     }
@@ -132,126 +134,126 @@ function AppContent() {
   }
 
   return (
-      <Routes>
+    <Routes>
       {/* Public routes - Không cần đăng nhập */}
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={
           <AuthEntry user={user} initialView="login" onLoginSuccess={handleLoginSuccess} getDefaultRoute={getDefaultRoute} />
-        } 
+        }
       />
-        <Route 
-          path="/signup" 
-          element={
-            <AuthEntry user={user} initialView="signup" onLoginSuccess={handleLoginSuccess} getDefaultRoute={getDefaultRoute} />
-          } 
-        />
-        <Route 
-          path="/verify" 
-          element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="verify" />} 
-        />
-        <Route 
-          path="/forgot-password" 
-          element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />} 
-        />
-        
+      <Route
+        path="/signup"
+        element={
+          <AuthEntry user={user} initialView="signup" onLoginSuccess={handleLoginSuccess} getDefaultRoute={getDefaultRoute} />
+        }
+      />
+      <Route
+        path="/verify"
+        element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="verify" />}
+      />
+      <Route
+        path="/forgot-password"
+        element={<LoginScreen onLoginSuccess={handleLoginSuccess} initialView="forgot" />}
+      />
 
-        {/* Public pages - Không cần đăng nhập */}
-        <Route 
-          path="/home" 
-          element={<HomeScreen onLogout={handleLogout} user={user} />} 
-        />
-        <Route 
-          path="/about" 
-          element={<AboutScreen onLogout={handleLogout} user={user} />} 
-        />
-        <Route 
-          path="/menu" 
-          element={<MenuScreen onLogout={handleLogout} user={user} />} 
-        />
 
-        <Route
-          path="/booking"
-          element={<BookingScreen user={user} />}
-        />
+      {/* Public pages - Không cần đăng nhập */}
+      <Route
+        path="/home"
+        element={<HomeScreen onLogout={handleLogout} user={user} />}
+      />
+      <Route
+        path="/about"
+        element={<AboutScreen onLogout={handleLogout} user={user} />}
+      />
+      <Route
+        path="/menu"
+        element={<MenuScreen onLogout={handleLogout} user={user} />}
+      />
 
-        {/* Backward-compatible redirect (header used to point here) */}
-        <Route path="/reservation" element={<Navigate to="/booking" replace />} />
-        <Route 
-          path="/checkout" 
-          element={<CheckoutScreen />} 
-        />
+      <Route
+        path="/booking"
+        element={<BookingScreen user={user} />}
+      />
 
-        <Route 
-          path="/order-lookup" 
-          element={<GuestOrderLookupScreen />} 
-        />
+      {/* Backward-compatible redirect (header used to point here) */}
+      <Route path="/reservation" element={<Navigate to="/booking" replace />} />
+      <Route
+        path="/checkout"
+        element={<CheckoutScreen />}
+      />
 
-        <Route
-          path="/table-map"
-          element={<TableMapScreen />}
-        />
+      <Route
+        path="/order-lookup"
+        element={<GuestOrderLookupScreen />}
+      />
 
-        <Route
-          path="/reservation-success"
-          element={<ReservationSuccessScreen />}
-        />
+      <Route
+        path="/table-map"
+        element={<TableMapScreen />}
+      />
 
-        {/* Admin routes */}
-        <Route 
-          path="/admin/*" 
-          element={
-            user && user.role === 'admin' ? 
-            <AdminDashboard user={user} onLogout={handleLogout} /> : 
+      <Route
+        path="/reservation-success"
+        element={<ReservationSuccessScreen />}
+      />
+
+      {/* Admin routes */}
+      <Route
+        path="/admin/*"
+        element={
+          user && (user.role === 'admin' || user.role === 'system_admin') ?
+            <AdminDashboard user={user} onLogout={handleLogout} /> :
             user && user.role === 'employee' ? <Navigate to="/employee/dashboard" replace /> :
-            user ? <Unauthorized /> :
-            <Navigate to="/login" replace />
-          } 
-        />
+              user ? <Unauthorized /> :
+                <Navigate to="/login" replace />
+        }
+      />
 
-        {/* Employee routes */}
-        <Route 
-          path="/employee/*" 
-          element={
-            user && user.role === 'employee' ? 
-            <EmployeeDashboard user={user} onLogout={handleLogout} /> : 
+      {/* Employee routes */}
+      <Route
+        path="/employee/*"
+        element={
+          user && user.role === 'employee' ?
+            <EmployeeDashboard user={user} onLogout={handleLogout} /> :
             user && user.role === 'admin' ? <Navigate to="/admin/dashboard" replace /> :
-            user ? <Unauthorized /> :
-            <Navigate to="/login" replace />
-          } 
-        />
+              user ? <Unauthorized /> :
+                <Navigate to="/login" replace />
+        }
+      />
 
-        {/* Profile route */}
-        <Route
-          path="/profile"
-          element={
-            user ? (
-              <SettingScreen user={user} onProfileUpdated={handleUserUpdated} />
-            ) : (
-              <Navigate to="/home" replace />
-            )
-          }
-        />
+      {/* Profile route */}
+      <Route
+        path="/profile"
+        element={
+          user ? (
+            <SettingScreen user={user} onProfileUpdated={handleUserUpdated} />
+          ) : (
+            <Navigate to="/home" replace />
+          )
+        }
+      />
 
-        {/* Backward-compatible redirect */}
-        <Route path="/setting" element={<Navigate to="/profile" replace />} />
+      {/* Backward-compatible redirect */}
+      <Route path="/setting" element={<Navigate to="/profile" replace />} />
 
-        {/* Error pages */}
-        <Route path="/403" element={<Unauthorized />} />
-        <Route path="/404" element={<Error404 />} />
+      {/* Error pages */}
+      <Route path="/403" element={<Unauthorized />} />
+      <Route path="/404" element={<Error404 />} />
 
-        {/* Default redirect */}
-        <Route 
-          path="/" 
-          element={<Navigate to="/home" replace />} 
-        />
-        
-        {/* 404 - Catch all undefined routes */}
-        <Route 
-          path="*" 
-          element={<Error404 />} 
-        />
-      </Routes>
+      {/* Default redirect */}
+      <Route
+        path="/"
+        element={<Navigate to="/home" replace />}
+      />
+
+      {/* 404 - Catch all undefined routes */}
+      <Route
+        path="*"
+        element={<Error404 />}
+      />
+    </Routes>
   );
 }
 

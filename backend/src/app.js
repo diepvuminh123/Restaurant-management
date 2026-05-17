@@ -48,8 +48,9 @@ app.get("/", (req, res) => {
 });
 
 // API Documentation
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
+  //  customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Restaurant API Documentation'
 }));
 
