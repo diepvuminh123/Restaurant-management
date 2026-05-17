@@ -161,6 +161,16 @@ const HomeScreenHeader = ({ user, onLogout }) => {
                       Trang admin
                     </button>
                   )}
+                  {userRole === 'system_admin' && (
+                    <button
+                      className="profile__dropdown-item"
+                      onClick={handleAdminPage}
+                      type="button"
+                      role="menuitem"
+                    >
+                      Trang quản trị hệ thống
+                    </button>
+                  )}
                   {userRole === 'employee' && (
                      <button 
                       className="profile__dropdown-item"

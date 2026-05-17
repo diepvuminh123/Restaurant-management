@@ -299,6 +299,15 @@ const CheckoutScreen = () => {
   const finalAmount = totalAmount - discountAmount;
 
   useEffect(() => {
+    if (user && (user.role === 'admin' || user.role === 'system_admin' || user.role === 'employee')) {
+      error('Tài khoản nhân viên/quản trị không thể mua hàng hay đặt món ở luồng khách hàng. Vui lòng sử dụng tài khoản khách hàng.');
+      setTimeout(() => {
+        navigate('/home', { replace: true });
+      }, 3000);
+    }
+  }, [user, navigate, error]);
+
+  useEffect(() => {
     if (!canShowPromotionSuggestions) {
       setAvailablePromotions([]);
       return;

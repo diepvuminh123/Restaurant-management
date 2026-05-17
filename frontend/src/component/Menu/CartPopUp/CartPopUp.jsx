@@ -50,6 +50,12 @@ const CartPopUp = ({ onLoginSuccess, cartItems, onClose, onUpdateQuantity, onRem
   const handleCheckout = () => {
     const user = getLoggedInUser();
 
+    // Chặn admin, sysadmin, employee mua hàng ở luồng khách hàng
+    if (user && (user.role === 'admin' || user.role === 'system_admin' || user.role === 'employee')) {
+      alert('Tài khoản nhân viên/quản trị không thể mua hàng hay đặt món ở luồng khách hàng. Vui lòng đăng xuất hoặc sử dụng tài khoản khách hàng.');
+      return;
+    }
+
     // Nếu chưa đăng nhập thì cho chọn vai trò
     if (!user) {
       setIsRoleModalOpen(true);

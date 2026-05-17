@@ -137,6 +137,12 @@ const ReservationForm = ({ user, onParamsChange, onContinue, submitting = false 
             return;
         }
 
+        // Chặn admin, sysadmin, employee đặt bàn ở luồng khách hàng
+        if (user.role === 'admin' || user.role === 'system_admin' || user.role === 'employee') {
+            toast.warning('Tài khoản nhân viên/quản trị không thể thực hiện đặt bàn ở luồng khách hàng. Vui lòng đăng xuất hoặc sử dụng tài khoản khách hàng.');
+            return;
+        }
+
         if (onContinue) {
             onContinue({ date, time, guests });
         } else {
