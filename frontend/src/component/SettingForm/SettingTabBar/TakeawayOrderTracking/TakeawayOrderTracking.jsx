@@ -8,11 +8,18 @@ import {
   IoTimeOutline,
   IoCloseCircleOutline,
   IoRestaurantOutline,
+  IoCloseOutline,
+  IoCopyOutline,
+  IoCardOutline,
+  IoBusiness,
+  IoLogoUsd,
+  IoChatbubbleEllipsesOutline,
 } from 'react-icons/io5';
 import ApiService from '../../../../services/apiService';
 import ConfirmDialog from '../../../ConfirmDialog/ConfirmDialog';
 import { useConfirm } from '../../../../hooks/useConfirm';
 import useOrderSSE from '../../../../hooks/useOrderSSE';
+import zaloQR from '../../../../picture/zalo.jpg';
 import './TakeawayOrderTracking.css';
 
 const STATUS_LABEL_MAP = {
@@ -188,6 +195,9 @@ const TakeawayOrderTracking = () => {
   });
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [modalPaymentMethod, setModalPaymentMethod] = useState('zalopay');
+  const [copiedField, setCopiedField] = useState('');
   const previousStatusesRef = useRef(new Map());
   const isFirstLoadRef = useRef(true);
   const isMountedRef = useRef(true);
@@ -196,6 +206,12 @@ const TakeawayOrderTracking = () => {
     () => orders.find((order) => order.id === selectedOrderId) || null,
     [orders, selectedOrderId]
   );
+
+  const handleCopy = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(''), 2000);
+  };
 
   const statusContent = useMemo(() => getTakeawayStatusContent(selectedOrder), [selectedOrder]);
 
@@ -357,7 +373,7 @@ const TakeawayOrderTracking = () => {
   const canGoNext = page < (pagination.total_pages || 1);
 
   const handleDepositGuide = () => {
-    setActionText('Vui lòng gửi ảnh hóa đơn cọc qua Messenger để nhà hàng xác nhận trạng thái cọc.');
+    setShowPaymentModal(true);
   };
 
   const handleCancelOrder = async () => {
@@ -628,6 +644,208 @@ const TakeawayOrderTracking = () => {
               </>
             )}
           </section>
+        </div>
+      )}
+
+      {showPaymentModal && selectedOrder && (
+        <div className="payment-modal-overlay" onClick={() => setShowPaymentModal(false)}>
+          <div className="payment-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="payment-modal-header">
+              <h3>Thanh toán cọc 50%</h3>
+              <button type="button" className="payment-modal-close" onClick={() => setShowPaymentModal(false)}>
+                <IoCloseOutline />
+              </button>
+            </div>
+            
+            <div className="payment-modal-body">
+              <div className="payment-modal-summary">
+                <div className="modal-summary-row">
+                  <span>Mã đơn hàng:</span>
+                  <strong>{selectedOrder.order_code || `#${selectedOrder.id}`}</strong>
+                </div>
+                <div className="modal-summary-row">
+                  <span>Tổng tiền đơn:</span>
+                  <span>{formatCurrency(selectedOrder.final_amount)}đ</span>
+                </div>
+                <div className="modal-summary-row highlight">
+                  <span>Số tiền cần cọc (50%):</span>
+                  <strong className="modal-deposit-amount">{formatCurrency(selectedOrder.deposit_amount)}đ</strong>
+                </div>
+              </div>
+
+              <div className="modal-payment-methods">
+                <h4>Chọn phương thức thanh toán</h4>
+                <div className="modal-payment-options">
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'zalopay' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('zalopay')}
+                  >
+                    <IoCardOutline />
+                    <span>ZaloPay</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'acb' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('acb')}
+                  >
+                    <IoBusiness />
+                    <span>Ngân hàng ACB</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`modal-payment-option ${modalPaymentMethod === 'vietcombank' ? 'active' : ''}`}
+                    onClick={() => setModalPaymentMethod('vietcombank')}
+                  >
+                    <IoLogoUsd />
+                    <span>Vietcombank</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="modal-payment-details">
+                <div className="modal-payment-info-box">
+                  {modalPaymentMethod === 'zalopay' && (
+                    <>
+                      <div className="info-row">
+                        <span>Ví điện tử:</span>
+                        <strong>ZaloPay</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>Số điện thoại:</span>
+                        <div className="copyable-value">
+                          <strong>0915728661</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('0915728661', 'phone')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'phone' ? 'Đã chép' : 'Sao chép'}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>Chủ tài khoản:</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  {modalPaymentMethod === 'acb' && (
+                    <>
+                      <div className="info-row">
+                        <span>Ngân hàng:</span>
+                        <strong>ACB (Ngân hàng TMCP Á Châu)</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>Số tài khoản:</span>
+                        <div className="copyable-value">
+                          <strong>10427847</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('10427847', 'account')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'account' ? 'Đã chép' : 'Sao chép'}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>Chủ tài khoản:</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  {modalPaymentMethod === 'vietcombank' && (
+                    <>
+                      <div className="info-row">
+                        <span>Ngân hàng:</span>
+                        <strong>Vietcombank (Ngoại thương VN)</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>Số tài khoản:</span>
+                        <div className="copyable-value">
+                          <strong>10182749372</strong>
+                          <button 
+                            type="button"
+                            className="btn-copy" 
+                            onClick={() => handleCopy('10182749372', 'account')}
+                          >
+                            <IoCopyOutline /> {copiedField === 'account' ? 'Đã chép' : 'Sao chép'}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span>Chủ tài khoản:</span>
+                        <strong>DIEP VU MINH</strong>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="info-row">
+                    <span>Số tiền cọc:</span>
+                    <div className="copyable-value">
+                      <strong>{formatCurrency(selectedOrder.deposit_amount)}đ</strong>
+                      <button 
+                        type="button"
+                        className="btn-copy" 
+                        onClick={() => handleCopy(selectedOrder.deposit_amount.toString(), 'amount')}
+                      >
+                        <IoCopyOutline /> {copiedField === 'amount' ? 'Đã chép' : 'Sao chép'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="info-row">
+                    <span>Nội dung CK:</span>
+                    <div className="copyable-value">
+                      <strong>{`${selectedOrder.order_code || `#${selectedOrder.id}`} ${selectedOrder.customer_phone || ''}`.trim()}</strong>
+                      <button 
+                        type="button"
+                        className="btn-copy" 
+                        onClick={() => handleCopy(`${selectedOrder.order_code || `#${selectedOrder.id}`} ${selectedOrder.customer_phone || ''}`.trim(), 'content')}
+                      >
+                        <IoCopyOutline /> {copiedField === 'content' ? 'Đã chép' : 'Sao chép'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-qr-container">
+                  <div className="modal-qr-placeholder">
+                    <img src={zaloQR} alt="QR Code chuyển khoản" />
+                  </div>
+                  <p className="qr-guide-text">Quét mã QR để chuyển khoản nhanh chóng</p>
+                </div>
+              </div>
+
+              <div className="modal-payment-instructions">
+                <IoInformationCircleOutline />
+                <p>Sau khi chuyển khoản thành công, vui lòng chụp màn hình giao dịch và gửi qua Messenger để nhà hàng đối chiếu và xác nhận trạng thái cọc sớm nhất.</p>
+              </div>
+            </div>
+
+            <div className="payment-modal-footer">
+              <button 
+                type="button" 
+                className="modal-messenger-btn"
+                onClick={() => {
+                  window.open('https://m.me/yourpage', '_blank');
+                }}
+              >
+                <IoChatbubbleEllipsesOutline />
+                <span>Gửi bill qua Messenger</span>
+              </button>
+              <button 
+                type="button" 
+                className="modal-close-btn"
+                onClick={() => setShowPaymentModal(false)}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
