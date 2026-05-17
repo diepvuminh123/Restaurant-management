@@ -9,6 +9,7 @@ import ApiService from '../../services/apiService';
 import ToastContainer from '../../component/Toast/ToastContainer';
 import ConfirmDialog from '../../component/ConfirmDialog/ConfirmDialog';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
+import { useRestaurantInfoContext } from '../../context/RestaurantInfoContext';
 import zaloQR from '../../picture/zalo.jpg';
 import './CheckoutScreen.css';
 
@@ -66,6 +67,8 @@ const proceedToDepositStep = async ({
   error,
   success,
   setCurrentStep,
+  openingTime,
+  closingTime,
 }) => {
   if (cartLoading) {
     return;
@@ -85,6 +88,14 @@ const proceedToDepositStep = async ({
   if (Number.isNaN(pickupTime.getTime())) {
     error('Thời gian nhận món không hợp lệ.');
     return;
+  }
+
+  // Chặn thời gian đến lấy vượt quá thời gian hoạt động của nhà hàng
+  if (openingTime && closingTime && customerInfo.pickupTime) {
+    if (customerInfo.pickupTime < openingTime || customerInfo.pickupTime > closingTime) {
+      error(`Thời gian nhận món phải nằm trong khung giờ hoạt động của nhà hàng: ${openingTime} - ${closingTime}.`);
+      return;
+    }
   }
 
   const minLeadTimeMinutes = 120;
@@ -262,6 +273,7 @@ const CheckoutScreen = () => {
   const { toasts, removeToast, error, success } = useToast();
   const { confirmState, showConfirm } = useConfirm();
   const { customerInfo: initialCustomerInfo = {} } = location.state || {};
+  const { openingTime, closingTime } = useRestaurantInfoContext();
 
   const {
     cartItems,
@@ -382,6 +394,8 @@ const CheckoutScreen = () => {
     error,
     success,
     setCurrentStep,
+    openingTime,
+    closingTime,
   });
 
   const handleConfirmDeposit = async () => {
@@ -402,6 +416,14 @@ const CheckoutScreen = () => {
         if (Number.isNaN(pickupTime.getTime())) {
           error('Thời gian nhận món không hợp lệ.');
           return;
+        }
+
+        // Chặn thời gian đến lấy vượt quá thời gian hoạt động của nhà hàng
+        if (openingTime && closingTime && customerInfo.pickupTime) {
+          if (customerInfo.pickupTime < openingTime || customerInfo.pickupTime > closingTime) {
+            error(`Thời gian nhận món phải nằm trong khung giờ hoạt động của nhà hàng: ${openingTime} - ${closingTime}.`);
+            return;
+          }
         }
 
         const response = await ApiService.createOrder({
