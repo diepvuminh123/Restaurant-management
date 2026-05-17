@@ -18,6 +18,43 @@ const getTablesAvailabilityQuerySchema = Joi.object({
 	ignoreCapacity: Joi.boolean().truthy('true').falsy('false').optional(),
 });
 
+const tableStatusSchema = Joi.string()
+	.valid('AVAILABLE', 'RESERVED', 'OCCUPIED')
+	.messages({
+		'any.only': 'table_status phải là AVAILABLE, RESERVED hoặc OCCUPIED',
+	});
+
+const getTableMapForAdminQuerySchema = Joi.object({
+	status: tableStatusSchema.optional(),
+});
+
+const tableMapBodySchema = Joi.object({
+	capacity: Joi.number().integer().min(1).required().messages({
+		'any.required': 'capacity là bắt buộc',
+		'number.base': 'capacity phải là số',
+		'number.integer': 'capacity phải là số nguyên',
+		'number.min': 'capacity phải lớn hơn 0',
+	}),
+	table_status: tableStatusSchema.required().messages({
+		'any.required': 'table_status là bắt buộc',
+	}),
+	position_x: Joi.number().integer().min(0).required().messages({
+		'any.required': 'position_x là bắt buộc',
+		'number.base': 'position_x phải là số',
+		'number.integer': 'position_x phải là số nguyên',
+		'number.min': 'position_x phải >= 0',
+	}),
+	position_y: Joi.number().integer().min(0).required().messages({
+		'any.required': 'position_y là bắt buộc',
+		'number.base': 'position_y phải là số',
+		'number.integer': 'position_y phải là số nguyên',
+		'number.min': 'position_y phải >= 0',
+	}),
+	restaurant_note: Joi.string().trim().max(255).allow('', null).optional().messages({
+		'string.max': 'restaurant_note không được quá 255 ký tự',
+	}),
+});
+
 const createReservationBodySchema = Joi.object({
 	table_id: Joi.number().integer().min(1).required().messages({
 		'any.required': 'table_id là bắt buộc',
@@ -107,6 +144,8 @@ const updateReservationStatusForStaffSchema = Joi.object({
 });
 
 module.exports = {
+	getTableMapForAdminQuerySchema,
+	tableMapBodySchema,
 	getTablesAvailabilityQuerySchema,
 	createReservationBodySchema,
 	getReservationsForStaffQuerySchema,

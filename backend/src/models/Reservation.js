@@ -4,6 +4,20 @@ require('dotenv').config();
 class Reservation {
   static DEFAULT_SLOT_MINUTES = process.env.DEFAULT_SLOT_MINUTES || 60;
 
+  static async hasActiveReservationForTable(tableId, states = ['CONFIRM', 'ON_SERVING']) {
+    const result = await pool.query(
+      `SELECT EXISTS (
+        SELECT 1
+        FROM reservation
+        WHERE table_id = $1
+          AND reservation_state = ANY($2::text[])
+      ) AS has_active_reservation`,
+      [tableId, states]
+    );
+
+    return Boolean(result.rows[0]?.has_active_reservation);
+  }
+
   static async getTablesWithAvailability(reservationTime, numOfGuests, slotMinutes = Reservation.DEFAULT_SLOT_MINUTES, ignoreCapacity = false) {
     const result = await pool.query(
       `SELECT

@@ -369,4 +369,6 @@ router.put(
 	validateBody(updateReservationStatusForStaffSchema),
 	ReservationController.updateReservationStatusForStaff
 )
+
+
 module.exports = router;

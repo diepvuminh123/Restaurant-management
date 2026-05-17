@@ -671,6 +671,43 @@ class ApiService {
     });
   }
 
+  static async getAdminTables(filters = {}) {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        params.set(key, String(value).trim());
+      }
+    });
+
+    const query = params.toString();
+    const endpoint = query ? `/admin/tables?${query}` : '/admin/tables';
+
+    return this.request(endpoint, {
+      method: 'GET',
+    });
+  }
+
+  static async createAdminTable(payload) {
+    return this.request('/admin/tables', {
+      method: 'POST',
+      body: payload,
+    });
+  }
+
+  static async updateAdminTable(tableId, payload) {
+    return this.request(`/admin/tables/${tableId}`, {
+      method: 'PUT',
+      body: payload,
+    });
+  }
+
+  static async deleteAdminTable(tableId) {
+    return this.request(`/admin/tables/${tableId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // ============= PROMOTION API =============
 
   static async validatePromotion(code, cartTotal) {
