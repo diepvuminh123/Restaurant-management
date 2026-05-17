@@ -5,7 +5,7 @@ import './Dashboard.css';
 import { FiTrendingUp, FiUsers, FiDollarSign, FiShoppingBag, FiCalendar } from 'react-icons/fi';
 
 const Dashboard = () => {
-    const [dashboardData, setDashboardData] = useState({
+    const initialDashboardData = {
         totalOrders: 0,
         totalReservations: 0,
         totalCustomers: 0,
@@ -14,6 +14,10 @@ const Dashboard = () => {
         ordersOverview: [],
         topCategories: [],
         orderStatuses: []
+    };
+
+    const [dashboardData, setDashboardData] = useState({
+        ...initialDashboardData
     });
     const [loading, setLoading] = useState(true);
 
@@ -30,7 +34,10 @@ const Dashboard = () => {
             
             if (response.success) {
                 console.log('Dashboard Data Received:', response.data);
-                setDashboardData(response.data);
+                setDashboardData({
+                    ...initialDashboardData,
+                    ...(response.data || {}),
+                });
             }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -69,7 +76,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                         <p className="stat-label">Tổng đơn hàng</p>
-                        <h3>{dashboardData.totalOrders.toLocaleString()}</h3>
+                        <h3>{Number(dashboardData.totalOrders ?? 0).toLocaleString()}</h3>
                         <span className="stat-change positive">
                             <FiTrendingUp /> 1.58%
                         </span>
@@ -82,7 +89,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                         <p className="stat-label">Tổng khách hàng</p>
-                        <h3>{dashboardData.totalCustomers.toLocaleString()}</h3>
+                        <h3>{Number(dashboardData.totalCustomers ?? 0).toLocaleString()}</h3>
                         <span className="stat-change">
                             <FiTrendingUp /> 0.42%
                         </span>
@@ -95,7 +102,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                         <p className="stat-label">Tổng đặt bàn</p>
-                        <h3>{dashboardData.totalReservations.toLocaleString()}</h3>
+                        <h3>{Number(dashboardData.totalReservations ?? 0).toLocaleString()}</h3>
                         <span className="stat-change positive">
                             <FiTrendingUp /> Theo bộ lọc thời gian
                         </span>
@@ -108,7 +115,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                         <p className="stat-label">Tổng doanh thu</p>
-                        <h3>{formatRevenue(dashboardData.totalRevenue)}</h3>
+                        <h3>{formatRevenue(Number(dashboardData.totalRevenue ?? 0))}</h3>
                         <span className="stat-change positive">
                             <FiTrendingUp /> 2.36%
                         </span>
