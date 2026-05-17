@@ -32,12 +32,7 @@ const buildRestaurantNote = ({ customerName, customerPhone, customerEmail, custo
   return parts.join(' | ').slice(0, 255) || null;
 };
 
-const STAFF_RESERVATION_STATE_TRANSITIONS = {
-  CONFIRM: ['ON_SERVING', 'CANCELED'],
-  ON_SERVING: ['COMPLETED'],
-  CANCELED: [],
-  COMPLETED: [],
-};
+const STAFF_EDITABLE_RESERVATION_STATES = ['CONFIRM', 'ON_SERVING', 'COMPLETED', 'CANCELED'];
 
 const buildError = (message, statusCode = 400) => {
   const error = new Error(message);
@@ -274,7 +269,7 @@ class ReservationService {
 
     const currentState = String(reservation.reservation_state || '').toUpperCase();
     const nextState = String(reservationState || '').toUpperCase();
-    const allowedNextStates = STAFF_RESERVATION_STATE_TRANSITIONS[currentState] || [];
+    const allowedNextStates = STAFF_EDITABLE_RESERVATION_STATES.filter((state) => state !== currentState);
 
     if (!allowedNextStates.includes(nextState)) {
       throw buildError(`Không thể chuyển trạng thái từ ${currentState} sang ${nextState}`, 409);

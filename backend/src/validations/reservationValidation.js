@@ -98,11 +98,11 @@ const createReservationForStaffSchema = Joi.object({
 
 const updateReservationStatusForStaffSchema = Joi.object({
 	reservation_state: Joi.string()
-		.valid('ON_SERVING', 'COMPLETED', 'CANCELED')
+		.valid('CONFIRM', 'ON_SERVING', 'COMPLETED', 'CANCELED')
 		.required()
 		.messages({
 			'any.required': 'Cần có reservation_state',
-			'any.only': 'reservation_state phải là ON_SERVING, COMPLETED hoặc CANCELED',
+			'any.only': 'reservation_state phải là CONFIRM, ON_SERVING, COMPLETED hoặc CANCELED',
 		}),
 });
 

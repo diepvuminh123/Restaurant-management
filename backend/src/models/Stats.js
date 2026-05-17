@@ -28,6 +28,15 @@ class Stats {
       const totalOrders = parseInt(overviewResult.rows[0].total_orders) || 0;
       const totalRevenue = parseFloat(overviewResult.rows[0].total_revenue) || 0;
 
+      // 1b. Tổng số đặt bàn (không tính đơn đã hủy)
+      const reservationOverviewResult = await client.query(`
+        SELECT COUNT(reservation_id) as total_reservations
+        FROM reservation
+        WHERE reservation_state != 'CANCELED'
+          AND created_at >= ${timeFilter}
+      `);
+      const totalReservations = parseInt(reservationOverviewResult.rows[0].total_reservations) || 0;
+
       // 2. Tổng số khách hàng (loại trừ các quyền quản trị/nhân viên)
       const customersResult = await client.query(`
         SELECT COUNT(user_id) as total_customers
@@ -213,6 +222,7 @@ class Stats {
 
       return {
         totalOrders,
+        totalReservations,
         totalCustomers,
         totalRevenue,
         topDishes,
