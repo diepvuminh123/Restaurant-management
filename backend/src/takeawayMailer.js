@@ -82,7 +82,6 @@ async function sendTakeawayAutomationEmail({
     return null;
   }
 
-  const transporter = createTransporter();
   const safeName = escapeHtml(customerName || 'Quy khach');
   const safeOrderCode = escapeHtml(orderCode || 'N/A');
   const pickupText = escapeHtml(formatDateTime(pickupTime));

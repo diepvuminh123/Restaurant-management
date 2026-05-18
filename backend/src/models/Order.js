@@ -675,7 +675,7 @@ class Order {
        WHERE status = 'PENDING'
          AND payment_status = 'UNPAID'
          AND created_at <= NOW() - make_interval(mins => $1::int)
-       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+       RETURNING id, user_id, session_id, order_code, customer_name, customer_email, customer_phone,
                  pickup_time, final_amount, deposit_amount, status, payment_status`,
       [safeTimeout]
     );
@@ -694,7 +694,7 @@ class Order {
          AND payment_status IN ('DEPOSIT_PAID', 'PAID')
          AND pickup_time > NOW()
          AND pickup_time <= NOW() + make_interval(mins => $1::int)
-       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+       RETURNING id, user_id, session_id, order_code, customer_name, customer_email, customer_phone,
                  pickup_time, final_amount, deposit_amount, status, payment_status`,
       [safeLead]
     );
@@ -710,7 +710,7 @@ class Order {
        WHERE status IN ('CONFIRMED', 'PREPARING')
          AND payment_status IN ('DEPOSIT_PAID', 'PAID')
          AND pickup_time <= NOW()
-       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+       RETURNING id, user_id, session_id, order_code, customer_name, customer_email, customer_phone,
                  pickup_time, final_amount, deposit_amount, status, payment_status`
     );
 
@@ -726,7 +726,7 @@ class Order {
            updated_at = NOW()
        WHERE status = 'READY'
          AND pickup_time <= NOW() - make_interval(mins => $1::int)
-       RETURNING id, order_code, customer_name, customer_email, customer_phone,
+       RETURNING id, user_id, session_id, order_code, customer_name, customer_email, customer_phone,
                  pickup_time, final_amount, deposit_amount, status, payment_status`,
       [safeMinutes]
     );
