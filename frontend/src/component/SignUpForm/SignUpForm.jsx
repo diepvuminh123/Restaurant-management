@@ -46,7 +46,7 @@ export default function SignUpForm({ onSignupSuccess, onBackToLogin }) {
       });
 
       if (response.success) {
-        onSignupSuccess(formData.email);
+        onSignupSuccess(formData.email, formData.password);
       }
     } catch (err) {
       // Kiểm tra nếu có mảng errors chi tiết từ backend
