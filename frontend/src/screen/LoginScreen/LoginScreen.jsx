@@ -57,24 +57,33 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
     navigate('/verify', { state: { email, password } });
   };
 
-  const handleVerifySuccess = async (response) => {
+  const handleVerifySuccess = (response) => {
     if (response.otp_type === 'signup') {
-      const email = response.email || registeredEmail || location.state?.email;
-      const password = registeredPassword || location.state?.password;
-      if (email && password) {
-        try {
-          const loginResponse = await ApiService.login(email, password);
-          if (loginResponse.success) {
-            setRegisteredPassword('');
-            handleLoginSuccess(loginResponse.data.user);
-            return;
-          }
-        } catch {
-          // Auto-login failed, fall through to success screen
-        }
-      }
       setCurrentView('success');
     }
+  };
+
+  const handleSuccessLoginClick = async () => {
+    const email = registeredEmail || location.state?.email;
+    const password = registeredPassword || location.state?.password;
+
+    if (!email || !password) {
+      handleBackToLogin();
+      return;
+    }
+
+    try {
+      const loginResponse = await ApiService.login(email, password);
+      if (loginResponse.success) {
+        setRegisteredPassword('');
+        handleLoginSuccess(loginResponse.data.user);
+        return;
+      }
+    } catch {
+      // Fall back to manual login if the stored credentials are unavailable or rejected
+    }
+
+    handleBackToLogin();
   };
 
   const renderCurrentView = () => {
@@ -107,7 +116,7 @@ export default function LoginScreen({ onLoginSuccess, initialView = 'login' }) {
         return (
           <SuccessMessage
             message="Tài khoản đã được kích hoạt thành công!"
-            onLoginClick={handleBackToLogin}
+            onLoginClick={handleSuccessLoginClick}
           />
         );
       case 'forgot':
