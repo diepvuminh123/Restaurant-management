@@ -460,6 +460,14 @@ const CheckoutScreen = () => {
   };
 
   const handleTrackOrder = () => {
+    // Nếu đã đăng nhập, chuyển hướng sang SettingScreen tab delivery
+    const storedUser = sessionStorage.getItem('user');
+    if (storedUser) {
+      navigate('/profile?tab=delivery');
+      return;
+    }
+
+    // Nếu chưa đăng nhập (Guest), chuyển hướng sang trang tra cứu công khai
     const params = new URLSearchParams();
 
     // Tự điền sẵn thông tin tra cứu để khách không cần nhập lại
