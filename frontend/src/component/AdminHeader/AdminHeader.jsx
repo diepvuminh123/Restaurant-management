@@ -24,6 +24,7 @@ const AdminHeader = ({ user, onLogout, isSidebarOpen = false, onMenuToggle }) =>
   const getRoleDisplay = () => {
     if (user.role === 'admin') return 'Admin';
     if (user.role === 'employee') return 'Nhân viên';
+    if (user.role === 'system_admin') return 'System admin';
     return 'Khách hàng';
   };
 
